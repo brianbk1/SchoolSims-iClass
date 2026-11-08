@@ -12,6 +12,13 @@
     }
   },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index" }
+    {
+      "source": "/admin",
+      "destination": "/admin.html"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index"
+    }
   ]
 }

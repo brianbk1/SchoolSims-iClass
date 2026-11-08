@@ -7,6 +7,7 @@ from typing import Any
 import json, copy, os, sys, tempfile
 from dotenv import load_dotenv
 from tts import get_audio, tts_enabled
+import localize
 
 BASE_DIR = Path(__file__).parent
 load_dotenv(BASE_DIR / ".env")  # backend/.env
@@ -19,7 +20,13 @@ app = FastAPI(title="SchoolSims Player")
 with open(BASE_DIR / "scenario.json") as f:
     SCENARIO: dict = json.load(f)
 
-VALID_LANGS = {"en", "es", "ar", "zh", "ne", "sw", "ur"}
+
+
+def valid_langs() -> set[str]:
+    """Approved languages = language blocks in scenario.json (grows when a draft is approved)."""
+    return {k for k, v in SCENARIO.items() if isinstance(v, dict) and not k.startswith("_") and "nodes" in v}
+
+
 # Characters (look, names per language, photo, videos) live in personas.json.
 with open(BASE_DIR / "personas.json") as f:
     PERSONAS: dict = json.load(f)["personas"]
@@ -30,6 +37,18 @@ VALID_ETHNICITIES = set(PERSONAS)
 PLACEHOLDER_NAME = "Jordan Chen"
 
 AVAILABLE_VIDEOS = {(pid, lang) for pid, p in PERSONAS.items() for lang in p.get("video", {})}
+
+
+def playable(pid: str, lang: str) -> bool:
+    """A character can be used in a language if it has a video in that language,
+    or (for newly added languages) an English video to fall back on."""
+    return (pid, lang) in AVAILABLE_VIDEOS or (pid, "en") in AVAILABLE_VIDEOS
+
+
+def language_label(code: str, display_lang: str) -> str:
+    return (SCENARIO[display_lang]["ui"].get("language_labels", {}).get(code)
+            or SCENARIO[code]["ui"].get("language_labels", {}).get(code)
+            or code)
 
 
 def suggested_persona(lang: str) -> str | None:
@@ -56,19 +75,20 @@ def swap_name(value: Any, name: str) -> Any:
 
 @app.get("/api/options")
 def get_options(lang: str = Query("en")):
-    display_lang = lang if lang in VALID_LANGS else "en"
+    langs = valid_langs()
+    display_lang = lang if lang in langs else "en"
     ui = SCENARIO[display_lang]["ui"]
     return {
         "languages": [
-            {"value": code, "label": ui["language_labels"][code]}
-            for code in sorted(VALID_LANGS)
+            {"value": code, "label": language_label(code, display_lang)}
+            for code in sorted(langs)
         ],
         "ethnicities": [
-            {"value": code, "label": ui["ethnicity_labels"][code]}
+            {"value": code, "label": ui["ethnicity_labels"].get(code, code)}
             for code in sorted(VALID_ETHNICITIES)
         ],
-        "available_combos": [list(c) for c in sorted(AVAILABLE_VIDEOS)],
-        "suggested": {code: suggested_persona(code) for code in sorted(VALID_LANGS)},
+        "available_combos": sorted([pid, code] for pid in PERSONAS for code in langs if playable(pid, code)),
+        "suggested": {code: suggested_persona(code) for code in sorted(langs)},
         "setup_ui": {
             "sim_title": ui["sim_title"],
             "setup_subtitle": ui["setup_subtitle"],
@@ -88,8 +108,8 @@ def get_simulation(
     lang: str = Query(..., description="en or es"),
     ethnicity: str = Query(..., description="persona id from personas.json"),
 ):
-    if lang not in VALID_LANGS:
-        raise HTTPException(400, detail=f"lang must be one of {sorted(VALID_LANGS)}")
+    if lang not in valid_langs():
+        raise HTTPException(400, detail=f"lang must be one of {sorted(valid_langs())}")
     if ethnicity not in VALID_ETHNICITIES:
         raise HTTPException(400, detail=f"ethnicity must be one of {sorted(VALID_ETHNICITIES)}")
 
@@ -142,7 +162,7 @@ def tts_preload(body: dict):
     play by /api/tts/audio and then cached by the CDN (and the local file cache)."""
     texts: dict = body.get("texts", {})
     lang: str = body.get("lang", "en")
-    if lang not in VALID_LANGS or not tts_enabled(lang):
+    if lang not in valid_langs() or not tts_enabled(lang):
         return {}
     return {
         node_id: f"/api/tts/audio?lang={lang}&node={node_id}"
@@ -153,7 +173,7 @@ def tts_preload(body: dict):
 
 @app.get("/api/tts/audio")
 def tts_audio(lang: str = Query(...), node: str = Query(...)):
-    if lang not in VALID_LANGS:
+    if lang not in valid_langs():
         raise HTTPException(400, detail="invalid lang")
     text = narration_text(lang, node)
     if not text:
@@ -174,8 +194,8 @@ def tts_audio(lang: str = Query(...), node: str = Query(...)):
 
 @app.post("/api/scenario/{lang}")
 def save_scenario(lang: str, body: ScenarioUpdate):
-    if lang not in VALID_LANGS:
-        raise HTTPException(400, detail=f"lang must be one of {sorted(VALID_LANGS)}")
+    if lang not in valid_langs():
+        raise HTTPException(400, detail=f"lang must be one of {sorted(valid_langs())}")
     if body.start_node_id not in body.nodes:
         raise HTTPException(400, detail="start_node_id not found in nodes")
     global SCENARIO
@@ -224,6 +244,145 @@ def submit_review(body: ReviewPayload):
     return {"ok": True}
 
 
+# ---------------------------------------------------------------------------
+# Admin: AI-drafted, human-approved locales (see backend/localize.py)
+# ---------------------------------------------------------------------------
+from fastapi import Header, Depends  # noqa: E402
+
+
+def require_admin(x_admin_token: str | None = Header(default=None)):
+    expected = os.getenv("ADMIN_TOKEN")
+    if expected:
+        if x_admin_token != expected:
+            raise HTTPException(401, detail="Admin token required.")
+    elif ON_VERCEL:
+        raise HTTPException(403, detail="Set ADMIN_TOKEN to use the admin page on a hosted site.")
+
+
+def authoring_writable() -> bool:
+    return not ON_VERCEL and os.access(BASE_DIR, os.W_OK)
+
+
+def write_scenario(updated: dict) -> None:
+    global SCENARIO
+    with open(BASE_DIR / "scenario.json", "w") as f:
+        json.dump(updated, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+    SCENARIO = updated
+
+
+class DraftRequest(BaseModel):
+    code: str
+    setting: str
+    language_name: str = ""
+    notes: str = ""
+
+
+class DraftEdits(BaseModel):
+    edits: dict[str, str]
+
+
+@app.get("/api/admin/locales", dependencies=[Depends(require_admin)])
+def admin_locales():
+    meta = SCENARIO.get("_locale_meta", {})
+    return {
+        "approved": [
+            {"code": c, "label": language_label(c, "en"), "native_label": language_label(c, c),
+             "setting": meta.get(c, {}).get("setting", ""), "approved_at": meta.get(c, {}).get("approved_at", "")}
+            for c in sorted(valid_langs())
+        ],
+        "drafts": localize.list_drafts(),
+        "writable": authoring_writable(),
+        "generator_ready": localize.generator_ready(),
+    }
+
+
+@app.post("/api/admin/drafts", dependencies=[Depends(require_admin)])
+def admin_create_draft(body: DraftRequest):
+    if not authoring_writable():
+        raise HTTPException(503, detail="Drafting works in your local copy or a Codespace, not on the hosted site.")
+    if not localize.generator_ready():
+        raise HTTPException(503, detail="Set ANTHROPIC_API_KEY to generate drafts.")
+    if not body.setting.strip():
+        raise HTTPException(400, detail="Describe the setting, e.g. 'Kathmandu, Nepal — private college'.")
+    try:
+        return localize.generate_draft(SCENARIO, body.code, body.language_name.strip(), body.setting.strip(), body.notes.strip())
+    except ValueError as e:
+        raise HTTPException(400, detail=str(e))
+    except Exception as e:  # API error, bad key, etc.
+        print(f"Draft generation failed: {e}", file=sys.stderr)
+        raise HTTPException(502, detail=f"Generation failed: {e}")
+
+
+def _draft_or_404(code: str) -> dict:
+    try:
+        d = localize.load_draft(code)
+    except ValueError as e:
+        raise HTTPException(400, detail=str(e))
+    if not d:
+        raise HTTPException(404, detail="No draft for that language.")
+    return d
+
+
+@app.get("/api/admin/drafts/{code}", dependencies=[Depends(require_admin)])
+def admin_get_draft(code: str):
+    d = _draft_or_404(code)
+    en = localize.flatten(localize.english_block(SCENARIO))
+    cur = (localize.flatten({"nodes": SCENARIO[code]["nodes"], "ui": SCENARIO[code]["ui"]})
+           if code in SCENARIO else {})
+    flat = localize.flatten(d["block"])
+    d["rows"] = [
+        {"path": path, "english": en.get(path, ""), "current": cur.get(path, ""),
+         "text": flat.get(path, ""), "back_translation": d.get("back_translation", {}).get(path, "")}
+        for path in d["fields"]
+    ]
+    return d
+
+
+@app.put("/api/admin/drafts/{code}", dependencies=[Depends(require_admin)])
+def admin_edit_draft(code: str, body: DraftEdits):
+    _draft_or_404(code)
+    if not authoring_writable():
+        raise HTTPException(503, detail="Editing drafts works in your local copy or a Codespace.")
+    localize.update_draft(SCENARIO, code, body.edits)
+    return admin_get_draft(code)
+
+
+@app.post("/api/admin/drafts/{code}/approve", dependencies=[Depends(require_admin)])
+def admin_approve_draft(code: str):
+    d = _draft_or_404(code)
+    if not authoring_writable():
+        raise HTTPException(503, detail="Approving works in your local copy or a Codespace; then commit and redeploy.")
+    problems = localize.validate(SCENARIO, code, d["block"]) + [f"Model skipped: {p}" for p in d.get("skipped", [])]
+    if problems:
+        raise HTTPException(400, detail="Fix these first: " + "; ".join(problems[:5]))
+    updated = copy.deepcopy(SCENARIO)
+    updated[code] = d["block"]
+    meta = updated.setdefault("_locale_meta", {})
+    meta[code] = {
+        "setting": d.get("setting", ""),
+        "approved_at": datetime_now(),
+        "source": f"generated by {d.get('model', 'AI')}, reviewed in admin",
+    }
+    write_scenario(updated)
+    localize.delete_draft(code)
+    return {"ok": True, "code": code}
+
+
+@app.delete("/api/admin/drafts/{code}", dependencies=[Depends(require_admin)])
+def admin_discard_draft(code: str):
+    _draft_or_404(code)
+    if not authoring_writable():
+        raise HTTPException(503, detail="Not available on the hosted site.")
+    localize.delete_draft(code)
+    return {"ok": True}
+
+
+def datetime_now() -> str:
+    import datetime
+    return datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
+
+
 if DIST_DIR.exists():
     app.mount("/assets", StaticFiles(directory=str(DIST_DIR / "assets")), name="assets")
 
@@ -231,6 +390,13 @@ if DIST_DIR.exists():
     def serve_index():
         return FileResponse(str(DIST_DIR / "index.html"))
 
+    @app.get("/admin")
+    def serve_admin():
+        return FileResponse(str(DIST_DIR / "admin.html"))
+
     @app.get("/{full_path:path}")
     def catch_all(full_path: str):
+        f = (DIST_DIR / full_path).resolve()
+        if full_path and f.is_file() and DIST_DIR.resolve() in f.parents:
+            return FileResponse(str(f))
         return FileResponse(str(DIST_DIR / "index.html"))

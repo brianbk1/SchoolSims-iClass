@@ -30,3 +30,4 @@ tests/screenshots/
 
 # Vercel
 .vercel
+backend/drafts/

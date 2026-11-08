@@ -148,6 +148,18 @@ Each on-screen character is defined in `backend/personas.json`: a name per langu
 
 To add a locally styled photo or video, drop the file in `public/assets/` and point the persona at it — no code changes needed.
 
+## Locale studio (AI-drafted, human-approved localizations)
+
+Open **/admin** (dev server: `http://localhost:5173/admin.html`). From there you can:
+
+1. **Draft a locale**: give a language code (`pt-BR`), its name and the setting ("Campinas, Brazil — private university"). Claude rewrites the English story for that place (institution, currency, calendar) while keeping the same decision, outcomes and the video's line ("Can we commit to four weeks?"). For an existing language, **Re-localize** rewrites only the story and keeps the reviewed UI wording.
+2. **Review** every field next to the English master and an English back-translation, with notes on facts to check. Edit anything inline.
+3. **Approve & publish**: the locale is merged into `backend/scenario.json` and appears for learners. Pending drafts (`backend/drafts/`, git-ignored) are never shown to learners.
+
+Safety rails: the model only writes text; ids, branching and outcome directions are rebuilt from the English master, so a draft cannot break the scenario. Approval is blocked if a field is empty or the character-name placeholder is missing. A brand-new language plays the English videos with localized on-screen text until videos are recorded for it.
+
+Setup: put `ANTHROPIC_API_KEY=...` in `.env.local` at the repo root (optional: `ANTHROPIC_MODEL`, default `claude-sonnet-5-5`). Drafting and approving write files, so they run in a local copy or a Codespace; commit `backend/scenario.json` and redeploy to publish to the hosted site. On a hosted site the admin page requires `ADMIN_TOKEN`.
+
 ## Deploying to Vercel
 
 Import the repo in Vercel (framework: Vite). `vercel.json` builds the frontend and runs the FastAPI backend from `api/index.py` as a serverless function. Optional: set `ELEVEN_LABS_API_KEY` in the project's environment variables for narration. On Vercel, submitted reviews are written to the function logs (search for `REVIEW`), and scenario editing via the API is disabled.
