@@ -19,7 +19,11 @@ interface Props {
   reviewImprovementsLabel: string;
   reviewSubmitBtn: string;
   reviewThankYou: string;
+  fitLabels: { question: string; yes: string; partly: string; no: string; details: string };
+  selectRatingHint: string;
 }
+
+type Fit = '' | 'yes' | 'partly' | 'no';
 
 export default function SummarySlide({
   node, chosenNode, optionLabel,
@@ -27,6 +31,7 @@ export default function SummarySlide({
   lang, ethnicity, chosenId,
   reviewTitle, reviewRatingLabel, reviewExperienceLabel,
   reviewImprovementsLabel, reviewSubmitBtn, reviewThankYou,
+  fitLabels, selectRatingHint,
 }: Props) {
   useSpeech(audioUrl, speechEnabled);
 
@@ -36,6 +41,9 @@ export default function SummarySlide({
   const [improvements, setImprovements] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  // Optional: did the character and setting feel accurate for the learner's region?
+  const [fit, setFit] = useState<Fit>('');
+  const [fitDetails, setFitDetails] = useState('');
 
   const handleSubmit = async () => {
     if (rating === 0 || submitting) return;
@@ -51,6 +59,8 @@ export default function SummarySlide({
           lang,
           ethnicity,
           chosen_option: chosenId ?? '',
+          regional_fit: fit,
+          regional_fit_details: fit === 'yes' ? '' : fitDetails,
         }),
       });
       setSubmitted(true);
@@ -78,7 +88,13 @@ export default function SummarySlide({
     );
   };
 
-  const ratingHint = rating === 0 && hoverRating === 0 ? 'Select a rating' : '';
+  const ratingHint = rating === 0 && hoverRating === 0 ? selectRatingHint : '';
+
+  const fitOptions: { value: Exclude<Fit, ''>; label: string }[] = [
+    { value: 'yes', label: fitLabels.yes },
+    { value: 'partly', label: fitLabels.partly },
+    { value: 'no', label: fitLabels.no },
+  ];
 
   return (
     <div className="slide-enter" style={{ maxWidth: 1020, width: '100%' }}>
@@ -130,6 +146,56 @@ export default function SummarySlide({
                 {[1, 2, 3, 4, 5].map(i => <Star key={i} index={i} />)}
                 {ratingHint && <span style={{ fontSize: 13, color: 'var(--text-3)', marginLeft: 4 }}>{ratingHint}</span>}
               </div>
+
+              <p id="fit-question" style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-1)', margin: '0 0 8px' }}>
+                {fitLabels.question}
+              </p>
+              <div role="radiogroup" aria-labelledby="fit-question" style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: fit === 'partly' || fit === 'no' ? 10 : 20 }}>
+                {fitOptions.map(o => {
+                  const on = fit === o.value;
+                  return (
+                    <button
+                      key={o.value}
+                      type="button"
+                      role="radio"
+                      aria-checked={on}
+                      onClick={() => setFit(on ? '' : o.value)}
+                      style={{
+                        padding: '7px 14px', borderRadius: 999, fontSize: 13, fontWeight: 500, cursor: 'pointer',
+                        fontFamily: "'DM Sans', sans-serif",
+                        border: `1px solid ${on ? 'var(--purple)' : 'var(--border2)'}`,
+                        background: on ? 'var(--purple)' : 'var(--surface)',
+                        color: on ? '#fff' : 'var(--text-2)',
+                        transition: 'background 0.15s, color 0.15s',
+                      }}
+                    >
+                      {o.label}
+                    </button>
+                  );
+                })}
+              </div>
+              {(fit === 'partly' || fit === 'no') && (
+                <>
+                  <label htmlFor="fit-details" style={{ fontSize: 13, color: 'var(--text-2)', display: 'block', marginBottom: 6 }}>
+                    {fitLabels.details}
+                  </label>
+                  <textarea
+                    id="fit-details"
+                    dir="auto"
+                    value={fitDetails}
+                    onChange={e => setFitDetails(e.target.value)}
+                    rows={2}
+                    maxLength={1000}
+                    style={{
+                      width: '100%', boxSizing: 'border-box', borderRadius: 8,
+                      border: '1px solid var(--border2)', padding: '10px 12px',
+                      fontFamily: "'DM Sans', sans-serif", fontSize: 14,
+                      color: 'var(--text-1)', background: 'var(--surface)',
+                      resize: 'vertical', marginBottom: 16,
+                    }}
+                  />
+                </>
+              )}
 
               <label style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-1)', display: 'block', marginBottom: 6 }}>
                 {reviewExperienceLabel}

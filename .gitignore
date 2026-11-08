@@ -31,3 +31,6 @@ tests/screenshots/
 # Vercel
 .vercel
 backend/drafts/
+
+# Learner feedback (personal data, never commit)
+backend/reviews.json
