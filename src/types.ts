@@ -127,6 +127,7 @@ export interface Media {
   photo_alt: string;
   character_name?: string;
   has_video?: boolean;
+  base_lang?: string;
 }
 
 export interface SimData {
@@ -138,7 +139,8 @@ export interface SimData {
 
 export type AudioMap = Record<string, string>; // node_id → /tts/xxx.mp3
 
-export type Lang = 'en' | 'es' | 'ar' | 'zh' | 'ne' | 'sw' | 'ur';
+// Language or regional locale code from scenario.json, e.g. 'es', 'es-AR'.
+export type Lang = string;
 export type Ethnicity = 'african' | 'caucasian' | 'east_asian' | 'latin' | 'south_asian';
 
 export type ModalType = 'brief' | 'cast' | 'help' | null;

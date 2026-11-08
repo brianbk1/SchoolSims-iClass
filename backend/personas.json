@@ -20,7 +20,8 @@
         "zh": "丹尼尔·姆万吉",
         "ne": "डेनियल म्वाङ्गी",
         "sw": "Daniel Mwangi",
-        "ur": "ڈینیئل موانگی"
+        "ur": "ڈینیئل موانگی",
+        "sw-TZ": "Baraka Mwakyusa"
       },
       "photo": {
         "default": "/assets/african.png"
@@ -101,7 +102,9 @@
         "zh": "卡洛斯·里维拉",
         "ne": "कार्लोस रिभेरा",
         "sw": "Carlos Rivera",
-        "ur": "کارلوس ریویرا"
+        "ur": "کارلوس ریویرا",
+        "es-MX": "Carlos Hernández",
+        "es-AR": "Martín Pereyra"
       },
       "photo": {
         "default": "/assets/latin.png"
@@ -126,7 +129,7 @@
         "zh": "阿尔琼·夏尔马",
         "ne": "अर्जुन शर्मा",
         "sw": "Arjun Sharma",
-        "ur": "ارجن شرما"
+        "ur": "بلال احمد"
       },
       "photo": {
         "default": "/assets/south_asian.png"

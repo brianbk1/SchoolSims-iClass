@@ -20,7 +20,7 @@ def _api_key() -> str | None:
 
 def tts_enabled(lang: str) -> bool:
     """TTS is on only when a key is configured and the language is supported."""
-    return bool(_api_key()) and lang in TTS_SUPPORTED_LANGS
+    return bool(_api_key()) and lang.split("-")[0] in TTS_SUPPORTED_LANGS
 
 
 def get_audio(text: str, lang: str = "en") -> bytes | None:

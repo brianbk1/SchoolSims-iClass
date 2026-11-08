@@ -79,10 +79,19 @@ def english_block(scenario: dict) -> dict:
     return {"nodes": scenario["en"]["nodes"], "ui": scenario["en"]["ui"]}
 
 
+def source_lang(scenario: dict, code: str) -> str | None:
+    """Approved language a draft starts from: the language itself, or its base
+    language for a regional variant (es-AR starts from es)."""
+    if code in scenario:
+        return code
+    base = code.split("-")[0]
+    return base if base in scenario and base != code else None
+
+
 def paths_to_localize(scenario: dict, code: str) -> dict[str, str]:
     """English text for every field the model must write for this language."""
     en = flatten(english_block(scenario))
-    if code in scenario:  # existing language: story only
+    if source_lang(scenario, code):  # existing language or regional variant: story only
         return {p: t for p, t in en.items()
                 if p.startswith("nodes.") or p.split(".")[1] in STORY_UI_KEYS}
     return en  # new language: everything
@@ -90,8 +99,9 @@ def paths_to_localize(scenario: dict, code: str) -> dict[str, str]:
 
 def build_block(scenario: dict, code: str, texts: dict[str, str], language_name: str) -> dict:
     """Rebuild a full {nodes, ui} block for `code` from the English structure."""
-    if code in scenario:
-        block = copy.deepcopy({"nodes": scenario[code]["nodes"], "ui": scenario[code]["ui"]})
+    src = source_lang(scenario, code)
+    if src:
+        block = copy.deepcopy({"nodes": scenario[src]["nodes"], "ui": scenario[src]["ui"]})
     else:
         block = copy.deepcopy(english_block(scenario))
         block["ui"]["speech_locale"] = code
@@ -221,15 +231,17 @@ def call_claude(user_prompt: str) -> dict:
 
 def build_prompt(scenario: dict, code: str, language_name: str, setting: str, notes: str) -> str:
     wanted = paths_to_localize(scenario, code)
-    current = flatten({"nodes": scenario[code]["nodes"], "ui": scenario[code]["ui"]}) if code in scenario else {}
+    src = source_lang(scenario, code)
+    current = flatten({"nodes": scenario[src]["nodes"], "ui": scenario[src]["ui"]}) if src else {}
     rows = [{"path": p, "english": t, **({"current_translation": current[p]} if p in current else {})}
             for p, t in wanted.items()]
     return (
         f"Target language: {language_name or code} (code: {code})\n"
         f"Target setting: {setting}\n"
         + (f"Extra guidance from the reviewer: {notes}\n" if notes else "")
-        + ("This language already has an approved translation; current_translation is given for "
-           "terminology. Re-localize the story for the setting.\n" if current else "")
+        + (f"An approved {src} translation exists; current_translation is given for terminology. "
+           "Re-localize the story for the setting, using the regional vocabulary and forms of address "
+           "people there actually use (e.g. 'vos' in Argentina).\n" if current else "")
         + "\nFields to write (JSON):\n"
         + json.dumps(rows, ensure_ascii=False, indent=1)
     )
@@ -297,7 +309,8 @@ def generate_draft(scenario: dict, code: str, language_name: str, setting: str, 
         "language_name": language_name or (scenario.get(code, {}).get("ui", {}).get("language_labels", {}).get(code, code)),
         "setting": setting,
         "notes": notes,
-        "is_new_language": code not in scenario,
+        "is_new_language": source_lang(scenario, code) is None,
+        "based_on": source_lang(scenario, code),
         "status": "pending",
         "created_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         "model": os.getenv("ANTHROPIC_MODEL", DEFAULT_MODEL),

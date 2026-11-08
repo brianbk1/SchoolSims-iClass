@@ -39,10 +39,24 @@ PLACEHOLDER_NAME = "Jordan Chen"
 AVAILABLE_VIDEOS = {(pid, lang) for pid, p in PERSONAS.items() for lang in p.get("video", {})}
 
 
+def lang_chain(code: str) -> list[str]:
+    """Most specific first: 'es-AR' -> ['es-AR', 'es', 'en']."""
+    chain = [code, code.split("-")[0], "en"]
+    return list(dict.fromkeys(chain))
+
+
+def pick(by_lang: dict, code: str, default=None):
+    """Value for the most specific language available (regional -> base -> English)."""
+    for c in lang_chain(code):
+        if by_lang.get(c):
+            return by_lang[c]
+    return default
+
+
 def playable(pid: str, lang: str) -> bool:
     """A character can be used in a language if it has a video in that language,
-    or (for newly added languages) an English video to fall back on."""
-    return (pid, lang) in AVAILABLE_VIDEOS or (pid, "en") in AVAILABLE_VIDEOS
+    its base language (es-AR -> es), or English to fall back on."""
+    return pick(PERSONAS[pid].get("video", {}), lang) is not None
 
 
 def language_label(code: str, display_lang: str) -> str:
@@ -52,15 +66,16 @@ def language_label(code: str, display_lang: str) -> str:
 
 
 def suggested_persona(lang: str) -> str | None:
-    for pid, p in PERSONAS.items():
-        if lang in p.get("suggested_for_langs", []) and (pid, lang) in AVAILABLE_VIDEOS:
-            return pid
+    # An exact match wins (sw-TZ), then the base language (es-MX -> es).
+    for c in lang_chain(lang)[:-1] if lang != "en" else ["en"]:
+        for pid, p in PERSONAS.items():
+            if c in p.get("suggested_for_langs", []) and playable(pid, lang):
+                return pid
     return None
 
 
 def persona_name(pid: str, lang: str) -> str:
-    names = PERSONAS[pid].get("name", {})
-    return names.get(lang) or names.get("en") or PLACEHOLDER_NAME
+    return pick(PERSONAS[pid].get("name", {}), lang, PLACEHOLDER_NAME)
 
 
 def swap_name(value: Any, name: str) -> Any:
@@ -120,18 +135,21 @@ def get_simulation(
         if "character_name" in node:
             node["character_name"] = name
     photos = persona.get("photo", {})
-    video = persona.get("video", {}).get(lang) or persona.get("video", {}).get("en", "")
+    videos = persona.get("video", {})
+    video = pick(videos, lang, "")
 
     return {
         "start_node_id": SCENARIO["start_node_id"],
         "nodes": nodes,
         "ui": swap_name(SCENARIO[lang]["ui"], name),
         "media": {
-            "photo": photos.get(lang) or photos.get("default", ""),
+            "photo": pick(photos, lang) or photos.get("default", ""),
             "video_template": video,
             "photo_alt": nodes.get("text_image", {}).get("character_alt", name),
             "character_name": name,
-            "has_video": (ethnicity, lang) in AVAILABLE_VIDEOS,
+            # True when the video is in this language or its base language (not English fallback).
+            "has_video": any(videos.get(c) for c in lang_chain(lang)[:2]),
+            "base_lang": lang.split("-")[0],
         },
     }
 
@@ -328,8 +346,9 @@ def _draft_or_404(code: str) -> dict:
 def admin_get_draft(code: str):
     d = _draft_or_404(code)
     en = localize.flatten(localize.english_block(SCENARIO))
-    cur = (localize.flatten({"nodes": SCENARIO[code]["nodes"], "ui": SCENARIO[code]["ui"]})
-           if code in SCENARIO else {})
+    src = localize.source_lang(SCENARIO, code)
+    cur = (localize.flatten({"nodes": SCENARIO[src]["nodes"], "ui": SCENARIO[src]["ui"]})
+           if src else {})
     flat = localize.flatten(d["block"])
     d["rows"] = [
         {"path": path, "english": en.get(path, ""), "current": cur.get(path, ""),
