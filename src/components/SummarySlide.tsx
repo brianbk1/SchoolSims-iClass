@@ -102,7 +102,7 @@ export default function SummarySlide({
       <h2 id="sum-title" style={{ fontSize: 36, fontWeight: 700, color: 'var(--text-1)', margin: '0 0 28px', letterSpacing: '-0.3px' }}>{node.title}</h2>
 
       {/* Two-column grid: left = recap + reflection, right = review form */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 32 }}>
+      <div className="sum-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 32 }}>
         {/* Left column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           {chosenNode && (

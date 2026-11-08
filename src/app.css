@@ -420,3 +420,56 @@ kbd {
   justify-content: center;
   margin: 0 auto 16px;
 }
+
+
+/* ── Layout fixes for every screen size ──
+   Center slides with auto margins instead of align/justify-content, so a slide taller
+   than the screen scrolls from its top instead of being cut off above the fold.
+   dvh follows the visible area on phones (browser bars shrinking/growing). */
+#app { height: 100vh; height: 100dvh !important; }
+.stage { align-items: flex-start !important; justify-content: flex-start !important; }
+.stage > * { margin: auto; }
+
+/* Keyboard hints mean nothing on touchscreens. */
+@media (hover: none) and (pointer: coarse) {
+  .kbd-only { display: none !important; }
+  .tip { display: none !important; }
+}
+
+/* ── Phones and small tablets ── */
+@media (max-width: 720px) {
+  /* Header: logo, progress, sound, timer. Title and language/character pills hidden
+     (they're chosen on the setup screen and shown in the side panels). */
+  .header-bar { height: 52px !important; padding: 0 10px !important; gap: 10px; }
+  .hdr-brand img { height: 34px !important; }
+  .hdr-wordmark, .hdr-divider, #hdr-sim-title, #badge-lang, #badge-eth { display: none !important; }
+  .hdr-progress { width: auto !important; flex: 1 1 auto !important; min-width: 0; }
+  #hdr-slide-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; }
+  .hdr-timer { padding: 4px 8px !important; }
+
+  /* Side rail becomes a slim row of icons under the header. */
+  .app-body { flex-direction: column !important; }
+  .rail-bar {
+    width: auto !important; flex-direction: row !important; justify-content: center;
+    padding: 4px 8px !important; gap: 14px !important;
+    border-right: none !important; border-bottom: 1px solid var(--border);
+  }
+
+  /* Slides use the full width. */
+  .stage { padding: 12px !important; }
+  .main-card { padding: 22px 18px !important; border-radius: 16px !important; }
+  .stage h1 { font-size: 28px !important; line-height: 1.2 !important; }
+  .stage h2 { font-size: 25px !important; line-height: 1.25 !important; }
+  .stage h3 { font-size: 18px !important; }
+  .sum-grid { grid-template-columns: 1fr !important; }
+  .choice-card { padding: 18px !important; }
+
+  /* Footer: just Back and Next/Restart (the header already shows progress). */
+  .footer-bar { height: 60px !important; padding: 0 12px !important; gap: 8px; }
+  .footer-dots { display: none !important; }
+  .footer-side { width: auto !important; }
+
+  /* Side panels fit the screen and scroll if needed. */
+  .cast-body { flex-direction: column !important; align-items: stretch !important; gap: 16px !important; padding: 18px !important; }
+  .modal-panel { width: calc(100% - 24px) !important; max-height: calc(100dvh - 48px); overflow-y: auto; }
+}
