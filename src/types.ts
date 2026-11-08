@@ -114,6 +114,12 @@ export interface UIStrings {
   review_improvements_label: string;
   review_submit_btn: string;
   review_thank_you: string;
+  review_fit_label?: string;
+  review_fit_yes?: string;
+  review_fit_partly?: string;
+  review_fit_no?: string;
+  review_fit_details_label?: string;
+  review_select_rating?: string;
   setup_badge?: string;
   suggested_hint?: string;
   captions_on?: string;

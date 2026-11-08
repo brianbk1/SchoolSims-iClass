@@ -4,6 +4,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 interface Approved { code: string; label: string; native_label: string; setting: string; approved_at: string }
 interface DraftSummary { code: string; language_name: string; setting: string; status: string; created_at: string; is_new_language: boolean; problems: number }
 interface Locales { approved: Approved[]; drafts: DraftSummary[]; writable: boolean; generator_ready: boolean }
+interface FitComment { fit: 'partly' | 'no'; character: string; text: string; timestamp: string }
+interface FitStats { yes: number; partly: number; no: number; comments: FitComment[] }
+interface Feedback { by_lang: Record<string, FitStats>; persistent: boolean }
 interface Row { path: string; english: string; current: string; text: string; back_translation: string }
 interface Draft {
   code: string; language_name: string; setting: string; notes: string; is_new_language: boolean;
@@ -51,6 +54,8 @@ const banner = (tone: 'warn' | 'bad' | 'ok'): React.CSSProperties => ({
 // ---- app -------------------------------------------------------------------
 export default function AdminApp() {
   const [locales, setLocales] = useState<Locales | null>(null);
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const [openFeedback, setOpenFeedback] = useState<string | null>(null);
   const [needToken, setNeedToken] = useState(false);
   const [tokenInput, setTokenInput] = useState(readToken());
   const [error, setError] = useState<string | null>(null);
@@ -68,6 +73,7 @@ export default function AdminApp() {
     try {
       setLocales(await api<Locales>('/api/admin/locales'));
       setNeedToken(false);
+      api<Feedback>('/api/admin/feedback').then(setFeedback).catch(() => setFeedback(null));
     } catch (e: any) {
       if (e.status === 401 || e.status === 403) setNeedToken(true);
       setError(e.message);
@@ -161,17 +167,49 @@ export default function AdminApp() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div style={card}>
             <p style={label}>Live for learners</p>
-            {(locales?.approved ?? []).map(a => (
-              <div key={a.code} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderTop: '1px solid var(--border)' }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600 }}>{a.native_label} <span style={{ color: 'var(--text-3)', fontWeight: 400 }}>· {a.code}</span></div>
-                  <div style={{ fontSize: 12, color: 'var(--text-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.setting || (a.code === 'en' ? 'Master version' : 'Translated (setting not localized yet)')}</div>
+            {(locales?.approved ?? []).map(a => {
+              const fb = feedback?.by_lang[a.code];
+              const total = fb ? fb.yes + fb.partly + fb.no : 0;
+              const open = openFeedback === a.code;
+              return (
+                <div key={a.code} style={{ padding: '8px 0', borderTop: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14, fontWeight: 600 }}>{a.native_label} <span style={{ color: 'var(--text-3)', fontWeight: 400 }}>· {a.code}</span></div>
+                      <div style={{ fontSize: 12, color: 'var(--text-3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.setting || (a.code === 'en' ? 'Master version' : 'Translated (setting not localized yet)')}</div>
+                      {fb && total > 0 && (
+                        <button onClick={() => setOpenFeedback(open ? null : a.code)} title="Learners: did the character and setting feel accurate for your region?"
+                          style={{ marginTop: 4, padding: 0, border: 'none', background: 'none', cursor: 'pointer', fontSize: 12, color: fb.no > 0 ? '#b91c1c' : fb.partly > 0 ? '#92400e' : '#166534' }}>
+                          Regional fit: {fb.yes} yes · {fb.partly} partly · {fb.no} no{fb.comments.length ? ` · ${fb.comments.length} comment(s) ${open ? '▴' : '▾'}` : ''}
+                        </button>
+                      )}
+                    </div>
+                    {a.code !== 'en' && (
+                      <button style={ghost} onClick={() => setForm({ code: a.code, language_name: a.native_label, setting: a.setting, notes: '' })}>Re-localize</button>
+                    )}
+                  </div>
+                  {open && fb && fb.comments.length > 0 && (
+                    <ul style={{ listStyle: 'none', margin: '8px 0 0', padding: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      {fb.comments.map((c, i) => (
+                        <li key={i} style={{ fontSize: 13, background: 'var(--surface2)', borderRadius: 8, padding: '8px 10px' }}>
+                          <div dir="auto" style={{ color: 'var(--text-1)' }}>{c.text}</div>
+                          <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 2 }}>{c.fit === 'no' ? 'Felt off' : 'Partly'} · character: {c.character} · {c.timestamp ? new Date(c.timestamp + 'Z').toLocaleDateString() : ''}</div>
+                        </li>
+                      ))}
+                      <li>
+                        <button style={{ ...ghost, fontSize: 12 }} onClick={() => setForm({ code: a.code, language_name: a.native_label, setting: a.setting,
+                          notes: 'Learner feedback to address:\n' + fb.comments.slice(0, 10).map(c => '- ' + c.text).join('\n') })}>
+                          Re-localize using this feedback
+                        </button>
+                      </li>
+                    </ul>
+                  )}
                 </div>
-                {a.code !== 'en' && (
-                  <button style={ghost} onClick={() => setForm({ code: a.code, language_name: a.native_label, setting: a.setting, notes: '' })}>Re-localize</button>
-                )}
-              </div>
-            ))}
+              );
+            })}
+            {feedback && !feedback.persistent && (
+              <p style={{ fontSize: 12, color: 'var(--text-3)', margin: '8px 0 0' }}>On the hosted site, feedback is only kept in Vercel's logs (search for REVIEW).</p>
+            )}
           </div>
 
           {(locales?.drafts.length ?? 0) > 0 && (

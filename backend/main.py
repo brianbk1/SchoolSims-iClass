@@ -233,6 +233,11 @@ def save_scenario(lang: str, body: ScenarioUpdate):
     return {"ok": True}
 
 
+def reviews_file() -> Path:
+    # On Vercel the disk is temporary, so reviews there are only reliable in the logs.
+    return (Path(tempfile.gettempdir()) if ON_VERCEL else BASE_DIR) / "reviews.json"
+
+
 class ReviewPayload(BaseModel):
     rating: int
     experience: str
@@ -240,24 +245,29 @@ class ReviewPayload(BaseModel):
     lang: str
     ethnicity: str
     chosen_option: str
+    # Optional check on the localization: "yes" | "partly" | "no" | "" (skipped)
+    regional_fit: str = ""
+    regional_fit_details: str = ""
 
 
 @app.post("/api/review")
 def submit_review(body: ReviewPayload):
     if body.rating < 1 or body.rating > 5:
         raise HTTPException(400, detail="rating must be 1-5")
+    if body.regional_fit not in ("", "yes", "partly", "no"):
+        raise HTTPException(400, detail="regional_fit must be yes, partly, no or empty")
     import datetime
     entry = body.model_dump()
     entry["timestamp"] = datetime.datetime.utcnow().isoformat()
     # Always log the review so it shows up in Vercel's function logs.
     print("REVIEW " + json.dumps(entry, ensure_ascii=False), flush=True)
     # On Vercel the disk is temporary, so the file copy is not permanent there.
-    reviews_path = (Path(tempfile.gettempdir()) if ON_VERCEL else BASE_DIR) / "reviews.json"
+    path = reviews_file()
     existing = []
-    if reviews_path.exists():
-        existing = json.loads(reviews_path.read_text())
+    if path.exists():
+        existing = json.loads(path.read_text())
     existing.append(entry)
-    with open(reviews_path, "w") as f:
+    with open(path, "w") as f:
         json.dump(existing, f, indent=2, ensure_ascii=False)
     return {"ok": True}
 
@@ -313,6 +323,31 @@ def admin_locales():
         "writable": authoring_writable(),
         "generator_ready": localize.generator_ready(),
     }
+
+
+@app.get("/api/admin/feedback", dependencies=[Depends(require_admin)])
+def admin_feedback():
+    """Learners' answers to "did the character and setting feel accurate for your region?",
+    grouped by language, with the comments for 'partly' / 'no'."""
+    path = reviews_file()
+    reviews = json.loads(path.read_text()) if path.exists() else []
+    out: dict[str, dict] = {}
+    for r in reviews:
+        fit = r.get("regional_fit") or ""
+        if not fit:
+            continue
+        d = out.setdefault(r.get("lang", "?"), {"yes": 0, "partly": 0, "no": 0, "comments": []})
+        d[fit] = d.get(fit, 0) + 1
+        if fit != "yes" and (r.get("regional_fit_details") or "").strip():
+            d["comments"].append({
+                "fit": fit,
+                "character": r.get("ethnicity", ""),
+                "text": r["regional_fit_details"].strip(),
+                "timestamp": r.get("timestamp", ""),
+            })
+    for d in out.values():
+        d["comments"].sort(key=lambda c: c["timestamp"], reverse=True)
+    return {"by_lang": out, "persistent": not ON_VERCEL}
 
 
 @app.post("/api/admin/drafts", dependencies=[Depends(require_admin)])

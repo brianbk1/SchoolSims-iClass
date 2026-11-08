@@ -179,7 +179,13 @@
       "suggested_hint": "Suggested for this language — you can change it.",
       "captions_on": "CC On",
       "captions_off": "CC Off",
-      "video_error": "Video failed to load"
+      "video_error": "Video failed to load",
+      "review_fit_label": "Did the character and setting feel accurate for your region?",
+      "review_fit_yes": "Yes, it felt right",
+      "review_fit_partly": "Partly",
+      "review_fit_no": "No, something felt off",
+      "review_fit_details_label": "What felt off? (names, places, money, holidays, wording…)",
+      "review_select_rating": "Select a rating"
     }
   },
   "es": {
@@ -361,7 +367,13 @@
       "suggested_hint": "Sugerido para este idioma; puedes cambiarlo.",
       "captions_on": "Subtítulos: sí",
       "captions_off": "Subtítulos: no",
-      "video_error": "No se pudo cargar el video"
+      "video_error": "No se pudo cargar el video",
+      "review_fit_label": "¿El personaje y el contexto te parecieron fieles a tu región?",
+      "review_fit_yes": "Sí, me pareció acertado",
+      "review_fit_partly": "En parte",
+      "review_fit_no": "No, algo no encajaba",
+      "review_fit_details_label": "¿Qué no encajaba? (nombres, lugares, dinero, días festivos, forma de hablar…)",
+      "review_select_rating": "Selecciona una calificación"
     }
   },
   "ar": {
@@ -543,7 +555,13 @@
       "suggested_hint": "مقترح لهذه اللغة، ويمكنك تغييره.",
       "captions_on": "الترجمة: تشغيل",
       "captions_off": "الترجمة: إيقاف",
-      "video_error": "تعذّر تحميل الفيديو"
+      "video_error": "تعذّر تحميل الفيديو",
+      "review_fit_label": "هل بدت الشخصية والسياق مناسبين لمنطقتك؟",
+      "review_fit_yes": "نعم، كان مناسباً",
+      "review_fit_partly": "إلى حدٍّ ما",
+      "review_fit_no": "لا، شيء ما لم يكن مناسباً",
+      "review_fit_details_label": "ما الذي لم يكن مناسباً؟ (الأسماء، الأماكن، العملة، العطل، الصياغة…)",
+      "review_select_rating": "اختر تقييماً"
     }
   },
   "zh": {
@@ -725,7 +743,13 @@
       "suggested_hint": "根据所选语言推荐，可自行更改。",
       "captions_on": "字幕：开",
       "captions_off": "字幕：关",
-      "video_error": "视频加载失败"
+      "video_error": "视频加载失败",
+      "review_fit_label": "角色和情境是否符合你所在地区的实际情况？",
+      "review_fit_yes": "是，很贴切",
+      "review_fit_partly": "部分符合",
+      "review_fit_no": "不，有些地方不对",
+      "review_fit_details_label": "哪里不对？（姓名、地点、货币、节假日、用语等）",
+      "review_select_rating": "请选择评分"
     }
   },
   "ne": {
@@ -907,7 +931,13 @@
       "suggested_hint": "यो भाषाका लागि सुझाव गरिएको — तपाईं परिवर्तन गर्न सक्नुहुन्छ।",
       "captions_on": "क्याप्सन: खुला",
       "captions_off": "क्याप्सन: बन्द",
-      "video_error": "भिडियो लोड हुन सकेन"
+      "video_error": "भिडियो लोड हुन सकेन",
+      "review_fit_label": "पात्र र परिवेश तपाईंको क्षेत्रअनुसार सही लाग्यो?",
+      "review_fit_yes": "हो, ठीक लाग्यो",
+      "review_fit_partly": "केही हदसम्म",
+      "review_fit_no": "होइन, केही कुरा मिलेन",
+      "review_fit_details_label": "के मिलेन? (नाम, ठाउँ, रकम, चाडपर्व, भाषा…)",
+      "review_select_rating": "मूल्याङ्कन छान्नुहोस्"
     }
   },
   "sw": {
@@ -1089,7 +1119,13 @@
       "suggested_hint": "Imependekezwa kwa lugha hii — unaweza kubadilisha.",
       "captions_on": "Manukuu: yamewashwa",
       "captions_off": "Manukuu: yamezimwa",
-      "video_error": "Video imeshindwa kupakia"
+      "video_error": "Video imeshindwa kupakia",
+      "review_fit_label": "Je, mhusika na mazingira yalionekana sahihi kwa eneo lako?",
+      "review_fit_yes": "Ndiyo, yalikuwa sahihi",
+      "review_fit_partly": "Kwa kiasi",
+      "review_fit_no": "Hapana, kuna kitu hakikuwa sawa",
+      "review_fit_details_label": "Nini hakikuwa sawa? (majina, maeneo, pesa, sikukuu, lugha…)",
+      "review_select_rating": "Chagua alama"
     }
   },
   "ur": {
@@ -1271,7 +1307,13 @@
       "suggested_hint": "اس زبان کے لیے تجویز کردہ — آپ اسے بدل سکتے ہیں۔",
       "captions_on": "کیپشن: آن",
       "captions_off": "کیپشن: آف",
-      "video_error": "ویڈیو لوڈ نہیں ہو سکی"
+      "video_error": "ویڈیو لوڈ نہیں ہو سکی",
+      "review_fit_label": "کیا کردار اور ماحول آپ کے علاقے کے لحاظ سے درست لگے؟",
+      "review_fit_yes": "جی ہاں، درست لگا",
+      "review_fit_partly": "کسی حد تک",
+      "review_fit_no": "نہیں، کچھ ٹھیک نہیں لگا",
+      "review_fit_details_label": "کیا ٹھیک نہیں لگا؟ (نام، جگہیں، رقم، تہوار، زبان…)",
+      "review_select_rating": "درجہ بندی منتخب کریں"
     }
   },
   "_locale_meta": {
@@ -1495,7 +1537,13 @@
       "suggested_hint": "Sugerido para este idioma; puedes cambiarlo.",
       "captions_on": "Subtítulos: sí",
       "captions_off": "Subtítulos: no",
-      "video_error": "No se pudo cargar el video"
+      "video_error": "No se pudo cargar el video",
+      "review_fit_label": "¿El personaje y el contexto te parecieron fieles a tu región?",
+      "review_fit_yes": "Sí, me pareció acertado",
+      "review_fit_partly": "En parte",
+      "review_fit_no": "No, algo no encajaba",
+      "review_fit_details_label": "¿Qué no encajaba? (nombres, lugares, dinero, días festivos, forma de hablar…)",
+      "review_select_rating": "Selecciona una calificación"
     }
   },
   "es-AR": {
@@ -1677,7 +1725,13 @@
       "suggested_hint": "Sugerido para este idioma; podés cambiarlo.",
       "captions_on": "Subtítulos: sí",
       "captions_off": "Subtítulos: no",
-      "video_error": "No se pudo cargar el video"
+      "video_error": "No se pudo cargar el video",
+      "review_fit_label": "¿El personaje y el contexto te parecieron fieles a tu región?",
+      "review_fit_yes": "Sí, me pareció acertado",
+      "review_fit_partly": "En parte",
+      "review_fit_no": "No, algo no cerraba",
+      "review_fit_details_label": "¿Qué no cerraba? (nombres, lugares, plata, feriados, forma de hablar…)",
+      "review_select_rating": "Seleccioná una calificación"
     }
   },
   "sw-TZ": {
@@ -1859,7 +1913,13 @@
       "suggested_hint": "Imependekezwa kwa lugha hii — unaweza kubadilisha.",
       "captions_on": "Manukuu: yamewashwa",
       "captions_off": "Manukuu: yamezimwa",
-      "video_error": "Video imeshindwa kupakia"
+      "video_error": "Video imeshindwa kupakia",
+      "review_fit_label": "Je, mhusika na mazingira yalionekana sahihi kwa eneo lako?",
+      "review_fit_yes": "Ndiyo, yalikuwa sahihi",
+      "review_fit_partly": "Kwa kiasi",
+      "review_fit_no": "Hapana, kuna kitu hakikuwa sawa",
+      "review_fit_details_label": "Nini hakikuwa sawa? (majina, maeneo, pesa, sikukuu, lugha…)",
+      "review_select_rating": "Chagua alama"
     }
   },
   "ar-JO": {
@@ -2041,7 +2101,13 @@
       "suggested_hint": "مقترح لهذه اللغة، ويمكنك تغييره.",
       "captions_on": "الترجمة: تشغيل",
       "captions_off": "الترجمة: إيقاف",
-      "video_error": "تعذّر تحميل الفيديو"
+      "video_error": "تعذّر تحميل الفيديو",
+      "review_fit_label": "هل بدت الشخصية والسياق مناسبين لمنطقتك؟",
+      "review_fit_yes": "نعم، كان مناسباً",
+      "review_fit_partly": "إلى حدٍّ ما",
+      "review_fit_no": "لا، شيء ما لم يكن مناسباً",
+      "review_fit_details_label": "ما الذي لم يكن مناسباً؟ (الأسماء، الأماكن، العملة، العطل، الصياغة…)",
+      "review_select_rating": "اختر تقييماً"
     }
   }
 }

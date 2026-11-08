@@ -241,6 +241,14 @@ export default function App() {
               reviewImprovementsLabel={ui?.review_improvements_label ?? 'Any suggested improvements?'}
               reviewSubmitBtn={ui?.review_submit_btn ?? 'Submit Feedback'}
               reviewThankYou={ui?.review_thank_you ?? 'Thank you for your feedback!'}
+              fitLabels={{
+                question: ui?.review_fit_label ?? 'Did the character and setting feel accurate for your region?',
+                yes: ui?.review_fit_yes ?? 'Yes, it felt right',
+                partly: ui?.review_fit_partly ?? 'Partly',
+                no: ui?.review_fit_no ?? 'No, something felt off',
+                details: ui?.review_fit_details_label ?? 'What felt off? (names, places, money, holidays, wording…)',
+              }}
+              selectRatingHint={ui?.review_select_rating ?? 'Select a rating'}
             />
           )}
         </main>
