@@ -21,6 +21,8 @@ const PROGRESS: Record<string, number> = {
 
 export default function App() {
   const [lang, setLang] = useState<Lang>('en');
+  // Tell the browser which language the page is in (fonts, hyphenation, screen readers).
+  useEffect(() => { document.documentElement.lang = lang; }, [lang]);
   const [ethnicity, setEthnicity] = useState<Ethnicity>('african');
   const [simData, setSimData] = useState<SimData | null>(null);
   const [currentNodeId, setCurrentNodeId] = useState<string>('setup');
@@ -202,7 +204,7 @@ export default function App() {
               key={currentNodeId}
               node={currentNode}
               videoUrl={simData.media.video_template.replace('{lang}', lang)}
-              captionsUrl={`/assets/captions_${lang}.vtt`}
+              captionsUrl={`/assets/captions_${lang.split('-')[0]}.vtt`}
               captionsOn={captionsOn}
               onToggleCaptions={() => setCaptionsOn(c => !c)}
               audioUrl={audioMap['video'] ?? null}

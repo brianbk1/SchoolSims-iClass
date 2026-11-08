@@ -121,22 +121,26 @@
       "next_btn": "Next",
       "restart_btn": "Restart Simulation",
       "lang_label": "Language",
-      "eth_label": "Character Ethnicity",
+      "eth_label": "Character background",
       "ethnicity_labels": {
-        "african": "African",
-        "caucasian": "Caucasian",
-        "east_asian": "East Asian",
-        "latin": "Latin",
-        "south_asian": "South Asian"
+        "african": "East Africa",
+        "caucasian": "Europe",
+        "east_asian": "East Asia",
+        "latin": "Latin America",
+        "south_asian": "South Asia"
       },
       "language_labels": {
         "en": "English",
         "es": "Español",
-        "ar": "العربية",
+        "ar": "العربية (الإمارات)",
         "zh": "中文",
         "ne": "नेपाली",
-        "sw": "Kiswahili",
-        "ur": "اردو"
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "es-MX": "Español (México)",
+        "es-AR": "Español (Argentina)",
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "ar-JO": "العربية (الأردن)"
       },
       "sim_title": "Leadership Decision Simulation",
       "setup_subtitle": "Experience realistic leadership scenarios and develop critical decision-making skills in a safe, reflective environment.",
@@ -299,22 +303,26 @@
       "next_btn": "Siguiente",
       "restart_btn": "Reiniciar simulación",
       "lang_label": "Idioma",
-      "eth_label": "Etnia del personaje",
+      "eth_label": "Origen del personaje",
       "ethnicity_labels": {
-        "african": "Africano",
-        "caucasian": "Caucásico",
-        "east_asian": "Asiático oriental",
-        "latin": "Latino",
-        "south_asian": "Sudasiático"
+        "african": "África Oriental",
+        "caucasian": "Europa",
+        "east_asian": "Asia Oriental",
+        "latin": "Latinoamérica",
+        "south_asian": "Asia del Sur"
       },
       "language_labels": {
         "en": "English",
         "es": "Español",
-        "ar": "العربية",
+        "ar": "العربية (الإمارات)",
         "zh": "中文",
         "ne": "नेपाली",
-        "sw": "Kiswahili",
-        "ur": "اردو"
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "es-MX": "Español (México)",
+        "es-AR": "Español (Argentina)",
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "ar-JO": "العربية (الأردن)"
       },
       "sim_title": "Simulación de Decisión de Liderazgo",
       "setup_subtitle": "Experimenta escenarios de liderazgo realistas y desarrolla habilidades críticas de toma de decisiones en un entorno seguro y reflexivo.",
@@ -362,8 +370,8 @@
         "type": "context",
         "next_node_id": "text_image",
         "step_badge": "1 السياق",
-        "title": "فرصة عميل جديدة",
-        "body": "أنت تقود SchoolSims. تطلب إحدى الجامعات ميزة جديدة قبل التوقيع. فريقك لديه قدرة محدودة. هدفك التعليمي هو الموازنة بين الإيرادات قصيرة المدى وقدرة التسليم وثقة العميل.",
+        "title": "فرصة جديدة من جامعة في دبي",
+        "body": "تقود فريق SchoolSims في دبي. جامعة خاصة في دبي مستعدة لتوقيع عقد سنوي بقيمة نحو 40 ألف درهم، لكنها تريد ميزة جديدة أولاً. فريقك محدود القدرة. هدفك التعليمي هو الموازنة بين الإيرادات قصيرة الأجل وقدرة التسليم وثقة العميل.",
         "learning_objective_label": "هدف التعلم",
         "learning_objective_body": "الموازنة بين الإيرادات قصيرة المدى وقدرة التسليم وثقة العميل."
       },
@@ -371,13 +379,13 @@
         "type": "text_image",
         "next_node_id": "video",
         "step_badge": "2 نص وصورة",
-        "title": "طلب العميل",
-        "body": "تريد الجامعة الميزة خلال أربعة أسابيع. مطوروك لديهم التزامات بالفعل.",
+        "title": "طلب الجامعة",
+        "body": "تريد الجامعة الميزة خلال أربعة أسابيع، قبل بدء الفصل الدراسي الأول في أواخر أغسطس. وتقع إجازات الصيف في هذه الفترة، ومطوّروك ملتزمون بالفعل بمهام أخرى.",
         "character_name": "Jordan Chen",
-        "character_title": "نائب رئيس التعلم الرقمي",
-        "character_alt": "صورة Jordan Chen، نائب رئيس التعلم الرقمي",
-        "ti_point1": "جدول تسليم مطلوب خلال 4 أسابيع",
-        "ti_point2": "فريق التطوير يعمل بكامل طاقته بالفعل"
+        "character_title": "مدير التعلم الرقمي",
+        "character_alt": "صورة Jordan Chen، مدير التعلم الرقمي",
+        "ti_point1": "التسليم مطلوب خلال 4 أسابيع، قبل بدء الفصل الدراسي",
+        "ti_point2": "إجازات الصيف، والفريق يعمل بكامل طاقته"
       },
       "video": {
         "type": "video",
@@ -385,7 +393,7 @@
         "step_badge": "3 فيديو",
         "quote": "هل يمكننا الالتزام بأربعة أسابيع؟",
         "watch_listen_title": "شاهد واستمع",
-        "watch_listen_body": "انتبه لإلحاح العميل. سيشكل ضغط القرار الذي ستشعر به في الشريحة التالية."
+        "watch_listen_body": "انتبه إلى استعجال العميل؛ فهو ما سيحدد ضغط القرار في الشريحة التالية."
       },
       "decision": {
         "type": "decision",
@@ -401,7 +409,7 @@
           },
           {
             "id": "B",
-            "label": "B اقتراح تجربة مرحلية",
+            "label": "B اقتراح تجربة في كلية واحدة",
             "target_node_id": "outcome_b"
           }
         ]
@@ -412,25 +420,25 @@
         "step_badge": "5A النتيجة أ",
         "you_chose": "اخترت أ",
         "title": "ضغط التسليم",
-        "body": "يوافق العميل. يجب على فريقك إعادة التفاوض على الالتزامات الحالية.",
+        "body": "توافق الجامعة. سيضطر فريقك إلى اختصار إجازات الصيف وإعادة التفاوض مع عملاء آخرين بشأن مواعيد التسليم.",
         "impacts": [
           {
             "key": "revenue",
             "label": "الإيرادات",
             "direction": "up",
-            "body": "تم تأمين الصفقة قصيرة المدى مع الجامعة"
+            "body": "عقد بقيمة 40 ألف درهم مضمون قبل بدء الفصل"
           },
           {
             "key": "capacity",
             "label": "القدرة",
             "direction": "down",
-            "body": "الفريق مثقل بالعمل، تمت إعادة التفاوض على الالتزامات"
+            "body": "فريق مُرهق وإجازات مختصرة"
           },
           {
             "key": "trust",
             "label": "الثقة",
             "direction": "mid",
-            "body": "معرضة للخطر إذا تأخر التسليم تحت الضغط"
+            "body": "في خطر إذا تعثّر التسليم مع بداية الفصل"
           }
         ]
       },
@@ -440,25 +448,25 @@
         "step_badge": "5B النتيجة ب",
         "you_chose": "اخترت ب",
         "title": "خطوة أولى أصغر",
-        "body": "يراجع العميل تجربة محدودة بنطاق وجدول زمني متفق عليهما.",
+        "body": "تراجع الجامعة تجربة في كلية واحدة بنطاق وجدول زمني متفق عليهما، على أن تصل الميزة كاملة بعد بدء الفصل.",
         "impacts": [
           {
             "key": "revenue",
             "label": "الإيرادات",
             "direction": "mid",
-            "body": "أبطأ في الإغلاق — التجربة أولاً، ثم الصفقة الكاملة لاحقاً"
+            "body": "إغلاق أبطأ: التجربة أولاً، ثم العقد الكامل"
           },
           {
             "key": "capacity",
             "label": "القدرة",
             "direction": "up",
-            "body": "تم الحفاظ على الالتزامات الحالية"
+            "body": "الإجازات والالتزامات الحالية محفوظة"
           },
           {
             "key": "trust",
             "label": "الثقة",
             "direction": "up",
-            "body": "تحديد التوقعات بشفافية يبني الثقة"
+            "body": "التوقعات الواضحة منذ البداية تبني الثقة"
           }
         ]
       },
@@ -468,7 +476,7 @@
         "step_badge": "6 ملخص",
         "title": "تأمل في قرارك",
         "reflection_prompt_label": "سؤال للتأمل",
-        "question": "كيف وازن اختيارك بين الإيرادات والقدرة والثقة؟"
+        "question": "كيف وازن قرارك بين العقد وإجازات فريقك وثقة الجامعة؟"
       }
     },
     "ui": {
@@ -477,22 +485,26 @@
       "next_btn": "التالي",
       "restart_btn": "إعادة المحاكاة",
       "lang_label": "اللغة",
-      "eth_label": "عرق الشخصية",
+      "eth_label": "خلفية الشخصية",
       "ethnicity_labels": {
-        "african": "أفريقي",
-        "caucasian": "قوقازي",
-        "east_asian": "شرق آسيوي",
-        "latin": "لاتيني",
-        "south_asian": "جنوب آسيوي"
+        "african": "شرق أفريقيا",
+        "caucasian": "أوروبا",
+        "east_asian": "شرق آسيا",
+        "latin": "أمريكا اللاتينية",
+        "south_asian": "جنوب آسيا"
       },
       "language_labels": {
         "en": "English",
         "es": "Español",
-        "ar": "العربية",
+        "ar": "العربية (الإمارات)",
         "zh": "中文",
         "ne": "नेपाली",
-        "sw": "Kiswahili",
-        "ur": "اردو"
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "es-MX": "Español (México)",
+        "es-AR": "Español (Argentina)",
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "ar-JO": "العربية (الأردن)"
       },
       "sim_title": "محاكاة قرار القيادة",
       "setup_subtitle": "عش سيناريوهات قيادية واقعية وطور مهارات اتخاذ القرارات الحاسمة في بيئة آمنة وتأملية.",
@@ -502,7 +514,7 @@
       "sim_error_body": "تعذر الاتصال بخدمة المحاكاة. يرجى التحقق من اتصالك والمحاولة مرة أخرى.",
       "retry_btn": "إعادة المحاولة",
       "brief_scenario_label": "السيناريو",
-      "brief_scenario_body": "أنت تقود SchoolSims. تطلب إحدى الجامعات ميزة جديدة قبل التوقيع. فريقك لديه قدرة محدودة.",
+      "brief_scenario_body": "تقود SchoolSims في دبي. جامعة خاصة تطلب ميزة جديدة قبل التوقيع. فريقك محدود القدرة.",
       "brief_objective_label": "هدف التعلم",
       "brief_objective_body": "الموازنة بين الإيرادات قصيرة المدى وقدرة التسليم وثقة العميل.",
       "cast_panel_label": "الشخصيات",
@@ -655,22 +667,26 @@
       "next_btn": "下一步",
       "restart_btn": "重新开始模拟",
       "lang_label": "语言",
-      "eth_label": "角色种族",
+      "eth_label": "角色背景",
       "ethnicity_labels": {
-        "african": "非洲裔",
-        "caucasian": "白人",
-        "east_asian": "东亚裔",
-        "latin": "拉丁裔",
-        "south_asian": "南亚裔"
+        "african": "东非",
+        "caucasian": "欧洲",
+        "east_asian": "东亚",
+        "latin": "拉丁美洲",
+        "south_asian": "南亚"
       },
       "language_labels": {
         "en": "English",
         "es": "Español",
-        "ar": "العربية",
+        "ar": "العربية (الإمارات)",
         "zh": "中文",
         "ne": "नेपाली",
-        "sw": "Kiswahili",
-        "ur": "اردو"
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "es-MX": "Español (México)",
+        "es-AR": "Español (Argentina)",
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "ar-JO": "العربية (الأردن)"
       },
       "sim_title": "领导力决策模拟",
       "setup_subtitle": "体验真实的领导力场景，在安全、反思的环境中培养关键的决策能力。",
@@ -833,22 +849,26 @@
       "next_btn": "अर्को",
       "restart_btn": "सिमुलेसन पुन: सुरु गर्नुहोस्",
       "lang_label": "भाषा",
-      "eth_label": "पात्रको जातीयता",
+      "eth_label": "पात्रको पृष्ठभूमि",
       "ethnicity_labels": {
-        "african": "अफ्रिकी",
-        "caucasian": "कोकेसियन",
-        "east_asian": "पूर्व एसियाली",
-        "latin": "ल्याटिन",
-        "south_asian": "दक्षिण एसियाली"
+        "african": "पूर्वी अफ्रिका",
+        "caucasian": "युरोप",
+        "east_asian": "पूर्वी एसिया",
+        "latin": "ल्याटिन अमेरिका",
+        "south_asian": "दक्षिण एसिया"
       },
       "language_labels": {
         "en": "English",
         "es": "Español",
-        "ar": "العربية",
+        "ar": "العربية (الإمارات)",
         "zh": "中文",
         "ne": "नेपाली",
-        "sw": "Kiswahili",
-        "ur": "اردو"
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "es-MX": "Español (México)",
+        "es-AR": "Español (Argentina)",
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "ar-JO": "العربية (الأردن)"
       },
       "sim_title": "नेतृत्व निर्णय सिमुलेसन",
       "setup_subtitle": "यथार्थपरक नेतृत्व परिदृश्यहरू अनुभव गर्नुहोस् र सुरक्षित, चिन्तनशील वातावरणमा महत्वपूर्ण निर्णय लिने सीपहरू विकास गर्नुहोस्।",
@@ -896,8 +916,8 @@
         "type": "context",
         "next_node_id": "text_image",
         "step_badge": "1 Muktadha",
-        "title": "Fursa mpya ya mteja",
-        "body": "Unaongoza SchoolSims. Chuo kikuu kinaomba kipengele kipya kabla ya kusaini. Timu yako ina uwezo mdogo. Lengo lako la kujifunza ni kupima mapato ya muda mfupi dhidi ya uwezo wa utoaji na uaminifu wa mteja.",
+        "title": "Fursa mpya kutoka chuo kikuu cha Nairobi",
+        "body": "Unaongoza timu ya SchoolSims jijini Nairobi. Chuo kikuu cha binafsi jijini humo kiko tayari kusaini mkataba wa mwaka wa takriban shilingi milioni 1.4, lakini kwanza kinataka kipengele kipya. Timu yako ina uwezo mdogo. Lengo lako la kujifunza ni kupima mapato ya muda mfupi dhidi ya uwezo wa kutekeleza na imani ya mteja.",
         "learning_objective_label": "Lengo la Kujifunza",
         "learning_objective_body": "Pima mapato ya muda mfupi dhidi ya uwezo wa utoaji na uaminifu wa mteja."
       },
@@ -905,13 +925,13 @@
         "type": "text_image",
         "next_node_id": "video",
         "step_badge": "2 Maandishi na picha",
-        "title": "Ombi la mteja",
-        "body": "Chuo kikuu kinataka kipengele hicho ndani ya wiki nne. Watengenezaji wako tayari wana ahadi nyingine.",
+        "title": "Ombi la chuo kikuu",
+        "body": "Chuo kinataka kipengele hiki ndani ya wiki nne, kabla ya usajili wa wanafunzi wa Januari. Likizo za Desemba ziko ndani ya kipindi hicho, na wasanidi programu wako tayari wana majukumu mengine.",
         "character_name": "Jordan Chen",
-        "character_title": "Makamu wa Rais wa Ujifunzaji wa Kidijitali",
-        "character_alt": "Picha ya Jordan Chen, Makamu wa Rais wa Ujifunzaji wa Kidijitali",
-        "ti_point1": "Ratiba ya utoaji ya wiki 4 imeombwa",
-        "ti_point2": "Timu ya maendeleo tayari imejaa"
+        "character_title": "Mkurugenzi wa Masomo ya Kidijitali",
+        "character_alt": "Picha ya Jordan Chen, Mkurugenzi wa Masomo ya Kidijitali",
+        "ti_point1": "Kinahitajika ndani ya wiki 4, kabla ya usajili wa Januari",
+        "ti_point2": "Likizo za Desemba, na timu tayari imejaa kazi"
       },
       "video": {
         "type": "video",
@@ -919,7 +939,7 @@
         "step_badge": "3 Video",
         "quote": "Je, tunaweza kujitolea kwa wiki nne?",
         "watch_listen_title": "Tazama na Sikiliza",
-        "watch_listen_body": "Zingatia dharura ya mteja. Itaunda shinikizo la uamuzi utakalohisi kwenye slaidi inayofuata."
+        "watch_listen_body": "Zingatia jinsi mteja anavyoharakisha. Hilo ndilo litakaloleta shinikizo la uamuzi kwenye slaidi inayofuata."
       },
       "decision": {
         "type": "decision",
@@ -935,7 +955,7 @@
           },
           {
             "id": "B",
-            "label": "B Pendekeza jaribio la awamu",
+            "label": "B Pendekeza majaribio katika kitivo kimoja",
             "target_node_id": "outcome_b"
           }
         ]
@@ -946,25 +966,25 @@
         "step_badge": "5A Matokeo A",
         "you_chose": "Umechagua A",
         "title": "Shinikizo la utoaji",
-        "body": "Mteja anakubali. Timu yako lazima ijadiliane upya ahadi zilizopo.",
+        "body": "Chuo kinakubali. Timu yako italazimika kupunguza likizo za Desemba na kujadiliana upya na wateja wengine.",
         "impacts": [
           {
             "key": "revenue",
             "label": "Mapato",
             "direction": "up",
-            "body": "Mkataba wa muda mfupi umepatikana na chuo kikuu"
+            "body": "Mkataba wa shilingi milioni 1.4 umepatikana kabla ya Januari"
           },
           {
             "key": "capacity",
             "label": "Uwezo",
             "direction": "down",
-            "body": "Timu imezidiwa, ahadi zimejadiliwa upya"
+            "body": "Timu imeelemewa, likizo zimepunguzwa"
           },
           {
             "key": "trust",
             "label": "Uaminifu",
             "direction": "mid",
-            "body": "Hatari ikiwa utoaji unachelewa chini ya shinikizo"
+            "body": "Iko hatarini iwapo utekelezaji utakwama wakati wa usajili"
           }
         ]
       },
@@ -974,25 +994,25 @@
         "step_badge": "5B Matokeo B",
         "you_chose": "Umechagua B",
         "title": "Hatua ndogo ya kwanza",
-        "body": "Mteja anapitia jaribio dogo lenye upeo na ratiba iliyokubaliwa.",
+        "body": "Chuo kinakagua majaribio katika kitivo kimoja, kwa wigo na ratiba iliyokubaliwa. Kipengele kamili kitakuja baada ya likizo.",
         "impacts": [
           {
             "key": "revenue",
             "label": "Mapato",
             "direction": "mid",
-            "body": "Polepole kufunga — jaribio kwanza, mkataba kamili baadaye"
+            "body": "Mkataba unachelewa: kwanza majaribio, kisha mkataba kamili"
           },
           {
             "key": "capacity",
             "label": "Uwezo",
             "direction": "up",
-            "body": "Ahadi zilizopo zimehifadhiwa"
+            "body": "Likizo za timu na majukumu yaliyopo yanaheshimiwa"
           },
           {
             "key": "trust",
             "label": "Uaminifu",
             "direction": "up",
-            "body": "Kuweka matarajio kwa uwazi kunaimarisha uaminifu"
+            "body": "Matarajio wazi tangu mwanzo hujenga imani"
           }
         ]
       },
@@ -1002,7 +1022,7 @@
         "step_badge": "6 Muhtasari",
         "title": "Tafakari juu ya uamuzi wako",
         "reflection_prompt_label": "Swali la Kutafakari",
-        "question": "Chaguo lako lilisawazisha vipi mapato, uwezo na uaminifu?"
+        "question": "Uamuzi wako ulisawazishaje mkataba, likizo za timu yako na imani ya chuo kikuu?"
       }
     },
     "ui": {
@@ -1011,22 +1031,26 @@
       "next_btn": "Ifuatayo",
       "restart_btn": "Anzisha Upya Uigizaji",
       "lang_label": "Lugha",
-      "eth_label": "Kabila la Mhusika",
+      "eth_label": "Asili ya mhusika",
       "ethnicity_labels": {
-        "african": "Mwafrika",
-        "caucasian": "Mkaukasia",
-        "east_asian": "Mwasia wa Mashariki",
-        "latin": "Mlatino",
-        "south_asian": "Mwasia wa Kusini"
+        "african": "Afrika Mashariki",
+        "caucasian": "Ulaya",
+        "east_asian": "Asia Mashariki",
+        "latin": "Amerika ya Latini",
+        "south_asian": "Asia Kusini"
       },
       "language_labels": {
         "en": "English",
         "es": "Español",
-        "ar": "العربية",
+        "ar": "العربية (الإمارات)",
         "zh": "中文",
         "ne": "नेपाली",
-        "sw": "Kiswahili",
-        "ur": "اردو"
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "es-MX": "Español (México)",
+        "es-AR": "Español (Argentina)",
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "ar-JO": "العربية (الأردن)"
       },
       "sim_title": "Uigizaji wa Uamuzi wa Uongozi",
       "setup_subtitle": "Pitia hali halisi za uongozi na kuendeleza ujuzi muhimu wa kufanya maamuzi katika mazingira salama na ya kutafakari.",
@@ -1036,7 +1060,7 @@
       "sim_error_body": "Haikuweza kuunganishwa na huduma ya uigizaji. Tafadhali angalia muunganisho wako na ujaribu tena.",
       "retry_btn": "Jaribu Tena",
       "brief_scenario_label": "Hali",
-      "brief_scenario_body": "Unaongoza SchoolSims. Chuo kikuu kinaomba kipengele kipya kabla ya kusaini. Timu yako ina uwezo mdogo.",
+      "brief_scenario_body": "Unaongoza SchoolSims jijini Nairobi. Chuo kikuu cha binafsi kinataka kipengele kipya kabla ya kusaini. Timu yako ina uwezo mdogo.",
       "brief_objective_label": "Lengo la Kujifunza",
       "brief_objective_body": "Pima mapato ya muda mfupi dhidi ya uwezo wa utoaji na uaminifu wa mteja.",
       "cast_panel_label": "Wahusika",
@@ -1074,8 +1098,8 @@
         "type": "context",
         "next_node_id": "text_image",
         "step_badge": "1 سیاق و سباق",
-        "title": "ایک نیا گاہک کا موقع",
-        "body": "آپ SchoolSims کی قیادت کرتے ہیں۔ ایک کالج دستخط سے پہلے ایک نئی خصوصیت کی درخواست کرتا ہے۔ آپ کی ٹیم کی صلاحیت محدود ہے۔ آپ کا سیکھنے کا مقصد قلیل مدتی آمدنی کو ترسیل کی صلاحیت اور گاہک کے اعتماد کے مقابلے میں تولنا ہے۔",
+        "title": "لاہور کی ایک یونیورسٹی سے نیا موقع",
+        "body": "آپ کراچی میں SchoolSims کی ٹیم کی قیادت کرتے ہیں۔ لاہور کی ایک نجی یونیورسٹی تقریباً 30 لاکھ روپے کے سالانہ معاہدے پر دستخط کے لیے تیار ہے، لیکن اس سے پہلے ایک نیا فیچر چاہتی ہے۔ آپ کی ٹیم کی گنجائش محدود ہے۔ آپ کا تعلیمی مقصد قلیل مدتی آمدنی کو ڈیلیوری کی صلاحیت اور کلائنٹ کے اعتماد کے مقابلے میں تولنا ہے۔",
         "learning_objective_label": "سیکھنے کا مقصد",
         "learning_objective_body": "قلیل مدتی آمدنی کو ترسیل کی صلاحیت اور گاہک کے اعتماد کے مقابلے میں تولیں۔"
       },
@@ -1083,13 +1107,13 @@
         "type": "text_image",
         "next_node_id": "video",
         "step_badge": "2 متن اور تصویر",
-        "title": "گاہک کی درخواست",
-        "body": "کالج چار ہفتوں میں خصوصیت چاہتا ہے۔ آپ کے ڈویلپرز کے پاس پہلے سے وعدے ہیں۔",
+        "title": "یونیورسٹی کی درخواست",
+        "body": "یونیورسٹی چاہتی ہے کہ یہ فیچر چار ہفتوں میں، یعنی خزاں کے سمسٹر کے داخلوں سے پہلے تیار ہو۔ عید کی چھٹیاں بھی اسی عرصے میں آ رہی ہیں، اور آپ کے ڈویلپرز پہلے ہی دوسرے کاموں میں مصروف ہیں۔",
         "character_name": "Jordan Chen",
-        "character_title": "ڈیجیٹل لرننگ کے نائب صدر",
-        "character_alt": "Jordan Chen کی تصویر، ڈیجیٹل لرننگ کے نائب صدر",
-        "ti_point1": "4 ہفتے کی ترسیل کی ٹائم لائن کی درخواست",
-        "ti_point2": "ترقیاتی ٹیم پہلے سے پوری صلاحیت پر"
+        "character_title": "ڈائریکٹر ڈیجیٹل لرننگ",
+        "character_alt": "Jordan Chen کی تصویر، ڈائریکٹر ڈیجیٹل لرننگ",
+        "ti_point1": "داخلوں سے پہلے 4 ہفتوں میں ڈیلیوری درکار",
+        "ti_point2": "عید کی چھٹیاں، اور ٹیم پہلے ہی پوری گنجائش پر"
       },
       "video": {
         "type": "video",
@@ -1097,7 +1121,7 @@
         "step_badge": "3 ویڈیو",
         "quote": "کیا ہم چار ہفتوں کا عہد کر سکتے ہیں؟",
         "watch_listen_title": "دیکھیں اور سنیں",
-        "watch_listen_body": "گاہک کی فوری ضرورت پر توجہ دیں۔ یہ اگلی سلائیڈ پر آپ کے فیصلے کے دباؤ کو تشکیل دے گی۔"
+        "watch_listen_body": "کلائنٹ کی عجلت پر دھیان دیں۔ یہی اگلی سلائیڈ پر فیصلے کا دباؤ طے کرے گی۔"
       },
       "decision": {
         "type": "decision",
@@ -1113,7 +1137,7 @@
           },
           {
             "id": "B",
-            "label": "B مرحلہ وار پائلٹ تجویز کریں",
+            "label": "B صرف ایک شعبے میں پائلٹ کی تجویز دیں",
             "target_node_id": "outcome_b"
           }
         ]
@@ -1124,25 +1148,25 @@
         "step_badge": "5A نتیجہ A",
         "you_chose": "آپ نے A چنا",
         "title": "ترسیل کا دباؤ",
-        "body": "گاہک راضی ہو جاتا ہے۔ آپ کی ٹیم کو موجودہ وعدوں پر دوبارہ بات چیت کرنی ہوگی۔",
+        "body": "یونیورسٹی مان جاتی ہے۔ آپ کی ٹیم کو عید کی چھٹیاں کم کرنی ہوں گی اور دوسرے کلائنٹس کے ساتھ وعدوں پر دوبارہ بات کرنی ہوگی۔",
         "impacts": [
           {
             "key": "revenue",
             "label": "آمدنی",
             "direction": "up",
-            "body": "کالج کے ساتھ قلیل مدتی معاہدہ محفوظ ہو گیا"
+            "body": "داخلوں سے پہلے 30 لاکھ روپے کا معاہدہ پکا"
           },
           {
             "key": "capacity",
             "label": "صلاحیت",
             "direction": "down",
-            "body": "ٹیم پر زیادہ بوجھ، وعدوں پر دوبارہ بات چیت ہوئی"
+            "body": "ٹیم پر بوجھ، عید کی چھٹیاں کم"
           },
           {
             "key": "trust",
             "label": "اعتماد",
             "direction": "mid",
-            "body": "دباؤ میں ترسیل میں تاخیر ہو تو خطرے میں"
+            "body": "داخلوں کے وقت ڈیلیوری میں گڑبڑ ہوئی تو خطرہ"
           }
         ]
       },
@@ -1152,25 +1176,25 @@
         "step_badge": "5B نتیجہ B",
         "you_chose": "آپ نے B چنا",
         "title": "ایک چھوٹا پہلا قدم",
-        "body": "گاہک متفقہ دائرہ کار اور ٹائم لائن کے ساتھ ایک محدود پائلٹ کا جائزہ لیتا ہے۔",
+        "body": "یونیورسٹی طے شدہ دائرہ کار اور ٹائم لائن کے ساتھ ایک شعبے، مثلاً بزنس اسکول، میں پائلٹ کا جائزہ لیتی ہے۔ مکمل فیچر عید کے بعد آئے گا۔",
         "impacts": [
           {
             "key": "revenue",
             "label": "آمدنی",
             "direction": "mid",
-            "body": "بند ہونے میں سست — پہلے پائلٹ، بعد میں مکمل معاہدہ"
+            "body": "معاہدہ دیر سے مکمل: پہلے پائلٹ، پھر پورا معاہدہ"
           },
           {
             "key": "capacity",
             "label": "صلاحیت",
             "direction": "up",
-            "body": "موجودہ وعدے محفوظ رہے"
+            "body": "ٹیم کی چھٹیاں اور موجودہ وعدے برقرار"
           },
           {
             "key": "trust",
             "label": "اعتماد",
             "direction": "up",
-            "body": "شفاف توقعات طے کرنا اعتماد بناتا ہے"
+            "body": "شروع سے واضح توقعات اعتماد بڑھاتی ہیں"
           }
         ]
       },
@@ -1180,7 +1204,7 @@
         "step_badge": "6 خلاصہ",
         "title": "اپنے فیصلے پر غور کریں",
         "reflection_prompt_label": "غور و فکر کا سوال",
-        "question": "آپ کے انتخاب نے آمدنی، صلاحیت اور اعتماد میں کیسے توازن رکھا؟"
+        "question": "آپ کے انتخاب نے 30 لاکھ روپے کے معاہدے، ٹیم کی عید کی چھٹیوں اور یونیورسٹی کے اعتماد میں کیسے توازن رکھا؟"
       }
     },
     "ui": {
@@ -1189,22 +1213,26 @@
       "next_btn": "اگلا",
       "restart_btn": "سمیولیشن دوبارہ شروع کریں",
       "lang_label": "زبان",
-      "eth_label": "کردار کی نسل",
+      "eth_label": "کردار کا پس منظر",
       "ethnicity_labels": {
-        "african": "افریقی",
-        "caucasian": "قفقازی",
-        "east_asian": "مشرقی ایشیائی",
-        "latin": "لاطینی",
-        "south_asian": "جنوبی ایشیائی"
+        "african": "مشرقی افریقہ",
+        "caucasian": "یورپ",
+        "east_asian": "مشرقی ایشیا",
+        "latin": "لاطینی امریکہ",
+        "south_asian": "جنوبی ایشیا"
       },
       "language_labels": {
         "en": "English",
         "es": "Español",
-        "ar": "العربية",
+        "ar": "العربية (الإمارات)",
         "zh": "中文",
         "ne": "नेपाली",
-        "sw": "Kiswahili",
-        "ur": "اردو"
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "es-MX": "Español (México)",
+        "es-AR": "Español (Argentina)",
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "ar-JO": "العربية (الأردن)"
       },
       "sim_title": "قیادت کے فیصلے کی سمیولیشن",
       "setup_subtitle": "حقیقت پسندانہ قیادت کے منظرناموں کا تجربہ کریں اور محفوظ، غور و فکر والے ماحول میں اہم فیصلہ سازی کی مہارتیں تیار کریں۔",
@@ -1214,7 +1242,7 @@
       "sim_error_body": "سمیولیشن سروس سے رابطہ نہیں ہو سکا۔ براہ کرم اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
       "retry_btn": "دوبارہ کوشش کریں",
       "brief_scenario_label": "منظرنامہ",
-      "brief_scenario_body": "آپ SchoolSims کی قیادت کرتے ہیں۔ ایک کالج دستخط سے پہلے ایک نئی خصوصیت کی درخواست کرتا ہے۔ آپ کی ٹیم کی صلاحیت محدود ہے۔",
+      "brief_scenario_body": "آپ کراچی میں SchoolSims کی قیادت کرتے ہیں۔ لاہور کی ایک نجی یونیورسٹی دستخط سے پہلے ایک نیا فیچر چاہتی ہے۔ آپ کی ٹیم کی گنجائش محدود ہے۔",
       "brief_objective_label": "سیکھنے کا مقصد",
       "brief_objective_body": "قلیل مدتی آمدنی کو ترسیل کی صلاحیت اور گاہک کے اعتماد کے مقابلے میں تولیں۔",
       "cast_panel_label": "کردار",
@@ -1251,6 +1279,769 @@
       "setting": "Lalitpur, Nepal — Tribhuvan University–affiliated private college",
       "approved_at": "2026-11-08T16:03:00+00:00",
       "source": "localized draft reviewed by Claude; needs native-speaker review"
+    },
+    "es-MX": {
+      "setting": "Guadalajara, México — universidad privada; semestre de agosto, vacaciones de verano; MXN",
+      "approved_at": "2026-11-08T18:04:22+00:00",
+      "source": "written by Claude; needs native-speaker review"
+    },
+    "es-AR": {
+      "setting": "Córdoba, Argentina — universidad privada; inicio de clases en marzo, vacaciones de enero; contrato en dólares",
+      "approved_at": "2026-11-08T18:04:22+00:00",
+      "source": "written by Claude; needs native-speaker review"
+    },
+    "ur": {
+      "setting": "Lahore, Pakistan — private university; fall admissions, Eid holidays; PKR",
+      "approved_at": "2026-11-08T18:04:22+00:00",
+      "source": "written by Claude; needs native-speaker review"
+    },
+    "sw": {
+      "setting": "Nairobi, Kenya — private university; January intake, December holidays; KES",
+      "approved_at": "2026-11-08T18:04:22+00:00",
+      "source": "written by Claude; needs native-speaker review"
+    },
+    "sw-TZ": {
+      "setting": "Dar es Salaam, Tanzania — private university; academic year starts in October; TZS",
+      "approved_at": "2026-11-08T18:04:22+00:00",
+      "source": "written by Claude; needs native-speaker review"
+    },
+    "ar": {
+      "setting": "Dubai, UAE — private university; fall semester in late August, summer leave; AED",
+      "approved_at": "2026-11-08T18:04:22+00:00",
+      "source": "written by Claude; needs native-speaker review"
+    },
+    "ar-JO": {
+      "setting": "Amman, Jordan — private university; second semester in February, winter break; JOD",
+      "approved_at": "2026-11-08T18:04:22+00:00",
+      "source": "written by Claude; needs native-speaker review"
+    }
+  },
+  "es-MX": {
+    "nodes": {
+      "context": {
+        "type": "context",
+        "next_node_id": "text_image",
+        "step_badge": "1 Contexto",
+        "title": "Una nueva oportunidad en Guadalajara",
+        "body": "Diriges el equipo de SchoolSims en la Ciudad de México. Una universidad privada de Guadalajara está lista para firmar un contrato anual de unos 200 mil pesos, pero antes quiere una nueva función. Tu equipo tiene capacidad limitada. Tu objetivo de aprendizaje es sopesar los ingresos a corto plazo frente a la capacidad de entrega y la confianza del cliente.",
+        "learning_objective_label": "Objetivo de aprendizaje",
+        "learning_objective_body": "Sopesar los ingresos a corto plazo frente a la capacidad de entrega y la confianza del cliente."
+      },
+      "text_image": {
+        "type": "text_image",
+        "next_node_id": "video",
+        "step_badge": "2 Texto e imagen",
+        "title": "La petición de la universidad",
+        "body": "La universidad quiere la función en cuatro semanas, antes de que arranque el semestre de agosto. Las vacaciones de verano caen justo en ese periodo y tus desarrolladores ya tienen otros compromisos.",
+        "character_name": "Jordan Chen",
+        "character_title": "Director de Innovación Educativa",
+        "character_alt": "Retrato de Jordan Chen, Director de Innovación Educativa",
+        "ti_point1": "Entrega en 4 semanas, antes del semestre de agosto",
+        "ti_point2": "Vacaciones de verano y un equipo ya a tope"
+      },
+      "video": {
+        "type": "video",
+        "next_node_id": "decision",
+        "step_badge": "3 Video",
+        "quote": "¿Podemos comprometernos a cuatro semanas?",
+        "watch_listen_title": "Mira y escucha",
+        "watch_listen_body": "Pon atención a la urgencia del cliente. Marcará la presión de la decisión en la siguiente diapositiva."
+      },
+      "decision": {
+        "type": "decision",
+        "next_node_id": null,
+        "step_badge": "4 Decisión",
+        "prompt": "¿Qué harás?",
+        "keyboard_hint": "Presiona [A] o [B] para decidir",
+        "choices": [
+          {
+            "id": "A",
+            "label": "A Comprometerse con la fecha límite",
+            "target_node_id": "outcome_a"
+          },
+          {
+            "id": "B",
+            "label": "B Proponer un piloto en una sola facultad",
+            "target_node_id": "outcome_b"
+          }
+        ]
+      },
+      "outcome_a": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5A Resultado A",
+        "you_chose": "Elegiste A",
+        "title": "Presión de entrega",
+        "body": "La universidad acepta. Tu equipo tendrá que recortar sus vacaciones y renegociar entregas con otros clientes.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Ingresos",
+            "direction": "up",
+            "body": "Contrato de 200 mil pesos asegurado antes del semestre"
+          },
+          {
+            "key": "capacity",
+            "label": "Capacidad",
+            "direction": "down",
+            "body": "Equipo saturado y vacaciones recortadas"
+          },
+          {
+            "key": "trust",
+            "label": "Confianza",
+            "direction": "mid",
+            "body": "En riesgo si la entrega falla al arrancar el semestre"
+          }
+        ]
+      },
+      "outcome_b": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5B Resultado B",
+        "you_chose": "Elegiste B",
+        "title": "Un primer paso más pequeño",
+        "body": "La universidad revisa un piloto en una sola facultad, con alcance y fechas acordados. La función completa llega después de las vacaciones.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Ingresos",
+            "direction": "mid",
+            "body": "Cierre más lento: primero el piloto, luego el contrato completo"
+          },
+          {
+            "key": "capacity",
+            "label": "Capacidad",
+            "direction": "up",
+            "body": "Se respetan las vacaciones y los compromisos actuales"
+          },
+          {
+            "key": "trust",
+            "label": "Confianza",
+            "direction": "up",
+            "body": "Expectativas claras desde el inicio generan confianza"
+          }
+        ]
+      },
+      "summary": {
+        "type": "summary",
+        "next_node_id": null,
+        "step_badge": "6 Resumen",
+        "title": "Reflexiona sobre tu decisión",
+        "reflection_prompt_label": "Pregunta de reflexión",
+        "question": "¿Cómo equilibró tu decisión el contrato, las vacaciones de tu equipo y la confianza de la universidad?"
+      }
+    },
+    "ui": {
+      "start_btn": "Iniciar simulación",
+      "back_btn": "Atrás",
+      "next_btn": "Siguiente",
+      "restart_btn": "Reiniciar simulación",
+      "lang_label": "Idioma",
+      "eth_label": "Origen del personaje",
+      "ethnicity_labels": {
+        "african": "África Oriental",
+        "caucasian": "Europa",
+        "east_asian": "Asia Oriental",
+        "latin": "Latinoamérica",
+        "south_asian": "Asia del Sur"
+      },
+      "language_labels": {
+        "en": "English",
+        "es": "Español",
+        "ar": "العربية (الإمارات)",
+        "zh": "中文",
+        "ne": "नेपाली",
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "es-MX": "Español (México)",
+        "es-AR": "Español (Argentina)",
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "ar-JO": "العربية (الأردن)"
+      },
+      "sim_title": "Simulación de Decisión de Liderazgo",
+      "setup_subtitle": "Experimenta escenarios de liderazgo realistas y desarrolla habilidades críticas de toma de decisiones en un entorno seguro y reflexivo.",
+      "before_you_begin_title": "Antes de comenzar",
+      "before_you_begin_body": "Este es un entorno seguro para practicar. No hay una sola respuesta correcta — explora ambos caminos para comprender toda la gama de compensaciones.",
+      "sim_error_title": "Error al cargar la simulación",
+      "sim_error_body": "No se pudo conectar al servicio de simulación. Verifica tu conexión e inténtalo de nuevo.",
+      "retry_btn": "Reintentar",
+      "brief_scenario_label": "Escenario",
+      "brief_scenario_body": "Diriges SchoolSims en la Ciudad de México. Una universidad privada de Guadalajara pide una nueva función antes de firmar. Tu equipo tiene capacidad limitada.",
+      "brief_objective_label": "Objetivo de aprendizaje",
+      "brief_objective_body": "Sopesar los ingresos a corto plazo frente a la capacidad de entrega y la confianza del cliente.",
+      "cast_panel_label": "Reparto",
+      "cast_panel_subtitle": "Personaje destacado",
+      "cast_panel_body": "Este personaje representa al actor externo en tu escenario. Sus decisiones moldean los resultados que experimentarás.",
+      "help_panel_title": "Antes de comenzar",
+      "help_safe_title": "Entorno seguro",
+      "help_safe_body": "Las decisiones aquí no afectan resultados reales. Practica libremente.",
+      "help_no_right_title": "No hay una sola respuesta correcta",
+      "help_no_right_body": "Ambas opciones implican compensaciones reales. Reflexiona sobre tu razonamiento.",
+      "help_replay_title": "Juega varias veces",
+      "help_replay_body": "Prueba ambos caminos para comprender toda la gama de consecuencias.",
+      "rail_brief_tip": "Resumen",
+      "rail_cast_tip": "Reparto",
+      "rail_help_tip": "Ayuda",
+      "badge_en": "ES",
+      "option_label": "Opción",
+      "speech_locale": "es-ES",
+      "review_title": "Califica esta simulación",
+      "review_rating_label": "¿Cómo calificarías esta simulación?",
+      "review_experience_label": "¿Cómo fue tu experiencia?",
+      "review_improvements_label": "¿Alguna mejora sugerida?",
+      "review_submit_btn": "Enviar comentarios",
+      "review_thank_you": "¡Gracias por tus comentarios!",
+      "setup_badge": "Simulación interactiva",
+      "suggested_hint": "Sugerido para este idioma; puedes cambiarlo.",
+      "captions_on": "Subtítulos: sí",
+      "captions_off": "Subtítulos: no",
+      "video_error": "No se pudo cargar el video"
+    }
+  },
+  "es-AR": {
+    "nodes": {
+      "context": {
+        "type": "context",
+        "next_node_id": "text_image",
+        "step_badge": "1 Contexto",
+        "title": "Una nueva oportunidad en Córdoba",
+        "body": "Liderás el equipo de SchoolSims en Buenos Aires. Una universidad privada de Córdoba está lista para firmar un contrato anual en dólares, pero antes quiere una funcionalidad nueva. Tu equipo tiene capacidad limitada. Tu objetivo de aprendizaje es sopesar los ingresos de corto plazo frente a la capacidad de entrega y la confianza del cliente.",
+        "learning_objective_label": "Objetivo de aprendizaje",
+        "learning_objective_body": "Sopesar los ingresos a corto plazo frente a la capacidad de entrega y la confianza del cliente."
+      },
+      "text_image": {
+        "type": "text_image",
+        "next_node_id": "video",
+        "step_badge": "2 Texto e imagen",
+        "title": "El pedido de la universidad",
+        "body": "La universidad quiere la funcionalidad en cuatro semanas, antes del inicio de clases en marzo. Las vacaciones de enero caen justo en ese período y tus desarrolladores ya tienen otros compromisos.",
+        "character_name": "Jordan Chen",
+        "character_title": "Director de Educación Digital",
+        "character_alt": "Retrato de Jordan Chen, Director de Educación Digital",
+        "ti_point1": "Entrega en 4 semanas, antes del inicio de clases",
+        "ti_point2": "Vacaciones de enero y un equipo ya al límite"
+      },
+      "video": {
+        "type": "video",
+        "next_node_id": "decision",
+        "step_badge": "3 Video",
+        "quote": "¿Podemos comprometernos a cuatro semanas?",
+        "watch_listen_title": "Mirá y escuchá",
+        "watch_listen_body": "Prestá atención a la urgencia del cliente. Va a marcar la presión de la decisión en la próxima diapositiva."
+      },
+      "decision": {
+        "type": "decision",
+        "next_node_id": null,
+        "step_badge": "4 Decisión",
+        "prompt": "¿Qué vas a hacer?",
+        "keyboard_hint": "Presioná [A] o [B] para decidir",
+        "choices": [
+          {
+            "id": "A",
+            "label": "A Comprometerse con la fecha límite",
+            "target_node_id": "outcome_a"
+          },
+          {
+            "id": "B",
+            "label": "B Proponer un piloto en una sola facultad",
+            "target_node_id": "outcome_b"
+          }
+        ]
+      },
+      "outcome_a": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5A Resultado A",
+        "you_chose": "Elegiste A",
+        "title": "Presión de entrega",
+        "body": "La universidad acepta. Tu equipo va a tener que cortar las vacaciones y renegociar entregas con otros clientes.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Ingresos",
+            "direction": "up",
+            "body": "Contrato en dólares asegurado antes del inicio de clases"
+          },
+          {
+            "key": "capacity",
+            "label": "Capacidad",
+            "direction": "down",
+            "body": "Equipo desbordado y vacaciones recortadas"
+          },
+          {
+            "key": "trust",
+            "label": "Confianza",
+            "direction": "mid",
+            "body": "En riesgo si la entrega falla al arrancar las clases"
+          }
+        ]
+      },
+      "outcome_b": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5B Resultado B",
+        "you_chose": "Elegiste B",
+        "title": "Un primer paso más pequeño",
+        "body": "La universidad evalúa un piloto en una sola facultad, con alcance y fechas acordados. La funcionalidad completa llega después del receso de verano.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Ingresos",
+            "direction": "mid",
+            "body": "Cierre más lento: primero el piloto, después el contrato completo"
+          },
+          {
+            "key": "capacity",
+            "label": "Capacidad",
+            "direction": "up",
+            "body": "Se respetan las vacaciones y los compromisos actuales"
+          },
+          {
+            "key": "trust",
+            "label": "Confianza",
+            "direction": "up",
+            "body": "Expectativas claras desde el principio generan confianza"
+          }
+        ]
+      },
+      "summary": {
+        "type": "summary",
+        "next_node_id": null,
+        "step_badge": "6 Resumen",
+        "title": "Reflexioná sobre tu decisión",
+        "reflection_prompt_label": "Pregunta de reflexión",
+        "question": "¿Cómo equilibró tu decisión el contrato, las vacaciones de tu equipo y la confianza de la universidad?"
+      }
+    },
+    "ui": {
+      "start_btn": "Iniciar simulación",
+      "back_btn": "Atrás",
+      "next_btn": "Siguiente",
+      "restart_btn": "Reiniciar simulación",
+      "lang_label": "Idioma",
+      "eth_label": "Origen del personaje",
+      "ethnicity_labels": {
+        "african": "África Oriental",
+        "caucasian": "Europa",
+        "east_asian": "Asia Oriental",
+        "latin": "Latinoamérica",
+        "south_asian": "Asia del Sur"
+      },
+      "language_labels": {
+        "en": "English",
+        "es": "Español",
+        "ar": "العربية (الإمارات)",
+        "zh": "中文",
+        "ne": "नेपाली",
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "es-AR": "Español (Argentina)",
+        "es-MX": "Español (México)",
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "ar-JO": "العربية (الأردن)"
+      },
+      "sim_title": "Simulación de Decisión de Liderazgo",
+      "setup_subtitle": "Viví escenarios de liderazgo realistas y desarrollá habilidades clave para tomar decisiones en un entorno seguro y reflexivo.",
+      "before_you_begin_title": "Antes de comenzar",
+      "before_you_begin_body": "Este es un entorno seguro para practicar. No hay una sola respuesta correcta: explorá ambos caminos para entender todas las concesiones en juego.",
+      "sim_error_title": "Error al cargar la simulación",
+      "sim_error_body": "No se pudo conectar al servicio de simulación. Verifica tu conexión e inténtalo de nuevo.",
+      "retry_btn": "Reintentar",
+      "brief_scenario_label": "Escenario",
+      "brief_scenario_body": "Liderás SchoolSims en Buenos Aires. Una universidad privada de Córdoba pide una funcionalidad nueva antes de firmar. Tu equipo tiene capacidad limitada.",
+      "brief_objective_label": "Objetivo de aprendizaje",
+      "brief_objective_body": "Sopesar los ingresos a corto plazo frente a la capacidad de entrega y la confianza del cliente.",
+      "cast_panel_label": "Reparto",
+      "cast_panel_subtitle": "Personaje destacado",
+      "cast_panel_body": "Este personaje representa al actor externo en tu escenario. Sus decisiones moldean los resultados que experimentarás.",
+      "help_panel_title": "Antes de comenzar",
+      "help_safe_title": "Entorno seguro",
+      "help_safe_body": "Las decisiones acá no afectan resultados reales. Practicá con libertad.",
+      "help_no_right_title": "No hay una sola respuesta correcta",
+      "help_no_right_body": "Las dos opciones implican concesiones reales. Reflexioná sobre tu razonamiento.",
+      "help_replay_title": "Juega varias veces",
+      "help_replay_body": "Probá los dos caminos para entender todas las consecuencias.",
+      "rail_brief_tip": "Resumen",
+      "rail_cast_tip": "Reparto",
+      "rail_help_tip": "Ayuda",
+      "badge_en": "ES",
+      "option_label": "Opción",
+      "speech_locale": "es-ES",
+      "review_title": "Calificá esta simulación",
+      "review_rating_label": "¿Cómo calificarías esta simulación?",
+      "review_experience_label": "¿Cómo fue tu experiencia?",
+      "review_improvements_label": "¿Alguna mejora sugerida?",
+      "review_submit_btn": "Enviar comentarios",
+      "review_thank_you": "¡Gracias por tus comentarios!",
+      "setup_badge": "Simulación interactiva",
+      "suggested_hint": "Sugerido para este idioma; podés cambiarlo.",
+      "captions_on": "Subtítulos: sí",
+      "captions_off": "Subtítulos: no",
+      "video_error": "No se pudo cargar el video"
+    }
+  },
+  "sw-TZ": {
+    "nodes": {
+      "context": {
+        "type": "context",
+        "next_node_id": "text_image",
+        "step_badge": "1 Muktadha",
+        "title": "Fursa mpya kutoka chuo kikuu cha Dar es Salaam",
+        "body": "Unaongoza timu ya SchoolSims jijini Dar es Salaam. Chuo kikuu cha binafsi jijini humo kiko tayari kusaini mkataba wa mwaka wa takriban shilingi milioni 28, lakini kwanza kinataka kipengele kipya. Timu yako ina uwezo mdogo. Lengo lako la kujifunza ni kupima mapato ya muda mfupi dhidi ya uwezo wa kutekeleza na imani ya mteja.",
+        "learning_objective_label": "Lengo la Kujifunza",
+        "learning_objective_body": "Pima mapato ya muda mfupi dhidi ya uwezo wa utoaji na uaminifu wa mteja."
+      },
+      "text_image": {
+        "type": "text_image",
+        "next_node_id": "video",
+        "step_badge": "2 Maandishi na picha",
+        "title": "Ombi la chuo kikuu",
+        "body": "Chuo kinataka kipengele hiki ndani ya wiki nne, kabla ya mwaka mpya wa masomo kuanza mwezi Oktoba. Wasanidi programu wako tayari wanamalizia miradi ya wateja wengine.",
+        "character_name": "Jordan Chen",
+        "character_title": "Mkurugenzi wa Elimu ya Kidijitali",
+        "character_alt": "Picha ya Jordan Chen, Mkurugenzi wa Elimu ya Kidijitali",
+        "ti_point1": "Kinahitajika ndani ya wiki 4, kabla ya Oktoba",
+        "ti_point2": "Timu tayari inamalizia miradi ya wateja wengine"
+      },
+      "video": {
+        "type": "video",
+        "next_node_id": "decision",
+        "step_badge": "3 Video",
+        "quote": "Je, tunaweza kujitolea kwa wiki nne?",
+        "watch_listen_title": "Tazama na Sikiliza",
+        "watch_listen_body": "Zingatia jinsi mteja anavyoharakisha. Hilo ndilo litakaloleta shinikizo la uamuzi kwenye slaidi inayofuata."
+      },
+      "decision": {
+        "type": "decision",
+        "next_node_id": null,
+        "step_badge": "4 Uamuzi",
+        "prompt": "Utafanya nini?",
+        "keyboard_hint": "Bonyeza [A] au [B] kuamua",
+        "choices": [
+          {
+            "id": "A",
+            "label": "A Jitolee kwa tarehe ya mwisho",
+            "target_node_id": "outcome_a"
+          },
+          {
+            "id": "B",
+            "label": "B Pendekeza majaribio katika kitivo kimoja",
+            "target_node_id": "outcome_b"
+          }
+        ]
+      },
+      "outcome_a": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5A Matokeo A",
+        "you_chose": "Umechagua A",
+        "title": "Shinikizo la utoaji",
+        "body": "Chuo kinakubali. Timu yako italazimika kufanya kazi wikendi na kujadiliana upya na wateja wengine kuhusu muda wa miradi yao.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Mapato",
+            "direction": "up",
+            "body": "Mkataba wa shilingi milioni 28 umepatikana kabla ya Oktoba"
+          },
+          {
+            "key": "capacity",
+            "label": "Uwezo",
+            "direction": "down",
+            "body": "Timu imeelemewa, kazi za wikendi"
+          },
+          {
+            "key": "trust",
+            "label": "Uaminifu",
+            "direction": "mid",
+            "body": "Iko hatarini iwapo utekelezaji utakwama mwanzoni mwa mwaka wa masomo"
+          }
+        ]
+      },
+      "outcome_b": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5B Matokeo B",
+        "you_chose": "Umechagua B",
+        "title": "Hatua ndogo ya kwanza",
+        "body": "Chuo kinakagua majaribio katika kitivo kimoja, kwa wigo na ratiba iliyokubaliwa. Kipengele kamili kitakuja baada ya muhula wa kwanza kuanza.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Mapato",
+            "direction": "mid",
+            "body": "Mkataba unachelewa: kwanza majaribio, kisha mkataba kamili"
+          },
+          {
+            "key": "capacity",
+            "label": "Uwezo",
+            "direction": "up",
+            "body": "Miradi ya wateja wengine inaendelea kama ilivyopangwa"
+          },
+          {
+            "key": "trust",
+            "label": "Uaminifu",
+            "direction": "up",
+            "body": "Matarajio wazi tangu mwanzo hujenga imani"
+          }
+        ]
+      },
+      "summary": {
+        "type": "summary",
+        "next_node_id": null,
+        "step_badge": "6 Muhtasari",
+        "title": "Tafakari juu ya uamuzi wako",
+        "reflection_prompt_label": "Swali la Kutafakari",
+        "question": "Uamuzi wako ulisawazishaje mkataba, mzigo wa kazi wa timu yako na imani ya chuo kikuu?"
+      }
+    },
+    "ui": {
+      "start_btn": "Anza Uigizaji",
+      "back_btn": "Rudi",
+      "next_btn": "Ifuatayo",
+      "restart_btn": "Anzisha Upya Uigizaji",
+      "lang_label": "Lugha",
+      "eth_label": "Asili ya mhusika",
+      "ethnicity_labels": {
+        "african": "Afrika Mashariki",
+        "caucasian": "Ulaya",
+        "east_asian": "Asia Mashariki",
+        "latin": "Amerika ya Latini",
+        "south_asian": "Asia Kusini"
+      },
+      "language_labels": {
+        "en": "English",
+        "es": "Español",
+        "ar": "العربية (الإمارات)",
+        "zh": "中文",
+        "ne": "नेपाली",
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "es-MX": "Español (México)",
+        "es-AR": "Español (Argentina)",
+        "ar-JO": "العربية (الأردن)"
+      },
+      "sim_title": "Uigizaji wa Uamuzi wa Uongozi",
+      "setup_subtitle": "Pitia hali halisi za uongozi na kuendeleza ujuzi muhimu wa kufanya maamuzi katika mazingira salama na ya kutafakari.",
+      "before_you_begin_title": "Kabla ya Kuanza",
+      "before_you_begin_body": "Hii ni mazingira salama ya kufanya mazoezi. Hakuna jibu moja sahihi — chunguza njia zote mbili kuelewa anuwai kamili ya makubaliano.",
+      "sim_error_title": "Imeshindwa kupakia uigizaji",
+      "sim_error_body": "Haikuweza kuunganishwa na huduma ya uigizaji. Tafadhali angalia muunganisho wako na ujaribu tena.",
+      "retry_btn": "Jaribu Tena",
+      "brief_scenario_label": "Hali",
+      "brief_scenario_body": "Unaongoza SchoolSims jijini Dar es Salaam. Chuo kikuu cha binafsi kinataka kipengele kipya kabla ya kusaini. Timu yako ina uwezo mdogo.",
+      "brief_objective_label": "Lengo la Kujifunza",
+      "brief_objective_body": "Pima mapato ya muda mfupi dhidi ya uwezo wa utoaji na uaminifu wa mteja.",
+      "cast_panel_label": "Wahusika",
+      "cast_panel_subtitle": "Mhusika Mkuu",
+      "cast_panel_body": "Mhusika huyu anawakilisha mdau wa nje katika hali yako. Maamuzi yao yanaunda matokeo utakayopitia.",
+      "help_panel_title": "Kabla ya Kuanza",
+      "help_safe_title": "Mazingira Salama",
+      "help_safe_body": "Maamuzi hapa hayaathiri matokeo halisi. Fanya mazoezi kwa uhuru.",
+      "help_no_right_title": "Hakuna Jibu Moja Sahihi",
+      "help_no_right_body": "Chaguzi zote mbili zinajumuisha makubaliano halisi. Tafakari juu ya mantiki yako.",
+      "help_replay_title": "Cheza Mara Nyingi",
+      "help_replay_body": "Jaribu njia zote mbili kuelewa anuwai kamili ya matokeo.",
+      "rail_brief_tip": "Muhtasari",
+      "rail_cast_tip": "Wahusika",
+      "rail_help_tip": "Msaada",
+      "badge_en": "SW",
+      "option_label": "Chaguo",
+      "speech_locale": "sw-KE",
+      "review_title": "Tathmini Uigizaji Huu",
+      "review_rating_label": "Ungetathmini vipi uigizaji huu?",
+      "review_experience_label": "Uzoefu wako ulikuwaje?",
+      "review_improvements_label": "Mapendekezo yoyote ya kuboresha?",
+      "review_submit_btn": "Tuma Maoni",
+      "review_thank_you": "Asante kwa maoni yako!",
+      "setup_badge": "Uigaji shirikishi",
+      "suggested_hint": "Imependekezwa kwa lugha hii — unaweza kubadilisha.",
+      "captions_on": "Manukuu: yamewashwa",
+      "captions_off": "Manukuu: yamezimwa",
+      "video_error": "Video imeshindwa kupakia"
+    }
+  },
+  "ar-JO": {
+    "nodes": {
+      "context": {
+        "type": "context",
+        "next_node_id": "text_image",
+        "step_badge": "1 السياق",
+        "title": "فرصة جديدة من جامعة في عمّان",
+        "body": "تقود فريق SchoolSims في عمّان. جامعة خاصة في عمّان مستعدة لتوقيع عقد سنوي بقيمة نحو 8 آلاف دينار، لكنها تريد ميزة جديدة أولاً. فريقك محدود القدرة. هدفك التعليمي هو الموازنة بين الإيرادات قصيرة الأجل وقدرة التسليم وثقة العميل.",
+        "learning_objective_label": "هدف التعلم",
+        "learning_objective_body": "الموازنة بين الإيرادات قصيرة المدى وقدرة التسليم وثقة العميل."
+      },
+      "text_image": {
+        "type": "text_image",
+        "next_node_id": "video",
+        "step_badge": "2 نص وصورة",
+        "title": "طلب الجامعة",
+        "body": "تريد الجامعة الميزة خلال أربعة أسابيع، قبل بدء الفصل الدراسي الثاني في فبراير. وتقع العطلة الشتوية بين الفصلين في هذه الفترة، ومطوّروك ملتزمون بالفعل بمهام أخرى.",
+        "character_name": "Jordan Chen",
+        "character_title": "مدير التعليم الإلكتروني",
+        "character_alt": "صورة Jordan Chen، مدير التعليم الإلكتروني",
+        "ti_point1": "التسليم مطلوب خلال 4 أسابيع، قبل الفصل الثاني",
+        "ti_point2": "العطلة الشتوية، والفريق يعمل بكامل طاقته"
+      },
+      "video": {
+        "type": "video",
+        "next_node_id": "decision",
+        "step_badge": "3 فيديو",
+        "quote": "هل يمكننا الالتزام بأربعة أسابيع؟",
+        "watch_listen_title": "شاهد واستمع",
+        "watch_listen_body": "انتبه إلى استعجال العميل؛ فهو ما سيحدد ضغط القرار في الشريحة التالية."
+      },
+      "decision": {
+        "type": "decision",
+        "next_node_id": null,
+        "step_badge": "4 قرار",
+        "prompt": "ماذا ستفعل؟",
+        "keyboard_hint": "اضغط [A] أو [B] لاتخاذ القرار",
+        "choices": [
+          {
+            "id": "A",
+            "label": "A الالتزام بالموعد النهائي",
+            "target_node_id": "outcome_a"
+          },
+          {
+            "id": "B",
+            "label": "B اقتراح تجربة في كلية واحدة",
+            "target_node_id": "outcome_b"
+          }
+        ]
+      },
+      "outcome_a": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5A النتيجة أ",
+        "you_chose": "اخترت أ",
+        "title": "ضغط التسليم",
+        "body": "توافق الجامعة. سيضطر فريقك إلى العمل خلال العطلة الشتوية وإعادة التفاوض مع عملاء آخرين بشأن مواعيد التسليم.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "الإيرادات",
+            "direction": "up",
+            "body": "عقد بقيمة 8 آلاف دينار مضمون قبل الفصل الثاني"
+          },
+          {
+            "key": "capacity",
+            "label": "القدرة",
+            "direction": "down",
+            "body": "فريق مُرهق والعطلة الشتوية ضائعة"
+          },
+          {
+            "key": "trust",
+            "label": "الثقة",
+            "direction": "mid",
+            "body": "في خطر إذا تعثّر التسليم مع بداية الفصل"
+          }
+        ]
+      },
+      "outcome_b": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5B النتيجة ب",
+        "you_chose": "اخترت ب",
+        "title": "خطوة أولى أصغر",
+        "body": "تراجع الجامعة تجربة في كلية واحدة بنطاق وجدول زمني متفق عليهما، على أن تصل الميزة كاملة خلال الفصل الثاني.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "الإيرادات",
+            "direction": "mid",
+            "body": "إغلاق أبطأ: التجربة أولاً، ثم العقد الكامل"
+          },
+          {
+            "key": "capacity",
+            "label": "القدرة",
+            "direction": "up",
+            "body": "العطلة والالتزامات الحالية محفوظة"
+          },
+          {
+            "key": "trust",
+            "label": "الثقة",
+            "direction": "up",
+            "body": "التوقعات الواضحة منذ البداية تبني الثقة"
+          }
+        ]
+      },
+      "summary": {
+        "type": "summary",
+        "next_node_id": null,
+        "step_badge": "6 ملخص",
+        "title": "تأمل في قرارك",
+        "reflection_prompt_label": "سؤال للتأمل",
+        "question": "كيف وازن قرارك بين العقد وعطلة فريقك وثقة الجامعة؟"
+      }
+    },
+    "ui": {
+      "start_btn": "بدء المحاكاة",
+      "back_btn": "رجوع",
+      "next_btn": "التالي",
+      "restart_btn": "إعادة المحاكاة",
+      "lang_label": "اللغة",
+      "eth_label": "خلفية الشخصية",
+      "ethnicity_labels": {
+        "african": "شرق أفريقيا",
+        "caucasian": "أوروبا",
+        "east_asian": "شرق آسيا",
+        "latin": "أمريكا اللاتينية",
+        "south_asian": "جنوب آسيا"
+      },
+      "language_labels": {
+        "en": "English",
+        "es": "Español",
+        "ar": "العربية (الإمارات)",
+        "zh": "中文",
+        "ne": "नेपाली",
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "ar-JO": "العربية (الأردن)",
+        "es-MX": "Español (México)",
+        "es-AR": "Español (Argentina)",
+        "sw-TZ": "Kiswahili (Tanzania)"
+      },
+      "sim_title": "محاكاة قرار القيادة",
+      "setup_subtitle": "عش سيناريوهات قيادية واقعية وطور مهارات اتخاذ القرارات الحاسمة في بيئة آمنة وتأملية.",
+      "before_you_begin_title": "قبل أن تبدأ",
+      "before_you_begin_body": "هذه بيئة آمنة للتدرب. لا توجد إجابة صحيحة واحدة — استكشف كلا المسارين لفهم النطاق الكامل للمقايضات.",
+      "sim_error_title": "فشل تحميل المحاكاة",
+      "sim_error_body": "تعذر الاتصال بخدمة المحاكاة. يرجى التحقق من اتصالك والمحاولة مرة أخرى.",
+      "retry_btn": "إعادة المحاولة",
+      "brief_scenario_label": "السيناريو",
+      "brief_scenario_body": "تقود SchoolSims في عمّان. جامعة خاصة تطلب ميزة جديدة قبل التوقيع. فريقك محدود القدرة.",
+      "brief_objective_label": "هدف التعلم",
+      "brief_objective_body": "الموازنة بين الإيرادات قصيرة المدى وقدرة التسليم وثقة العميل.",
+      "cast_panel_label": "الشخصيات",
+      "cast_panel_subtitle": "الشخصية الرئيسية",
+      "cast_panel_body": "تمثل هذه الشخصية صاحب المصلحة الخارجي في السيناريو. قراراتها تشكل النتائج التي ستختبرها.",
+      "help_panel_title": "قبل أن تبدأ",
+      "help_safe_title": "بيئة آمنة",
+      "help_safe_body": "القرارات هنا لا تؤثر على نتائج حقيقية. تدرب بحرية.",
+      "help_no_right_title": "لا توجد إجابة صحيحة واحدة",
+      "help_no_right_body": "كلا الخيارين ينطويان على مقايضات حقيقية. تأمل في منطقك.",
+      "help_replay_title": "العب عدة مرات",
+      "help_replay_body": "جرب كلا المسارين لفهم النطاق الكامل للعواقب.",
+      "rail_brief_tip": "ملخص",
+      "rail_cast_tip": "الشخصيات",
+      "rail_help_tip": "مساعدة",
+      "badge_en": "AR",
+      "option_label": "خيار",
+      "speech_locale": "ar-SA",
+      "review_title": "قيّم هذه المحاكاة",
+      "review_rating_label": "كيف تقيّم هذه المحاكاة؟",
+      "review_experience_label": "كيف كانت تجربتك؟",
+      "review_improvements_label": "هل لديك أي اقتراحات للتحسين؟",
+      "review_submit_btn": "إرسال الملاحظات",
+      "review_thank_you": "شكراً لملاحظاتك!",
+      "setup_badge": "محاكاة تفاعلية",
+      "suggested_hint": "مقترح لهذه اللغة، ويمكنك تغييره.",
+      "captions_on": "الترجمة: تشغيل",
+      "captions_off": "الترجمة: إيقاف",
+      "video_error": "تعذّر تحميل الفيديو"
     }
   }
 }
