@@ -1,5 +1,5 @@
-assets/
-docs/
+/assets/
+/docs/
+/tests/
 backend/tts_cache/
 backend/reviews.json
-tests/
