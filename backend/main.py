@@ -1,43 +1,57 @@
 from pathlib import Path
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel
 from typing import Any
-import json, copy
+import json, copy, os, sys, tempfile
 from dotenv import load_dotenv
-from tts import get_or_generate, CACHE_DIR
+from tts import get_audio, tts_enabled
 
 BASE_DIR = Path(__file__).parent
 load_dotenv(BASE_DIR / ".env")  # backend/.env
 load_dotenv(BASE_DIR.parent / ".env.local", override=False)  # project root .env.local (ElevenLabs key)
 DIST_DIR = BASE_DIR.parent / "dist"
+ON_VERCEL = bool(os.getenv("VERCEL"))
 
 app = FastAPI(title="SchoolSims Player")
-
-# Serve cached TTS audio files
-app.mount("/tts", StaticFiles(directory=str(CACHE_DIR)), name="tts")
 
 with open(BASE_DIR / "scenario.json") as f:
     SCENARIO: dict = json.load(f)
 
 VALID_LANGS = {"en", "es", "ar", "zh", "ne", "sw", "ur"}
-VALID_ETHNICITIES = {"african", "caucasian", "east_asian", "latin", "south_asian"}
+# Characters (look, names per language, photo, videos) live in personas.json.
+with open(BASE_DIR / "personas.json") as f:
+    PERSONAS: dict = json.load(f)["personas"]
 
-CHARACTER_NAMES: dict[str, str] = {
-    "african":     "Marcus Johnson",
-    "caucasian":   "James Mitchell",
-    "east_asian":  "Jordan Chen",
-    "latin":       "Sofia Rivera",
-    "south_asian": "Priya Sharma",
-}
+VALID_ETHNICITIES = set(PERSONAS)
+# The scenario text is written with this placeholder name; it is swapped for the
+# chosen character's name (in the chosen language) everywhere it appears.
+PLACEHOLDER_NAME = "Jordan Chen"
 
-AVAILABLE_VIDEOS = set()
-for _e in VALID_ETHNICITIES:
-    for _l in VALID_LANGS:
-        _path = Path(__file__).parent.parent / "public" / "assets" / f"{_e}_{_l}.mp4"
-        if _path.exists():
-            AVAILABLE_VIDEOS.add((_e, _l))
+AVAILABLE_VIDEOS = {(pid, lang) for pid, p in PERSONAS.items() for lang in p.get("video", {})}
+
+
+def suggested_persona(lang: str) -> str | None:
+    for pid, p in PERSONAS.items():
+        if lang in p.get("suggested_for_langs", []) and (pid, lang) in AVAILABLE_VIDEOS:
+            return pid
+    return None
+
+
+def persona_name(pid: str, lang: str) -> str:
+    names = PERSONAS[pid].get("name", {})
+    return names.get(lang) or names.get("en") or PLACEHOLDER_NAME
+
+
+def swap_name(value: Any, name: str) -> Any:
+    if isinstance(value, str):
+        return value.replace(PLACEHOLDER_NAME, name)
+    if isinstance(value, list):
+        return [swap_name(v, name) for v in value]
+    if isinstance(value, dict):
+        return {k: swap_name(v, name) for k, v in value.items()}
+    return value
 
 
 @app.get("/api/options")
@@ -54,6 +68,7 @@ def get_options(lang: str = Query("en")):
             for code in sorted(VALID_ETHNICITIES)
         ],
         "available_combos": [list(c) for c in sorted(AVAILABLE_VIDEOS)],
+        "suggested": {code: suggested_persona(code) for code in sorted(VALID_LANGS)},
         "setup_ui": {
             "sim_title": ui["sim_title"],
             "setup_subtitle": ui["setup_subtitle"],
@@ -62,6 +77,8 @@ def get_options(lang: str = Query("en")):
             "lang_label": ui["lang_label"],
             "eth_label": ui["eth_label"],
             "start_btn": ui["start_btn"],
+            "setup_badge": ui.get("setup_badge", "Interactive Simulation"),
+            "suggested_hint": ui.get("suggested_hint", ""),
         },
     }
 
@@ -69,29 +86,32 @@ def get_options(lang: str = Query("en")):
 @app.get("/api/simulation")
 def get_simulation(
     lang: str = Query(..., description="en or es"),
-    ethnicity: str = Query(..., description="black or east_asian"),
+    ethnicity: str = Query(..., description="persona id from personas.json"),
 ):
     if lang not in VALID_LANGS:
         raise HTTPException(400, detail=f"lang must be one of {sorted(VALID_LANGS)}")
     if ethnicity not in VALID_ETHNICITIES:
         raise HTTPException(400, detail=f"ethnicity must be one of {sorted(VALID_ETHNICITIES)}")
 
-    nodes = copy.deepcopy(SCENARIO[lang]["nodes"])
-    char_name = CHARACTER_NAMES.get(ethnicity, "Jordan Chen")
+    persona = PERSONAS[ethnicity]
+    name = persona_name(ethnicity, lang)
+    nodes = swap_name(copy.deepcopy(SCENARIO[lang]["nodes"]), name)
     for node in nodes.values():
         if "character_name" in node:
-            node["character_name"] = char_name
-        if "character_alt" in node:
-            node["character_alt"] = node["character_alt"].replace("Jordan Chen", char_name)
+            node["character_name"] = name
+    photos = persona.get("photo", {})
+    video = persona.get("video", {}).get(lang) or persona.get("video", {}).get("en", "")
 
     return {
         "start_node_id": SCENARIO["start_node_id"],
         "nodes": nodes,
-        "ui": SCENARIO[lang]["ui"],
+        "ui": swap_name(SCENARIO[lang]["ui"], name),
         "media": {
-            "photo": f"/assets/{ethnicity}.png",
-            "video_template": f"/assets/{ethnicity}_{lang}.mp4",
-            "photo_alt": "Character portrait",
+            "photo": photos.get(lang) or photos.get("default", ""),
+            "video_template": video,
+            "photo_alt": nodes.get("text_image", {}).get("character_alt", name),
+            "character_name": name,
+            "has_video": (ethnicity, lang) in AVAILABLE_VIDEOS,
         },
     }
 
@@ -102,18 +122,54 @@ class ScenarioUpdate(BaseModel):
     ui: dict[str, Any]
 
 
+def narration_text(lang: str, node_id: str) -> str:
+    """Build a slide's narration server-side (same rules the frontend uses), so the
+    public audio endpoint can only ever voice scenario text, not arbitrary input."""
+    node = SCENARIO.get(lang, {}).get("nodes", {}).get(node_id)
+    if not node:
+        return ""
+    if node_id == "context":
+        return " ".join(p for p in [node.get("body"), node.get("learning_objective_body")] if p)
+    if node_id == "decision":
+        parts = [node.get("prompt", "")] + [f"Option {c['id']}: {c['label']}" for c in node.get("choices", [])]
+        return ". ".join(parts)
+    return node.get("body", "") or ""
+
+
 @app.post("/api/tts/preload")
 def tts_preload(body: dict):
-    """Generate (or return cached) ElevenLabs MP3s for all slide texts."""
+    """Return audio URLs for slides that have narration. Audio is generated on first
+    play by /api/tts/audio and then cached by the CDN (and the local file cache)."""
     texts: dict = body.get("texts", {})
     lang: str = body.get("lang", "en")
-    result = {}
-    for node_id, text in texts.items():
-        if text:
-            filename = get_or_generate(text, lang=lang)
-            if filename:
-                result[node_id] = f"/tts/{filename}"
-    return result
+    if lang not in VALID_LANGS or not tts_enabled(lang):
+        return {}
+    return {
+        node_id: f"/api/tts/audio?lang={lang}&node={node_id}"
+        for node_id, text in texts.items()
+        if text and narration_text(lang, node_id)
+    }
+
+
+@app.get("/api/tts/audio")
+def tts_audio(lang: str = Query(...), node: str = Query(...)):
+    if lang not in VALID_LANGS:
+        raise HTTPException(400, detail="invalid lang")
+    text = narration_text(lang, node)
+    if not text:
+        raise HTTPException(404, detail="no narration for that slide")
+    try:
+        data = get_audio(text, lang=lang)
+    except Exception as e:  # ElevenLabs error, bad key, quota, etc.
+        print(f"TTS error: {e}", file=sys.stderr)
+        raise HTTPException(502, detail="TTS unavailable")
+    if not data:
+        raise HTTPException(404, detail="TTS disabled")
+    return Response(
+        content=data,
+        media_type="audio/mpeg",
+        headers={"Cache-Control": "public, max-age=86400, s-maxage=31536000"},
+    )
 
 
 @app.post("/api/scenario/{lang}")
@@ -127,8 +183,14 @@ def save_scenario(lang: str, body: ScenarioUpdate):
     updated[lang]["nodes"] = body.nodes
     updated[lang]["ui"] = body.ui
     updated["start_node_id"] = body.start_node_id
-    with open(BASE_DIR / "scenario.json", "w") as f:
-        json.dump(updated, f, indent=2, ensure_ascii=False)
+    try:
+        with open(BASE_DIR / "scenario.json", "w") as f:
+            json.dump(updated, f, indent=2, ensure_ascii=False)
+    except OSError:
+        raise HTTPException(
+            503,
+            detail="Scenario editing isn't available on the hosted site. Edit backend/scenario.json and redeploy.",
+        )
     SCENARIO = updated
     return {"ok": True}
 
@@ -149,7 +211,10 @@ def submit_review(body: ReviewPayload):
     import datetime
     entry = body.model_dump()
     entry["timestamp"] = datetime.datetime.utcnow().isoformat()
-    reviews_path = BASE_DIR / "reviews.json"
+    # Always log the review so it shows up in Vercel's function logs.
+    print("REVIEW " + json.dumps(entry, ensure_ascii=False), flush=True)
+    # On Vercel the disk is temporary, so the file copy is not permanent there.
+    reviews_path = (Path(tempfile.gettempdir()) if ON_VERCEL else BASE_DIR) / "reviews.json"
     existing = []
     if reviews_path.exists():
         existing = json.loads(reviews_path.read_text())

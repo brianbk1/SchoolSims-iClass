@@ -207,6 +207,11 @@ export default function App() {
               onToggleCaptions={() => setCaptionsOn(c => !c)}
               audioUrl={audioMap['video'] ?? null}
               speechEnabled={speechEnabled}
+              speakerName={simData.media.character_name ?? ''}
+              captionsOnLabel={ui?.captions_on ?? 'CC On'}
+              captionsOffLabel={ui?.captions_off ?? 'CC Off'}
+              videoErrorLabel={ui?.video_error ?? 'Video failed to load'}
+              retryLabel={ui?.retry_btn ?? 'Retry'}
             />
           )}
           {!loading && !error && !isSetup && currentNode?.type === 'decision' && (

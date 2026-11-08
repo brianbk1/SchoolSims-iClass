@@ -170,7 +170,12 @@
       "review_experience_label": "How was your experience?",
       "review_improvements_label": "Any suggested improvements?",
       "review_submit_btn": "Submit Feedback",
-      "review_thank_you": "Thank you for your feedback!"
+      "review_thank_you": "Thank you for your feedback!",
+      "setup_badge": "Interactive Simulation",
+      "suggested_hint": "Suggested for this language — you can change it.",
+      "captions_on": "CC On",
+      "captions_off": "CC Off",
+      "video_error": "Video failed to load"
     }
   },
   "es": {
@@ -343,7 +348,12 @@
       "review_experience_label": "¿Cómo fue tu experiencia?",
       "review_improvements_label": "¿Alguna mejora sugerida?",
       "review_submit_btn": "Enviar comentarios",
-      "review_thank_you": "¡Gracias por tus comentarios!"
+      "review_thank_you": "¡Gracias por tus comentarios!",
+      "setup_badge": "Simulación interactiva",
+      "suggested_hint": "Sugerido para este idioma; puedes cambiarlo.",
+      "captions_on": "Subtítulos: sí",
+      "captions_off": "Subtítulos: no",
+      "video_error": "No se pudo cargar el video"
     }
   },
   "ar": {
@@ -516,7 +526,12 @@
       "review_experience_label": "كيف كانت تجربتك؟",
       "review_improvements_label": "هل لديك أي اقتراحات للتحسين؟",
       "review_submit_btn": "إرسال الملاحظات",
-      "review_thank_you": "شكراً لملاحظاتك!"
+      "review_thank_you": "شكراً لملاحظاتك!",
+      "setup_badge": "محاكاة تفاعلية",
+      "suggested_hint": "مقترح لهذه اللغة، ويمكنك تغييره.",
+      "captions_on": "الترجمة: تشغيل",
+      "captions_off": "الترجمة: إيقاف",
+      "video_error": "تعذّر تحميل الفيديو"
     }
   },
   "zh": {
@@ -689,7 +704,12 @@
       "review_experience_label": "你的体验如何？",
       "review_improvements_label": "有什么改进建议吗？",
       "review_submit_btn": "提交反馈",
-      "review_thank_you": "感谢你的反馈！"
+      "review_thank_you": "感谢你的反馈！",
+      "setup_badge": "互动模拟",
+      "suggested_hint": "根据所选语言推荐，可自行更改。",
+      "captions_on": "字幕：开",
+      "captions_off": "字幕：关",
+      "video_error": "视频加载失败"
     }
   },
   "ne": {
@@ -862,7 +882,12 @@
       "review_experience_label": "तपाईंको अनुभव कस्तो थियो?",
       "review_improvements_label": "कुनै सुधार सुझावहरू?",
       "review_submit_btn": "प्रतिक्रिया पठाउनुहोस्",
-      "review_thank_you": "तपाईंको प्रतिक्रियाको लागि धन्यवाद!"
+      "review_thank_you": "तपाईंको प्रतिक्रियाको लागि धन्यवाद!",
+      "setup_badge": "अन्तरक्रियात्मक सिमुलेसन",
+      "suggested_hint": "यो भाषाका लागि सुझाव गरिएको — तपाईं परिवर्तन गर्न सक्नुहुन्छ।",
+      "captions_on": "क्याप्सन: खुला",
+      "captions_off": "क्याप्सन: बन्द",
+      "video_error": "भिडियो लोड हुन सकेन"
     }
   },
   "sw": {
@@ -1035,7 +1060,12 @@
       "review_experience_label": "Uzoefu wako ulikuwaje?",
       "review_improvements_label": "Mapendekezo yoyote ya kuboresha?",
       "review_submit_btn": "Tuma Maoni",
-      "review_thank_you": "Asante kwa maoni yako!"
+      "review_thank_you": "Asante kwa maoni yako!",
+      "setup_badge": "Uigaji shirikishi",
+      "suggested_hint": "Imependekezwa kwa lugha hii — unaweza kubadilisha.",
+      "captions_on": "Manukuu: yamewashwa",
+      "captions_off": "Manukuu: yamezimwa",
+      "video_error": "Video imeshindwa kupakia"
     }
   },
   "ur": {
@@ -1208,7 +1238,12 @@
       "review_experience_label": "آپ کا تجربہ کیسا رہا؟",
       "review_improvements_label": "کوئی تجاویز برائے بہتری؟",
       "review_submit_btn": "رائے جمع کرائیں",
-      "review_thank_you": "آپ کی رائے کا شکریہ!"
+      "review_thank_you": "آپ کی رائے کا شکریہ!",
+      "setup_badge": "انٹرایکٹو سمولیشن",
+      "suggested_hint": "اس زبان کے لیے تجویز کردہ — آپ اسے بدل سکتے ہیں۔",
+      "captions_on": "کیپشن: آن",
+      "captions_off": "کیپشن: آف",
+      "video_error": "ویڈیو لوڈ نہیں ہو سکی"
     }
   }
 }

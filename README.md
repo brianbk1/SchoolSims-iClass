@@ -142,6 +142,16 @@ Setup → 1 Context → 2 Text+Image → 3 Video → 4 Decision → 5A/5B Outcom
 
 ---
 
+## Characters (personas)
+
+Each on-screen character is defined in `backend/personas.json`: a name per language (in that language's script), a photo (with optional per-language overrides), a video per language, and the languages it is suggested for. Choosing a language pre-selects its suggested character; the learner can still pick another. Scenario text uses the placeholder name `Jordan Chen`, which is swapped for the chosen character's name everywhere it appears.
+
+To add a locally styled photo or video, drop the file in `public/assets/` and point the persona at it — no code changes needed.
+
+## Deploying to Vercel
+
+Import the repo in Vercel (framework: Vite). `vercel.json` builds the frontend and runs the FastAPI backend from `api/index.py` as a serverless function. Optional: set `ELEVEN_LABS_API_KEY` in the project's environment variables for narration. On Vercel, submitted reviews are written to the function logs (search for `REVIEW`), and scenario editing via the API is disabled.
+
 ## Scenario Content
 
 All slide content lives in `backend/scenario.json` as a linked graph keyed by language:

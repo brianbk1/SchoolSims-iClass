@@ -15,12 +15,15 @@ interface SetupUI {
   lang_label: string;
   eth_label: string;
   start_btn: string;
+  setup_badge?: string;
+  suggested_hint?: string;
 }
 
 interface OptionsData {
   languages: OptionItem[];
   ethnicities: OptionItem[];
   available_combos: [string, string][];
+  suggested?: Record<string, string | null>;
   setup_ui: SetupUI;
 }
 
@@ -101,11 +104,15 @@ export default function SetupSlide({ lang, ethnicity, onLangChange, onEthnicityC
       .then(r => r.json())
       .then((data: OptionsData) => {
         setOptions(data);
-        // If current ethnicity is not available for selected language, switch to first available
         const available = data.ethnicities
           .filter(e => data.available_combos.some(([eth, lng]) => eth === e.value && lng === lang))
           .map(e => e.value);
-        if (available.length > 0 && !available.includes(ethnicity)) {
+        // Pre-select the character suggested for this language (learner can still change it);
+        // otherwise make sure the current character has a video in this language.
+        const suggested = data.suggested?.[lang];
+        if (suggested && available.includes(suggested)) {
+          onEthnicityChange(suggested as Ethnicity);
+        } else if (available.length > 0 && !available.includes(ethnicity)) {
           onEthnicityChange(available[0] as Ethnicity);
         }
       })
@@ -132,7 +139,7 @@ export default function SetupSlide({ lang, ethnicity, onLangChange, onEthnicityC
   return (
     <div className="main-card slide-enter" style={{ maxWidth: 1020, width: '100%', padding: 60 }}>
       <div style={{ textAlign: 'center', marginBottom: 36 }}>
-        <span className="step-badge" style={{ marginBottom: 16, display: 'inline-block' }}>● Interactive Simulation</span>
+        <span className="step-badge" style={{ marginBottom: 16, display: 'inline-block' }}>● {u.setup_badge ?? 'Interactive Simulation'}</span>
         <h1 id="setup-title" style={{ fontSize: 42, fontWeight: 700, color: 'var(--text-1)', margin: '0 0 12px', letterSpacing: '-0.5px' }}>{u.sim_title}</h1>
         <p id="setup-subtitle" style={{ fontSize: 16, color: 'var(--text-3)', lineHeight: 1.6, margin: 0 }}>{u.setup_subtitle}</p>
       </div>
@@ -160,6 +167,9 @@ export default function SetupSlide({ lang, ethnicity, onLangChange, onEthnicityC
             options={availableEthnicities.map(o => ({ value: o.value as Ethnicity, label: o.label }))}
             onChange={onEthnicityChange}
           />
+          {options?.suggested?.[lang] === ethnicity && u.suggested_hint && (
+            <p id="eth-suggested-hint" style={{ fontSize: 12, color: 'var(--text-3)', margin: '6px 2px 0' }}>{u.suggested_hint}</p>
+          )}
         </div>
       </div>
 

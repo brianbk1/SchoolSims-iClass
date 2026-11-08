@@ -10,9 +10,14 @@ interface Props {
   onToggleCaptions: () => void;
   audioUrl: string | null;
   speechEnabled: boolean;
+  speakerName: string;
+  captionsOnLabel: string;
+  captionsOffLabel: string;
+  videoErrorLabel: string;
+  retryLabel: string;
 }
 
-export default function VideoSlide({ node, videoUrl, captionsUrl, captionsOn, onToggleCaptions, audioUrl, speechEnabled }: Props) {
+export default function VideoSlide({ node, videoUrl, captionsUrl, captionsOn, onToggleCaptions, audioUrl, speechEnabled, speakerName, captionsOnLabel, captionsOffLabel, videoErrorLabel, retryLabel }: Props) {
   useSpeech(audioUrl, speechEnabled);
   const [vidErr, setVidErr] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
@@ -37,8 +42,8 @@ export default function VideoSlide({ node, videoUrl, captionsUrl, captionsOn, on
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 12 }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span style={{ fontSize: 13, color: '#94a3b8' }}>Video failed to load</span>
-              <button onClick={retry} style={{ fontSize: 12, color: '#C4B5FD', background: 'none', border: '1px solid #334155', borderRadius: 20, padding: '5px 14px', cursor: 'pointer' }}>↺ Retry</button>
+              <span style={{ fontSize: 13, color: '#94a3b8' }}>{videoErrorLabel}</span>
+              <button onClick={retry} style={{ fontSize: 12, color: '#C4B5FD', background: 'none', border: '1px solid #334155', borderRadius: 20, padding: '5px 14px', cursor: 'pointer' }}>↺ {retryLabel}</button>
             </div>
           )}
         </div>
@@ -48,7 +53,7 @@ export default function VideoSlide({ node, videoUrl, captionsUrl, captionsOn, on
             <p id="vid-quote" style={{ fontSize: 18, fontWeight: 600, color: '#f1f5f9', lineHeight: 1.5, margin: '0 0 12px' }}>{node.quote}</p>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--purple)"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              <span style={{ fontSize: 11, color: '#94a3b8' }}>Customer — 00:12</span>
+              <span style={{ fontSize: 11, color: '#94a3b8' }}>{speakerName}</span>
             </div>
           </div>
           <div className="callout">
@@ -60,7 +65,7 @@ export default function VideoSlide({ node, videoUrl, captionsUrl, captionsOn, on
             style={{ fontSize: 12, color: captionsOn ? 'var(--purple)' : 'var(--text-3)', background: captionsOn ? 'rgba(107,70,193,0.08)' : 'var(--surface2)', border: `1px solid ${captionsOn ? 'rgba(107,70,193,0.25)' : 'var(--border2)'}`, borderRadius: 8, padding: '6px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M12 20v-4"/><path d="M6 6V4"/><path d="M18 6V4"/></svg>
-            CC {captionsOn ? 'ON' : 'OFF'}
+            {captionsOn ? captionsOnLabel : captionsOffLabel}
           </button>
         </div>
       </div>

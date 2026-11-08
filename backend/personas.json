@@ -1,0 +1,145 @@
+{
+  "_readme": [
+    "One entry per on-screen character. Everything the learner sees about the character comes from here.",
+    "name: the character's name per language (use the language's own script).",
+    "photo: 'default' plus optional per-language overrides, e.g. \"ne\": \"/assets/south_asian_ne.png\" for a locally styled photo.",
+    "video: per-language video file. A language with no video here is hidden for this character on the setup screen.",
+    "suggested_for_langs: picking one of these languages pre-selects this character (the learner can still change it).",
+    "The character's job title comes from scenario.json (text_image.character_title) so it is translated with the rest of the text."
+  ],
+  "personas": {
+    "african": {
+      "gender": "male",
+      "suggested_for_langs": [
+        "sw"
+      ],
+      "name": {
+        "en": "Daniel Mwangi",
+        "es": "Daniel Mwangi",
+        "ar": "دانيال موانغي",
+        "zh": "丹尼尔·姆万吉",
+        "ne": "डेनियल म्वाङ्गी",
+        "sw": "Daniel Mwangi",
+        "ur": "ڈینیئل موانگی"
+      },
+      "photo": {
+        "default": "/assets/african.png"
+      },
+      "video": {
+        "en": "/assets/african_en.mp4",
+        "es": "/assets/african_es.mp4",
+        "ar": "/assets/african_ar.mp4",
+        "zh": "/assets/african_zh.mp4",
+        "ne": "/assets/african_ne.mp4",
+        "sw": "/assets/african_sw.mp4",
+        "ur": "/assets/african_ur.mp4"
+      }
+    },
+    "caucasian": {
+      "gender": "male",
+      "suggested_for_langs": [
+        "en"
+      ],
+      "name": {
+        "en": "James Mitchell",
+        "es": "James Mitchell",
+        "ar": "جيمس ميتشل",
+        "zh": "詹姆斯·米切尔",
+        "ne": "जेम्स मिचेल",
+        "sw": "James Mitchell",
+        "ur": "جیمز مچل"
+      },
+      "photo": {
+        "default": "/assets/caucasian.png"
+      },
+      "video": {
+        "en": "/assets/caucasian_en.mp4",
+        "es": "/assets/caucasian_es.mp4",
+        "ar": "/assets/caucasian_ar.mp4",
+        "zh": "/assets/caucasian_zh.mp4",
+        "ne": "/assets/caucasian_ne.mp4",
+        "sw": "/assets/caucasian_sw.mp4",
+        "ur": "/assets/caucasian_ur.mp4"
+      }
+    },
+    "east_asian": {
+      "gender": "male",
+      "suggested_for_langs": [
+        "zh"
+      ],
+      "name": {
+        "en": "Jordan Chen",
+        "es": "Jordan Chen",
+        "ar": "جوردان تشين",
+        "zh": "陈乔丹",
+        "ne": "जोर्डन चेन",
+        "sw": "Jordan Chen",
+        "ur": "جورڈن چن"
+      },
+      "photo": {
+        "default": "/assets/east_asian.png"
+      },
+      "video": {
+        "en": "/assets/east_asian_en.mp4",
+        "es": "/assets/east_asian_es.mp4",
+        "ar": "/assets/east_asian_ar.mp4",
+        "zh": "/assets/east_asian_zh.mp4",
+        "ne": "/assets/east_asian_ne.mp4",
+        "sw": "/assets/east_asian_sw.mp4",
+        "ur": "/assets/east_asian_ur.mp4"
+      }
+    },
+    "latin": {
+      "gender": "male",
+      "suggested_for_langs": [
+        "es"
+      ],
+      "name": {
+        "en": "Carlos Rivera",
+        "es": "Carlos Rivera",
+        "ar": "كارلوس ريفيرا",
+        "zh": "卡洛斯·里维拉",
+        "ne": "कार्लोस रिभेरा",
+        "sw": "Carlos Rivera",
+        "ur": "کارلوس ریویرا"
+      },
+      "photo": {
+        "default": "/assets/latin.png"
+      },
+      "video": {
+        "en": "/assets/latin_en.mp4",
+        "es": "/assets/latin_es.mp4",
+        "ar": "/assets/latin_ar.mp4",
+        "zh": "/assets/latin_zh.mp4"
+      }
+    },
+    "south_asian": {
+      "gender": "male",
+      "suggested_for_langs": [
+        "ne",
+        "ur"
+      ],
+      "name": {
+        "en": "Arjun Sharma",
+        "es": "Arjun Sharma",
+        "ar": "أرجون شارما",
+        "zh": "阿尔琼·夏尔马",
+        "ne": "अर्जुन शर्मा",
+        "sw": "Arjun Sharma",
+        "ur": "ارجن شرما"
+      },
+      "photo": {
+        "default": "/assets/south_asian.png"
+      },
+      "video": {
+        "en": "/assets/south_asian_en.mp4",
+        "es": "/assets/south_asian_es.mp4",
+        "ar": "/assets/south_asian_ar.mp4",
+        "zh": "/assets/south_asian_zh.mp4",
+        "ne": "/assets/south_asian_ne.mp4",
+        "sw": "/assets/south_asian_sw.mp4",
+        "ur": "/assets/south_asian_ur.mp4"
+      }
+    }
+  }
+}

@@ -114,12 +114,19 @@ export interface UIStrings {
   review_improvements_label: string;
   review_submit_btn: string;
   review_thank_you: string;
+  setup_badge?: string;
+  suggested_hint?: string;
+  captions_on?: string;
+  captions_off?: string;
+  video_error?: string;
 }
 
 export interface Media {
   photo: string;
   video_template: string;
   photo_alt: string;
+  character_name?: string;
+  has_video?: boolean;
 }
 
 export interface SimData {

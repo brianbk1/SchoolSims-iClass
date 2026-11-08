@@ -1,4 +1,1 @@
-fastapi
-uvicorn[standard]
-httpx
-python-dotenv
+-r ../requirements.txt

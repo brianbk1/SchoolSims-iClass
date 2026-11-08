@@ -22,7 +22,7 @@ interface Props {
 }
 
 export default function SummarySlide({
-  node, chosenNode, optionLabel, restartLabel, onRestart,
+  node, chosenNode, optionLabel,
   audioUrl, speechEnabled,
   lang, ethnicity, chosenId,
   reviewTitle, reviewRatingLabel, reviewExperienceLabel,

@@ -27,3 +27,6 @@ verify_ui.mjs
 tests/screenshots/
 # Local secrets written by `elevenlabs onboard`
 /.env.local
+
+# Vercel
+.vercel
