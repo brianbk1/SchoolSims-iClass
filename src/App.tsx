@@ -162,7 +162,7 @@ export default function App() {
         onToggleSpeech={() => { setSpeechEnabled(s => !s); window.speechSynthesis.cancel(); }}
       />
 
-      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+      <div className="app-body" style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
         <LeftRail
           onBrief={() => setModal('brief')}
           onCast={() => setModal('cast')}
@@ -299,7 +299,7 @@ export default function App() {
                 </button>
               </div>
               {/* Body */}
-              <div style={{ padding: '24px', display: 'flex', gap: 24, alignItems: 'flex-start' }}>
+              <div className="cast-body" style={{ padding: '24px', display: 'flex', gap: 24, alignItems: 'flex-start' }}>
                 <div style={{ width: 110, height: 130, borderRadius: 14, overflow: 'hidden', border: '2px solid var(--border)', background: 'var(--surface2)', flexShrink: 0 }}>
                   {simData?.media.photo && <img src={simData.media.photo} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={ui?.cast_panel_subtitle ?? ''} onError={e => (e.currentTarget.style.display = 'none')} />}
                 </div>
