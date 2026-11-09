@@ -132,7 +132,11 @@
         "en": "/assets/latin_en.mp4",
         "es": "/assets/latin_es.mp4",
         "ar": "/assets/latin_ar.mp4",
-        "zh": "/assets/latin_zh.mp4"
+        "zh": "/assets/latin_zh.mp4",
+        "es-AR": "/assets/latin_es-AR.mp4"
+      },
+      "captions": {
+        "es-AR": "/assets/captions_latin_es-AR.vtt"
       }
     },
     "south_asian": {
