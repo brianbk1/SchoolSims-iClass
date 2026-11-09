@@ -144,7 +144,7 @@ export default function SummarySlide({
               </label>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
                 {[1, 2, 3, 4, 5].map(i => <Star key={i} index={i} />)}
-                {ratingHint && <span style={{ fontSize: 13, color: 'var(--text-3)', marginLeft: 4 }}>{ratingHint}</span>}
+                {ratingHint && <span style={{ fontSize: 13, color: 'var(--text-3)', marginInlineStart: 4 }}>{ratingHint}</span>}
               </div>
 
               <p id="fit-question" style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-1)', margin: '0 0 8px' }}>
