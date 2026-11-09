@@ -36,7 +36,13 @@
         "zh": "/assets/african_zh.mp4",
         "ne": "/assets/african_ne.mp4",
         "sw": "/assets/african_sw.mp4",
-        "ur": "/assets/african_ur.mp4"
+        "ur": "/assets/african_ur.mp4",
+        "af": "/assets/african_af.mp4",
+        "sw-TZ": "/assets/african_sw-TZ.mp4"
+      },
+      "captions": {
+        "af": "/assets/captions_african_af.vtt",
+        "sw-TZ": "/assets/captions_african_sw-TZ.vtt"
       }
     },
     "caucasian": {
@@ -74,7 +80,21 @@
         "zh": "/assets/caucasian_zh.mp4",
         "ne": "/assets/caucasian_ne.mp4",
         "sw": "/assets/caucasian_sw.mp4",
-        "ur": "/assets/caucasian_ur.mp4"
+        "ur": "/assets/caucasian_ur.mp4",
+        "en-US": "/assets/caucasian_en-US.mp4",
+        "en-GB": "/assets/caucasian_en-GB.mp4",
+        "es-ES": "/assets/caucasian_es-ES.mp4",
+        "pt-PT": "/assets/caucasian_pt-PT.mp4",
+        "eu": "/assets/caucasian_eu.mp4",
+        "he": "/assets/caucasian_he.mp4"
+      },
+      "captions": {
+        "en-US": "/assets/captions_caucasian_en-US.vtt",
+        "en-GB": "/assets/captions_caucasian_en-GB.vtt",
+        "es-ES": "/assets/captions_caucasian_es-ES.vtt",
+        "pt-PT": "/assets/captions_caucasian_pt-PT.vtt",
+        "eu": "/assets/captions_caucasian_eu.vtt",
+        "he": "/assets/captions_caucasian_he.vtt"
       }
     },
     "east_asian": {
@@ -103,7 +123,11 @@
         "zh": "/assets/east_asian_zh.mp4",
         "ne": "/assets/east_asian_ne.mp4",
         "sw": "/assets/east_asian_sw.mp4",
-        "ur": "/assets/east_asian_ur.mp4"
+        "ur": "/assets/east_asian_ur.mp4",
+        "zh-HK": "/assets/east_asian_zh-HK.mp4"
+      },
+      "captions": {
+        "zh-HK": "/assets/captions_east_asian_zh-HK.vtt"
       }
     },
     "latin": {
@@ -133,10 +157,14 @@
         "es": "/assets/latin_es.mp4",
         "ar": "/assets/latin_ar.mp4",
         "zh": "/assets/latin_zh.mp4",
-        "es-AR": "/assets/latin_es-AR.mp4"
+        "es-AR": "/assets/latin_es-AR.mp4",
+        "es-MX": "/assets/latin_es-MX.mp4",
+        "es-CL": "/assets/latin_es-CL.mp4"
       },
       "captions": {
-        "es-AR": "/assets/captions_latin_es-AR.vtt"
+        "es-AR": "/assets/captions_latin_es-AR.vtt",
+        "es-MX": "/assets/captions_latin_es-MX.vtt",
+        "es-CL": "/assets/captions_latin_es-CL.vtt"
       }
     },
     "south_asian": {
