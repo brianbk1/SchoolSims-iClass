@@ -134,6 +134,7 @@ export interface Media {
   character_name?: string;
   has_video?: boolean;
   base_lang?: string;
+  captions?: string | null;
 }
 
 export interface SimData {

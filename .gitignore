@@ -34,3 +34,6 @@ backend/drafts/
 
 # Learner feedback (personal data, never commit)
 backend/reviews.json
+
+# HeyGen upload ids (scripts/make_videos.py)
+scripts/heygen/.upload-cache.json

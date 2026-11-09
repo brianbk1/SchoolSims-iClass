@@ -162,6 +162,18 @@ Safety rails: the model only writes text; ids, branching and outcome directions 
 
 Setup: put `ANTHROPIC_API_KEY=...` in `.env.local` at the repo root (optional: `ANTHROPIC_MODEL`, default `claude-sonnet-5-5`). Drafting and approving write files, so they run in a local copy or a Codespace; commit `backend/scenario.json` and redeploy to publish to the hosted site. On a hosted site the admin page requires `ADMIN_TOKEN`.
 
+## Localized character videos (HeyGen)
+
+`scripts/make_videos.py` makes each version's video with HeyGen: the character speaks the lines in that language and accent, in front of a region-appropriate background, with matching subtitles. The list of clips (character, lines, voice, background) is in `scripts/heygen/clips.json`; background image briefs are in `scripts/heygen/BACKGROUNDS.md`.
+
+1. Put `HEYGEN_API_KEY=...` in `.env.local` (repo root).
+2. Optional: add background images to `scripts/heygen/backgrounds/<locale>.jpg` (without one, the character keeps its photo's background).
+3. `python scripts/make_videos.py --check` (key + credits), then `--dry-run` (what would be made, which voice; spends nothing).
+4. `python scripts/make_videos.py --only es-AR` to make and review one clip, then run without `--only` for the rest.
+5. Commit `public/assets`, `backend/personas.json` and push.
+
+Use `--list-voices Spanish` to browse voices and set `voice_id` in clips.json to force one. Existing clips are skipped unless `--force`.
+
 ## Deploying to Vercel
 
 Import the repo in Vercel (framework: Vite). `vercel.json` builds the frontend and runs the FastAPI backend from `api/index.py` as a serverless function. Optional: set `ELEVEN_LABS_API_KEY` in the project's environment variables for narration. On Vercel, submitted reviews are written to the function logs (search for `REVIEW`), and scenario editing via the API is disabled.
