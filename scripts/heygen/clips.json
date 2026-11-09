@@ -7,8 +7,7 @@
     "background_brief: description for making that image (see BACKGROUNDS.md)."
   ],
   "settings": {
-    "width": 1280,
-    "height": 720,
+    "resolution": "720p",
     "remove_photo_background": true
   },
   "characters": {
