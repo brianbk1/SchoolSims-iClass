@@ -75,7 +75,7 @@ function CustomSelect<T extends string>({ value, options, onChange, id }: { valu
   return (
     <div ref={triggerRef} className={`csel${open ? ' open' : ''}`} id={id}>
       <div className="csel-trigger" onClick={handleOpen}>
-        <span className="csel-value">{current?.label}</span>
+        <span className="csel-value"><bdi>{current?.label}</bdi></span>
         <svg className="csel-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       {open && createPortal(
@@ -86,7 +86,7 @@ function CustomSelect<T extends string>({ value, options, onChange, id }: { valu
               className={`csel-opt${o.value === value ? ' selected' : ''}`}
               onClick={() => { onChange(o.value); setOpen(false); }}
             >
-              {o.label}
+              <bdi>{o.label}</bdi>
             </div>
           ))}
         </div>,

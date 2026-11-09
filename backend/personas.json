@@ -23,7 +23,8 @@
         "ur": "ڈینیئل موانگی",
         "sw-TZ": "Baraka Mwakyusa",
         "he": "דניאל מוואנגי",
-        "zh-HK": "丹尼爾·姆萬吉"
+        "zh-HK": "丹尼爾·姆萬吉",
+        "af": "Sipho Ndlovu"
       },
       "photo": {
         "default": "/assets/african.png"
@@ -42,7 +43,10 @@
       "gender": "male",
       "suggested_for_langs": [
         "en",
-        "he"
+        "he",
+        "es-ES",
+        "pt-PT",
+        "eu"
       ],
       "name": {
         "en": "James Mitchell",
@@ -53,7 +57,12 @@
         "sw": "James Mitchell",
         "ur": "جیمز مچل",
         "he": "יונתן לוי",
-        "zh-HK": "詹姆斯·米切爾"
+        "zh-HK": "詹姆斯·米切爾",
+        "en-GB": "Oliver Bennett",
+        "af": "Pieter van der Merwe",
+        "es-ES": "Javier García",
+        "pt-PT": "João Ferreira",
+        "eu": "Iker Etxeberria"
       },
       "photo": {
         "default": "/assets/caucasian.png"

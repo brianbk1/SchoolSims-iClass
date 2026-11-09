@@ -66,8 +66,8 @@ def language_label(code: str, display_lang: str) -> str:
 
 
 def suggested_persona(lang: str) -> str | None:
-    # An exact match wins (sw-TZ), then the base language (es-MX -> es).
-    for c in lang_chain(lang)[:-1] if lang != "en" else ["en"]:
+    # An exact match wins (sw-TZ), then the base language (es-MX -> es, en-GB -> en).
+    for c in dict.fromkeys([lang, lang.split("-")[0]]):
         for pid, p in PERSONAS.items():
             if c in p.get("suggested_for_langs", []) and playable(pid, lang):
                 return pid
