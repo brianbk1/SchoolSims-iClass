@@ -37,3 +37,4 @@ backend/reviews.json
 
 # HeyGen upload ids (scripts/make_videos.py)
 scripts/heygen/.upload-cache.json
+scripts/heygen/.framed/

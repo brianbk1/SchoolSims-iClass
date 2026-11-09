@@ -103,6 +103,35 @@ class HeyGen:
                     f.write(chunk)
 
 
+FRAMED_DIR = REPO / "scripts/heygen/.framed"   # widened copies of the photos (git-ignored)
+
+
+def frame_photo(photo: Path, person_height: float) -> Path:
+    """Place a portrait photo on a 16:9 canvas so the person keeps a natural
+    video-call size. Without this HeyGen crops a tall photo to fill the wide
+    frame, which zooms in on the face. The canvas around the photo is removed
+    together with the photo's own background (remove_background)."""
+    try:
+        from PIL import Image
+    except ImportError:
+        sys.exit("Framing photos needs Pillow: run  pip install pillow  and try again "
+                 "(or set \"frame_photo\": false in scripts/heygen/clips.json).")
+    W, H = 1920, 1080
+    im = Image.open(photo).convert("RGB")
+    scale = (H * person_height) / im.height
+    im = im.resize((max(1, round(im.width * scale)), max(1, round(im.height * scale))), Image.LANCZOS)
+    if im.width > W:                       # very wide photo: fit by width instead
+        im = im.resize((W, round(im.height * W / im.width)), Image.LANCZOS)
+    # Fill with the photo's own edge colour so background removal sees one continuous backdrop.
+    edge = im.resize((1, 1)).getpixel((0, 0))
+    canvas = Image.new("RGB", (W, H), edge)
+    canvas.paste(im, ((W - im.width) // 2, H - im.height))   # centred, sitting on the bottom edge
+    FRAMED_DIR.mkdir(parents=True, exist_ok=True)
+    out = FRAMED_DIR / f"{photo.stem}-{int(person_height * 100)}.jpg"
+    canvas.save(out, quality=92)
+    return out
+
+
 def mime(p: Path) -> str:
     return {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp"}[p.suffix.lower()]
 
@@ -271,10 +300,13 @@ def main(argv=None, client: httpx.Client | None = None) -> int:
             if char.get("heygen_avatar_id"):
                 payload.update({"type": "avatar", "avatar_id": char["heygen_avatar_id"]})
             else:
-                key = f"v3photo:{char['photo']}"
+                framing = bool(settings.get("frame_photo", True)) and bool(bg and bg.exists()) \
+                    and bool(settings.get("remove_photo_background", True))
+                ph = float(settings.get("person_height", 0.9))
+                key = f"v3photo:{char['photo']}" + (f":framed{int(ph * 100)}" if framing else "")
                 if key not in cache:
                     print("uploading photo… ", end="", flush=True)
-                    cache[key] = hg.upload_asset(photo)
+                    cache[key] = hg.upload_asset(frame_photo(photo, ph) if framing else photo)
                     CACHE_FILE.write_text(json.dumps(cache, indent=2))
                 payload.update({"type": "image", "image": {"type": "asset_id", "asset_id": cache[key]}})
             if bg and bg.exists():
