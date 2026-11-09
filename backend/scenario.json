@@ -130,7 +130,7 @@
         "south_asian": "South Asia"
       },
       "language_labels": {
-        "en": "English",
+        "en": "English (International)",
         "es": "Español",
         "ar": "العربية (الإمارات)",
         "zh": "中文",
@@ -143,7 +143,13 @@
         "ar-JO": "العربية (الأردن)",
         "he": "עברית",
         "es-CL": "Español (Chile)",
-        "zh-HK": "廣東話（香港）"
+        "zh-HK": "廣東話（香港）",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "af": "Afrikaans",
+        "es-ES": "Español (España)",
+        "pt-PT": "Português (Portugal)",
+        "eu": "Euskara"
       },
       "sim_title": "Leadership Decision Simulation",
       "setup_subtitle": "Experience realistic leadership scenarios and develop critical decision-making skills in a safe, reflective environment.",
@@ -321,7 +327,7 @@
         "south_asian": "Asia del Sur"
       },
       "language_labels": {
-        "en": "English",
+        "en": "English (International)",
         "es": "Español",
         "ar": "العربية (الإمارات)",
         "zh": "中文",
@@ -334,7 +340,13 @@
         "ar-JO": "العربية (الأردن)",
         "he": "עברית",
         "es-CL": "Español (Chile)",
-        "zh-HK": "廣東話（香港）"
+        "zh-HK": "廣東話（香港）",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "af": "Afrikaans",
+        "es-ES": "Español (España)",
+        "pt-PT": "Português (Portugal)",
+        "eu": "Euskara"
       },
       "sim_title": "Simulación de Decisión de Liderazgo",
       "setup_subtitle": "Experimenta escenarios de liderazgo realistas y desarrolla habilidades críticas de toma de decisiones en un entorno seguro y reflexivo.",
@@ -512,7 +524,7 @@
         "south_asian": "جنوب آسيا"
       },
       "language_labels": {
-        "en": "English",
+        "en": "English (International)",
         "es": "Español",
         "ar": "العربية (الإمارات)",
         "zh": "中文",
@@ -525,7 +537,13 @@
         "ar-JO": "العربية (الأردن)",
         "he": "עברית",
         "es-CL": "Español (Chile)",
-        "zh-HK": "廣東話（香港）"
+        "zh-HK": "廣東話（香港）",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "af": "Afrikaans",
+        "es-ES": "Español (España)",
+        "pt-PT": "Português (Portugal)",
+        "eu": "Euskara"
       },
       "sim_title": "محاكاة قرار القيادة",
       "setup_subtitle": "عش سيناريوهات قيادية واقعية وطور مهارات اتخاذ القرارات الحاسمة في بيئة آمنة وتأملية.",
@@ -703,7 +721,7 @@
         "south_asian": "南亚"
       },
       "language_labels": {
-        "en": "English",
+        "en": "English (International)",
         "es": "Español",
         "ar": "العربية (الإمارات)",
         "zh": "中文",
@@ -716,7 +734,13 @@
         "ar-JO": "العربية (الأردن)",
         "he": "עברית",
         "es-CL": "Español (Chile)",
-        "zh-HK": "廣東話（香港）"
+        "zh-HK": "廣東話（香港）",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "af": "Afrikaans",
+        "es-ES": "Español (España)",
+        "pt-PT": "Português (Portugal)",
+        "eu": "Euskara"
       },
       "sim_title": "领导力决策模拟",
       "setup_subtitle": "体验真实的领导力场景，在安全、反思的环境中培养关键的决策能力。",
@@ -894,7 +918,7 @@
         "south_asian": "दक्षिण एसिया"
       },
       "language_labels": {
-        "en": "English",
+        "en": "English (International)",
         "es": "Español",
         "ar": "العربية (الإمارات)",
         "zh": "中文",
@@ -907,7 +931,13 @@
         "ar-JO": "العربية (الأردن)",
         "he": "עברית",
         "es-CL": "Español (Chile)",
-        "zh-HK": "廣東話（香港）"
+        "zh-HK": "廣東話（香港）",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "af": "Afrikaans",
+        "es-ES": "Español (España)",
+        "pt-PT": "Português (Portugal)",
+        "eu": "Euskara"
       },
       "sim_title": "नेतृत्व निर्णय सिमुलेसन",
       "setup_subtitle": "यथार्थपरक नेतृत्व परिदृश्यहरू अनुभव गर्नुहोस् र सुरक्षित, चिन्तनशील वातावरणमा महत्वपूर्ण निर्णय लिने सीपहरू विकास गर्नुहोस्।",
@@ -1085,7 +1115,7 @@
         "south_asian": "Asia Kusini"
       },
       "language_labels": {
-        "en": "English",
+        "en": "English (International)",
         "es": "Español",
         "ar": "العربية (الإمارات)",
         "zh": "中文",
@@ -1098,7 +1128,13 @@
         "ar-JO": "العربية (الأردن)",
         "he": "עברית",
         "es-CL": "Español (Chile)",
-        "zh-HK": "廣東話（香港）"
+        "zh-HK": "廣東話（香港）",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "af": "Afrikaans",
+        "es-ES": "Español (España)",
+        "pt-PT": "Português (Portugal)",
+        "eu": "Euskara"
       },
       "sim_title": "Uigizaji wa Uamuzi wa Uongozi",
       "setup_subtitle": "Pitia hali halisi za uongozi na kuendeleza ujuzi muhimu wa kufanya maamuzi katika mazingira salama na ya kutafakari.",
@@ -1276,7 +1312,7 @@
         "south_asian": "جنوبی ایشیا"
       },
       "language_labels": {
-        "en": "English",
+        "en": "English (International)",
         "es": "Español",
         "ar": "العربية (الإمارات)",
         "zh": "中文",
@@ -1289,7 +1325,13 @@
         "ar-JO": "العربية (الأردن)",
         "he": "עברית",
         "es-CL": "Español (Chile)",
-        "zh-HK": "廣東話（香港）"
+        "zh-HK": "廣東話（香港）",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "af": "Afrikaans",
+        "es-ES": "Español (España)",
+        "pt-PT": "Português (Portugal)",
+        "eu": "Euskara"
       },
       "sim_title": "قیادت کے فیصلے کی سمیولیشن",
       "setup_subtitle": "حقیقت پسندانہ قیادت کے منظرناموں کا تجربہ کریں اور محفوظ، غور و فکر والے ماحول میں اہم فیصلہ سازی کی مہارتیں تیار کریں۔",
@@ -1391,6 +1433,36 @@
     "zh-HK": {
       "setting": "Hong Kong — self-financing post-secondary institution; September start, summer leave; HKD; written Cantonese",
       "approved_at": "2026-11-09T01:56:53+00:00",
+      "source": "written by Claude; needs native-speaker review"
+    },
+    "en-US": {
+      "setting": "Columbus, Ohio, USA — community college; fall semester in late August, summer vacations, Labor Day; USD",
+      "approved_at": "2026-11-09T02:07:26+00:00",
+      "source": "written by Claude; needs review"
+    },
+    "en-GB": {
+      "setting": "Leeds, UK — further education college; autumn term in September, August bank holiday, annual leave; GBP; British spelling",
+      "approved_at": "2026-11-09T02:07:26+00:00",
+      "source": "written by Claude; needs review"
+    },
+    "af": {
+      "setting": "Stellenbosch, South Africa — private higher-education institution; academic year starts in February, December holidays; ZAR",
+      "approved_at": "2026-11-09T02:10:42+00:00",
+      "source": "written by Claude; needs native-speaker review"
+    },
+    "es-ES": {
+      "setting": "Valencia, España — universidad privada; curso en septiembre, vacaciones de agosto; EUR",
+      "approved_at": "2026-11-09T02:10:42+00:00",
+      "source": "written by Claude; needs native-speaker review"
+    },
+    "pt-PT": {
+      "setting": "Porto, Portugal — instituto politécnico privado; ano letivo em setembro, férias de agosto; EUR; European Portuguese, formal",
+      "approved_at": "2026-11-09T02:10:42+00:00",
+      "source": "written by Claude; needs native-speaker review"
+    },
+    "eu": {
+      "setting": "Donostia, Basque Country — private university; course starts in September, August holidays; EUR",
+      "approved_at": "2026-11-09T02:10:42+00:00",
       "source": "written by Claude; needs native-speaker review"
     }
   },
@@ -1524,7 +1596,7 @@
         "south_asian": "Asia del Sur"
       },
       "language_labels": {
-        "en": "English",
+        "en": "English (International)",
         "es": "Español",
         "ar": "العربية (الإمارات)",
         "zh": "中文",
@@ -1537,7 +1609,13 @@
         "ar-JO": "العربية (الأردن)",
         "he": "עברית",
         "es-CL": "Español (Chile)",
-        "zh-HK": "廣東話（香港）"
+        "zh-HK": "廣東話（香港）",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "af": "Afrikaans",
+        "es-ES": "Español (España)",
+        "pt-PT": "Português (Portugal)",
+        "eu": "Euskara"
       },
       "sim_title": "Simulación de Decisión de Liderazgo",
       "setup_subtitle": "Experimenta escenarios de liderazgo realistas y desarrolla habilidades críticas de toma de decisiones en un entorno seguro y reflexivo.",
@@ -1715,7 +1793,7 @@
         "south_asian": "Asia del Sur"
       },
       "language_labels": {
-        "en": "English",
+        "en": "English (International)",
         "es": "Español",
         "ar": "العربية (الإمارات)",
         "zh": "中文",
@@ -1728,7 +1806,13 @@
         "ar-JO": "العربية (الأردن)",
         "he": "עברית",
         "es-CL": "Español (Chile)",
-        "zh-HK": "廣東話（香港）"
+        "zh-HK": "廣東話（香港）",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "af": "Afrikaans",
+        "es-ES": "Español (España)",
+        "pt-PT": "Português (Portugal)",
+        "eu": "Euskara"
       },
       "sim_title": "Simulación de Decisión de Liderazgo",
       "setup_subtitle": "Viví escenarios de liderazgo realistas y desarrollá habilidades clave para tomar decisiones en un entorno seguro y reflexivo.",
@@ -1906,7 +1990,7 @@
         "south_asian": "Asia Kusini"
       },
       "language_labels": {
-        "en": "English",
+        "en": "English (International)",
         "es": "Español",
         "ar": "العربية (الإمارات)",
         "zh": "中文",
@@ -1919,7 +2003,13 @@
         "ar-JO": "العربية (الأردن)",
         "he": "עברית",
         "es-CL": "Español (Chile)",
-        "zh-HK": "廣東話（香港）"
+        "zh-HK": "廣東話（香港）",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "af": "Afrikaans",
+        "es-ES": "Español (España)",
+        "pt-PT": "Português (Portugal)",
+        "eu": "Euskara"
       },
       "sim_title": "Uigizaji wa Uamuzi wa Uongozi",
       "setup_subtitle": "Pitia hali halisi za uongozi na kuendeleza ujuzi muhimu wa kufanya maamuzi katika mazingira salama na ya kutafakari.",
@@ -2097,7 +2187,7 @@
         "south_asian": "جنوب آسيا"
       },
       "language_labels": {
-        "en": "English",
+        "en": "English (International)",
         "es": "Español",
         "ar": "العربية (الإمارات)",
         "zh": "中文",
@@ -2110,7 +2200,13 @@
         "sw-TZ": "Kiswahili (Tanzania)",
         "he": "עברית",
         "es-CL": "Español (Chile)",
-        "zh-HK": "廣東話（香港）"
+        "zh-HK": "廣東話（香港）",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "af": "Afrikaans",
+        "es-ES": "Español (España)",
+        "pt-PT": "Português (Portugal)",
+        "eu": "Euskara"
       },
       "sim_title": "محاكاة قرار القيادة",
       "setup_subtitle": "عش سيناريوهات قيادية واقعية وطور مهارات اتخاذ القرارات الحاسمة في بيئة آمنة وتأملية.",
@@ -2288,7 +2384,7 @@
         "south_asian": "דרום אסיה"
       },
       "language_labels": {
-        "en": "English",
+        "en": "English (International)",
         "es": "Español",
         "ar": "العربية (الإمارات)",
         "zh": "中文",
@@ -2301,7 +2397,13 @@
         "ar-JO": "العربية (الأردن)",
         "he": "עברית",
         "es-CL": "Español (Chile)",
-        "zh-HK": "廣東話（香港）"
+        "zh-HK": "廣東話（香港）",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "af": "Afrikaans",
+        "es-ES": "Español (España)",
+        "pt-PT": "Português (Portugal)",
+        "eu": "Euskara"
       },
       "sim_title": "סימולציית החלטות ניהוליות",
       "setup_subtitle": "התנסו בתרחישי ניהול מציאותיים ופתחו מיומנויות של קבלת החלטות בסביבה בטוחה שמזמינה חשיבה.",
@@ -2479,7 +2581,7 @@
         "south_asian": "Asia del Sur"
       },
       "language_labels": {
-        "en": "English",
+        "en": "English (International)",
         "es": "Español",
         "ar": "العربية (الإمارات)",
         "zh": "中文",
@@ -2492,7 +2594,13 @@
         "ar-JO": "العربية (الأردن)",
         "es-CL": "Español (Chile)",
         "he": "עברית",
-        "zh-HK": "廣東話（香港）"
+        "zh-HK": "廣東話（香港）",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "af": "Afrikaans",
+        "es-ES": "Español (España)",
+        "pt-PT": "Português (Portugal)",
+        "eu": "Euskara"
       },
       "sim_title": "Simulación de Decisión de Liderazgo",
       "setup_subtitle": "Experimenta escenarios de liderazgo realistas y desarrolla habilidades críticas de toma de decisiones en un entorno seguro y reflexivo.",
@@ -2670,7 +2778,7 @@
         "south_asian": "南亞"
       },
       "language_labels": {
-        "en": "English",
+        "en": "English (International)",
         "es": "Español",
         "ar": "العربية (الإمارات)",
         "zh": "中文",
@@ -2683,7 +2791,13 @@
         "ar-JO": "العربية (الأردن)",
         "zh-HK": "廣東話（香港）",
         "he": "עברית",
-        "es-CL": "Español (Chile)"
+        "es-CL": "Español (Chile)",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "af": "Afrikaans",
+        "es-ES": "Español (España)",
+        "pt-PT": "Português (Portugal)",
+        "eu": "Euskara"
       },
       "sim_title": "領導力決策模擬",
       "setup_subtitle": "體驗真實的領導力場景，在安全、反思的環境中培養關鍵的決策能力。",
@@ -2729,6 +2843,1188 @@
       "review_fit_no": "不，有些地方不對",
       "review_fit_details_label": "哪裏不對？（姓名、地點、貨幣、節假日、用語等）",
       "review_select_rating": "請選擇評分"
+    }
+  },
+  "en-US": {
+    "nodes": {
+      "context": {
+        "type": "context",
+        "next_node_id": "text_image",
+        "step_badge": "1 Context",
+        "title": "A new opportunity in Ohio",
+        "body": "You lead the SchoolSims team in Philadelphia. A community college in Columbus, Ohio, is ready to sign an annual contract worth about $12,000, but wants a new feature first. Your team has limited capacity. Your learning objective is to weigh near-term revenue against delivery capacity and customer trust.",
+        "learning_objective_label": "Learning Objective",
+        "learning_objective_body": "Weigh near-term revenue against delivery capacity and customer trust."
+      },
+      "text_image": {
+        "type": "text_image",
+        "next_node_id": "video",
+        "step_badge": "2 Text and image",
+        "title": "The college's request",
+        "body": "The college wants the feature in four weeks, before the fall semester starts in late August. Summer vacations fall right in that window, and your developers already have other commitments.",
+        "character_name": "Jordan Chen",
+        "character_title": "VP of Digital Learning",
+        "character_alt": "Portrait of Jordan Chen, VP of Digital Learning",
+        "ti_point1": "4-week delivery, before the fall semester",
+        "ti_point2": "Summer vacations, and the dev team is already at capacity"
+      },
+      "video": {
+        "type": "video",
+        "next_node_id": "decision",
+        "step_badge": "3 Video",
+        "quote": "Can we commit to four weeks?",
+        "watch_listen_title": "Watch & Listen",
+        "watch_listen_body": "Pay attention to the customer's urgency. It shapes the decision pressure you'll feel on the next slide."
+      },
+      "decision": {
+        "type": "decision",
+        "next_node_id": null,
+        "step_badge": "4 Decision",
+        "prompt": "What will you do?",
+        "keyboard_hint": "Press [A] or [B] to decide",
+        "choices": [
+          {
+            "id": "A",
+            "label": "A Commit to the deadline",
+            "target_node_id": "outcome_a"
+          },
+          {
+            "id": "B",
+            "label": "B Propose a pilot in one department",
+            "target_node_id": "outcome_b"
+          }
+        ]
+      },
+      "outcome_a": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5A Outcome A",
+        "you_chose": "You chose A",
+        "title": "Delivery pressure",
+        "body": "The college agrees. Your team will have to cut into summer vacations and renegotiate deadlines with other customers.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Revenue",
+            "direction": "up",
+            "body": "$12,000 contract signed before the fall semester"
+          },
+          {
+            "key": "capacity",
+            "label": "Capacity",
+            "direction": "down",
+            "body": "Team stretched thin, vacations cut short"
+          },
+          {
+            "key": "trust",
+            "label": "Trust",
+            "direction": "mid",
+            "body": "At risk if delivery slips at the start of the semester"
+          }
+        ]
+      },
+      "outcome_b": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5B Outcome B",
+        "you_chose": "You chose B",
+        "title": "A smaller first step",
+        "body": "The college reviews a pilot in one department, with an agreed scope and timeline. The full feature ships after Labor Day.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Revenue",
+            "direction": "mid",
+            "body": "Slower to close: pilot first, full contract later"
+          },
+          {
+            "key": "capacity",
+            "label": "Capacity",
+            "direction": "up",
+            "body": "Vacations and existing commitments protected"
+          },
+          {
+            "key": "trust",
+            "label": "Trust",
+            "direction": "up",
+            "body": "Setting clear expectations up front builds trust"
+          }
+        ]
+      },
+      "summary": {
+        "type": "summary",
+        "next_node_id": null,
+        "step_badge": "6 Summary",
+        "title": "Reflect on your decision",
+        "reflection_prompt_label": "Reflection Prompt",
+        "question": "How did your choice balance the contract, your team's summer vacations and the college's trust?"
+      }
+    },
+    "ui": {
+      "start_btn": "Start Simulation",
+      "back_btn": "Back",
+      "next_btn": "Next",
+      "restart_btn": "Restart Simulation",
+      "lang_label": "Language",
+      "eth_label": "Character background",
+      "ethnicity_labels": {
+        "african": "East Africa",
+        "caucasian": "Europe",
+        "east_asian": "East Asia",
+        "latin": "Latin America",
+        "south_asian": "South Asia"
+      },
+      "language_labels": {
+        "en": "English (International)",
+        "es": "Español",
+        "ar": "العربية (الإمارات)",
+        "zh": "中文",
+        "ne": "नेपाली",
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "es-MX": "Español (México)",
+        "es-AR": "Español (Argentina)",
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "ar-JO": "العربية (الأردن)",
+        "he": "עברית",
+        "es-CL": "Español (Chile)",
+        "zh-HK": "廣東話（香港）",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "af": "Afrikaans",
+        "es-ES": "Español (España)",
+        "pt-PT": "Português (Portugal)",
+        "eu": "Euskara"
+      },
+      "sim_title": "Leadership Decision Simulation",
+      "setup_subtitle": "Experience realistic leadership scenarios and develop critical decision-making skills in a safe, reflective environment.",
+      "before_you_begin_title": "Before You Begin",
+      "before_you_begin_body": "This is a safe environment to practice. There's no single right answer — explore both paths to understand the full range of trade-offs.",
+      "sim_error_title": "Failed to load simulation",
+      "sim_error_body": "Could not connect to the simulation service. Please check your connection and try again.",
+      "retry_btn": "Retry",
+      "brief_scenario_label": "Scenario",
+      "brief_scenario_body": "You lead SchoolSims in Philadelphia. A community college in Ohio wants a new feature before signing. Your team has limited capacity.",
+      "brief_objective_label": "Learning Objective",
+      "brief_objective_body": "Weigh near-term revenue against delivery capacity and customer trust.",
+      "cast_panel_label": "Cast",
+      "cast_panel_subtitle": "Featured Character",
+      "cast_panel_body": "This character represents the external stakeholder in your scenario. Their decisions shape the outcomes you'll experience.",
+      "help_panel_title": "Before You Begin",
+      "help_safe_title": "Safe Environment",
+      "help_safe_body": "No decisions here affect real outcomes. Practice freely.",
+      "help_no_right_title": "No Single Right Answer",
+      "help_no_right_body": "Both options involve real trade-offs. Reflect on your reasoning.",
+      "help_replay_title": "Play Multiple Times",
+      "help_replay_body": "Try both paths to understand the full range of consequences.",
+      "rail_brief_tip": "Brief",
+      "rail_cast_tip": "Cast",
+      "rail_help_tip": "Help",
+      "badge_en": "EN",
+      "option_label": "Option",
+      "speech_locale": "en-US",
+      "review_title": "Rate This Simulation",
+      "review_rating_label": "How would you rate this simulation?",
+      "review_experience_label": "How was your experience?",
+      "review_improvements_label": "Any suggested improvements?",
+      "review_submit_btn": "Submit Feedback",
+      "review_thank_you": "Thank you for your feedback!",
+      "setup_badge": "Interactive Simulation",
+      "suggested_hint": "Suggested for this language — you can change it.",
+      "captions_on": "CC On",
+      "captions_off": "CC Off",
+      "video_error": "Video failed to load",
+      "review_fit_label": "Did the character and setting feel accurate for your region?",
+      "review_fit_yes": "Yes, it felt right",
+      "review_fit_partly": "Partly",
+      "review_fit_no": "No, something felt off",
+      "review_fit_details_label": "What felt off? (names, places, money, holidays, wording…)",
+      "review_select_rating": "Select a rating"
+    }
+  },
+  "en-GB": {
+    "nodes": {
+      "context": {
+        "type": "context",
+        "next_node_id": "text_image",
+        "step_badge": "1 Context",
+        "title": "A new opportunity in Leeds",
+        "body": "You lead the SchoolSims team in Manchester. A further education college in Leeds is ready to sign an annual contract worth about £9,500, but wants a new feature first. Your team has limited capacity. Your learning objective is to weigh near-term revenue against delivery capacity and customer trust.",
+        "learning_objective_label": "Learning Objective",
+        "learning_objective_body": "Weigh near-term revenue against delivery capacity and customer trust."
+      },
+      "text_image": {
+        "type": "text_image",
+        "next_node_id": "video",
+        "step_badge": "2 Text and image",
+        "title": "The college's request",
+        "body": "The college wants the feature within four weeks, before the autumn term starts in September. The August bank holiday and staff annual leave fall in that window, and your developers already have other commitments.",
+        "character_name": "Jordan Chen",
+        "character_title": "Head of Digital Learning",
+        "character_alt": "Portrait of Jordan Chen, Head of Digital Learning",
+        "ti_point1": "Delivery needed within 4 weeks, before the autumn term",
+        "ti_point2": "Summer annual leave, and the dev team is already at capacity"
+      },
+      "video": {
+        "type": "video",
+        "next_node_id": "decision",
+        "step_badge": "3 Video",
+        "quote": "Can we commit to four weeks?",
+        "watch_listen_title": "Watch & Listen",
+        "watch_listen_body": "Pay attention to the customer's urgency. It shapes the decision pressure you'll feel on the next slide."
+      },
+      "decision": {
+        "type": "decision",
+        "next_node_id": null,
+        "step_badge": "4 Decision",
+        "prompt": "What will you do?",
+        "keyboard_hint": "Press [A] or [B] to decide",
+        "choices": [
+          {
+            "id": "A",
+            "label": "A Commit to the deadline",
+            "target_node_id": "outcome_a"
+          },
+          {
+            "id": "B",
+            "label": "B Propose a pilot in one department",
+            "target_node_id": "outcome_b"
+          }
+        ]
+      },
+      "outcome_a": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5A Outcome A",
+        "you_chose": "You chose A",
+        "title": "Delivery pressure",
+        "body": "The college agrees. Your team will have to cancel annual leave and renegotiate deadlines with other clients.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Revenue",
+            "direction": "up",
+            "body": "£9,500 contract signed before the autumn term"
+          },
+          {
+            "key": "capacity",
+            "label": "Capacity",
+            "direction": "down",
+            "body": "Team overstretched, annual leave cancelled"
+          },
+          {
+            "key": "trust",
+            "label": "Trust",
+            "direction": "mid",
+            "body": "At risk if delivery slips at the start of term"
+          }
+        ]
+      },
+      "outcome_b": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5B Outcome B",
+        "you_chose": "You chose B",
+        "title": "A smaller first step",
+        "body": "The college reviews a pilot in one department, with an agreed scope and timetable. The full feature follows once term is under way.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Revenue",
+            "direction": "mid",
+            "body": "Slower to close: pilot first, full contract later"
+          },
+          {
+            "key": "capacity",
+            "label": "Capacity",
+            "direction": "up",
+            "body": "Annual leave and existing commitments protected"
+          },
+          {
+            "key": "trust",
+            "label": "Trust",
+            "direction": "up",
+            "body": "Setting clear expectations from the start builds trust"
+          }
+        ]
+      },
+      "summary": {
+        "type": "summary",
+        "next_node_id": null,
+        "step_badge": "6 Summary",
+        "title": "Reflect on your decision",
+        "reflection_prompt_label": "Reflection Prompt",
+        "question": "How did your choice balance the contract, your team's annual leave and the college's trust?"
+      }
+    },
+    "ui": {
+      "start_btn": "Start Simulation",
+      "back_btn": "Back",
+      "next_btn": "Next",
+      "restart_btn": "Restart Simulation",
+      "lang_label": "Language",
+      "eth_label": "Character background",
+      "ethnicity_labels": {
+        "african": "East Africa",
+        "caucasian": "Europe",
+        "east_asian": "East Asia",
+        "latin": "Latin America",
+        "south_asian": "South Asia"
+      },
+      "language_labels": {
+        "en": "English (International)",
+        "es": "Español",
+        "ar": "العربية (الإمارات)",
+        "zh": "中文",
+        "ne": "नेपाली",
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "es-MX": "Español (México)",
+        "es-AR": "Español (Argentina)",
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "ar-JO": "العربية (الأردن)",
+        "he": "עברית",
+        "es-CL": "Español (Chile)",
+        "zh-HK": "廣東話（香港）",
+        "en-GB": "English (UK)",
+        "en-US": "English (US)",
+        "af": "Afrikaans",
+        "es-ES": "Español (España)",
+        "pt-PT": "Português (Portugal)",
+        "eu": "Euskara"
+      },
+      "sim_title": "Leadership Decision Simulation",
+      "setup_subtitle": "Experience realistic leadership scenarios and develop critical decision-making skills in a safe, reflective environment.",
+      "before_you_begin_title": "Before You Begin",
+      "before_you_begin_body": "This is a safe environment to practice. There's no single right answer — explore both paths to understand the full range of trade-offs.",
+      "sim_error_title": "Failed to load simulation",
+      "sim_error_body": "Could not connect to the simulation service. Please check your connection and try again.",
+      "retry_btn": "Retry",
+      "brief_scenario_label": "Scenario",
+      "brief_scenario_body": "You lead SchoolSims in Manchester. A further education college in Leeds wants a new feature before signing. Your team has limited capacity.",
+      "brief_objective_label": "Learning Objective",
+      "brief_objective_body": "Weigh near-term revenue against delivery capacity and customer trust.",
+      "cast_panel_label": "Cast",
+      "cast_panel_subtitle": "Featured Character",
+      "cast_panel_body": "This character represents the external stakeholder in your scenario. Their decisions shape the outcomes you'll experience.",
+      "help_panel_title": "Before You Begin",
+      "help_safe_title": "Safe Environment",
+      "help_safe_body": "No decisions here affect real outcomes. Practice freely.",
+      "help_no_right_title": "No Single Right Answer",
+      "help_no_right_body": "Both options involve real trade-offs. Reflect on your reasoning.",
+      "help_replay_title": "Play Multiple Times",
+      "help_replay_body": "Try both paths to understand the full range of consequences.",
+      "rail_brief_tip": "Brief",
+      "rail_cast_tip": "Cast",
+      "rail_help_tip": "Help",
+      "badge_en": "EN",
+      "option_label": "Option",
+      "speech_locale": "en-US",
+      "review_title": "Rate This Simulation",
+      "review_rating_label": "How would you rate this simulation?",
+      "review_experience_label": "How was your experience?",
+      "review_improvements_label": "Any suggested improvements?",
+      "review_submit_btn": "Submit Feedback",
+      "review_thank_you": "Thank you for your feedback!",
+      "setup_badge": "Interactive Simulation",
+      "suggested_hint": "Suggested for this language — you can change it.",
+      "captions_on": "Subtitles on",
+      "captions_off": "Subtitles off",
+      "video_error": "Video failed to load",
+      "review_fit_label": "Did the character and setting feel accurate for your region?",
+      "review_fit_yes": "Yes, it felt right",
+      "review_fit_partly": "Partly",
+      "review_fit_no": "No, something felt off",
+      "review_fit_details_label": "What felt off? (names, places, money, holidays, wording…)",
+      "review_select_rating": "Select a rating"
+    }
+  },
+  "af": {
+    "nodes": {
+      "context": {
+        "type": "context",
+        "next_node_id": "text_image",
+        "step_badge": "1 Konteks",
+        "title": "'n Nuwe geleentheid in Stellenbosch",
+        "body": "Jy lei die SchoolSims-span in Kaapstad. 'n Privaat hoëronderwysinstelling in Stellenbosch is gereed om 'n jaarlikse kontrak van sowat R200 000 te teken, maar wil eers 'n nuwe funksie hê. Jou span se kapasiteit is beperk. Jou leerdoelwit is om korttermyninkomste op te weeg teen leweringskapasiteit en kliëntevertroue.",
+        "learning_objective_label": "Leerdoelwit",
+        "learning_objective_body": "Weeg korttermyninkomste op teen leweringskapasiteit en kliëntevertroue."
+      },
+      "text_image": {
+        "type": "text_image",
+        "next_node_id": "video",
+        "step_badge": "2 Teks en beeld",
+        "title": "Die instelling se versoek",
+        "body": "Die instelling wil die funksie binne vier weke hê, voor die akademiese jaar in Februarie begin. Die Desember-vakansie val reg in daardie tydperk, en jou ontwikkelaars het reeds ander verpligtinge.",
+        "character_name": "Jordan Chen",
+        "character_title": "Hoof van Digitale Leer",
+        "character_alt": "Portret van Jordan Chen, Hoof van Digitale Leer",
+        "ti_point1": "Lewering binne 4 weke, voor die akademiese jaar",
+        "ti_point2": "Desember-vakansie, en die span is reeds ten volle besig"
+      },
+      "video": {
+        "type": "video",
+        "next_node_id": "decision",
+        "step_badge": "3 Video",
+        "quote": "Kan ons ons tot vier weke verbind?",
+        "watch_listen_title": "Kyk en luister",
+        "watch_listen_body": "Let op hoe dringend die kliënt is. Dit bepaal die besluitdruk wat jy op die volgende skyfie gaan voel."
+      },
+      "decision": {
+        "type": "decision",
+        "next_node_id": null,
+        "step_badge": "4 Besluit",
+        "prompt": "Wat gaan jy doen?",
+        "keyboard_hint": "Druk [A] of [B] om te besluit",
+        "choices": [
+          {
+            "id": "A",
+            "label": "A Verbind jou tot die sperdatum",
+            "target_node_id": "outcome_a"
+          },
+          {
+            "id": "B",
+            "label": "B Stel 'n loodsprojek in een fakulteit voor",
+            "target_node_id": "outcome_b"
+          }
+        ]
+      },
+      "outcome_a": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5A Uitkoms A",
+        "you_chose": "Jy het A gekies",
+        "title": "Leweringsdruk",
+        "body": "Die instelling stem in. Jou span sal die Desember-vakansie moet inkort en sperdatums met ander kliënte moet heronderhandel.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Inkomste",
+            "direction": "up",
+            "body": "Kontrak van R200 000 voor die akademiese jaar beklink"
+          },
+          {
+            "key": "capacity",
+            "label": "Kapasiteit",
+            "direction": "down",
+            "body": "Span oorlaai, vakansie ingekort"
+          },
+          {
+            "key": "trust",
+            "label": "Vertroue",
+            "direction": "mid",
+            "body": "In gevaar as lewering aan die begin van die jaar vertraag"
+          }
+        ]
+      },
+      "outcome_b": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5B Uitkoms B",
+        "you_chose": "Jy het B gekies",
+        "title": "'n Kleiner eerste stap",
+        "body": "Die instelling oorweeg 'n loodsprojek in een fakulteit, met 'n ooreengekome omvang en tydlyn. Die volledige funksie volg ná die vakansie.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Inkomste",
+            "direction": "mid",
+            "body": "Stadiger om te sluit: eers die loodsprojek, later die volle kontrak"
+          },
+          {
+            "key": "capacity",
+            "label": "Kapasiteit",
+            "direction": "up",
+            "body": "Vakansie en bestaande verpligtinge bly beskerm"
+          },
+          {
+            "key": "trust",
+            "label": "Vertroue",
+            "direction": "up",
+            "body": "Duidelike verwagtinge van die begin af bou vertroue"
+          }
+        ]
+      },
+      "summary": {
+        "type": "summary",
+        "next_node_id": null,
+        "step_badge": "6 Opsomming",
+        "title": "Besin oor jou besluit",
+        "reflection_prompt_label": "Besinningsvraag",
+        "question": "Hoe het jou keuse die kontrak, jou span se vakansie en die instelling se vertroue gebalanseer?"
+      }
+    },
+    "ui": {
+      "start_btn": "Begin simulasie",
+      "back_btn": "Terug",
+      "next_btn": "Volgende",
+      "restart_btn": "Begin weer",
+      "lang_label": "Taal",
+      "eth_label": "Karakter se agtergrond",
+      "ethnicity_labels": {
+        "african": "Oos-Afrika",
+        "caucasian": "Europa",
+        "east_asian": "Oos-Asië",
+        "latin": "Latyns-Amerika",
+        "south_asian": "Suid-Asië"
+      },
+      "language_labels": {
+        "en": "English (International)",
+        "es": "Español",
+        "ar": "العربية (الإمارات)",
+        "zh": "中文",
+        "ne": "नेपाली",
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "es-MX": "Español (México)",
+        "es-AR": "Español (Argentina)",
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "ar-JO": "العربية (الأردن)",
+        "he": "עברית",
+        "es-CL": "Español (Chile)",
+        "zh-HK": "廣東話（香港）",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "af": "Afrikaans",
+        "es-ES": "Español (España)",
+        "pt-PT": "Português (Portugal)",
+        "eu": "Euskara"
+      },
+      "sim_title": "Leierskapbesluit-simulasie",
+      "setup_subtitle": "Ervaar realistiese leierskapscenario's en ontwikkel noodsaaklike besluitnemingsvaardighede in 'n veilige omgewing wat tot nadenke stem.",
+      "before_you_begin_title": "Voordat jy begin",
+      "before_you_begin_body": "Dit is 'n veilige omgewing om te oefen. Daar is nie een regte antwoord nie — verken albei paaie om al die afwegings te verstaan.",
+      "sim_error_title": "Kon nie die simulasie laai nie",
+      "sim_error_body": "Kon nie aan die simulasiediens koppel nie. Kontroleer jou verbinding en probeer weer.",
+      "retry_btn": "Probeer weer",
+      "brief_scenario_label": "Scenario",
+      "brief_scenario_body": "Jy lei SchoolSims in Kaapstad. 'n Privaat hoëronderwysinstelling in Stellenbosch wil 'n nuwe funksie hê voordat hulle teken. Jou span se kapasiteit is beperk.",
+      "brief_objective_label": "Leerdoelwit",
+      "brief_objective_body": "Weeg korttermyninkomste op teen leweringskapasiteit en kliëntevertroue.",
+      "cast_panel_label": "Karakters",
+      "cast_panel_subtitle": "Uitgeligte karakter",
+      "cast_panel_body": "Hierdie karakter verteenwoordig die eksterne belanghebbende in jou scenario. Hul besluite vorm die uitkomste wat jy sal ervaar.",
+      "help_panel_title": "Voordat jy begin",
+      "help_safe_title": "Veilige omgewing",
+      "help_safe_body": "Besluite hier het geen werklike gevolge nie. Oefen gerus.",
+      "help_no_right_title": "Nie een regte antwoord nie",
+      "help_no_right_body": "Albei opsies behels werklike afwegings. Dink na oor jou redenasie.",
+      "help_replay_title": "Speel meer as een keer",
+      "help_replay_body": "Probeer albei paaie om al die gevolge te verstaan.",
+      "rail_brief_tip": "Inligting",
+      "rail_cast_tip": "Karakters",
+      "rail_help_tip": "Hulp",
+      "badge_en": "AF",
+      "option_label": "Opsie",
+      "speech_locale": "af",
+      "review_title": "Beoordeel hierdie simulasie",
+      "review_rating_label": "Hoe sal jy hierdie simulasie beoordeel?",
+      "review_experience_label": "Hoe was jou ervaring?",
+      "review_improvements_label": "Enige voorstelle vir verbetering?",
+      "review_submit_btn": "Stuur terugvoer",
+      "review_thank_you": "Dankie vir jou terugvoer!",
+      "setup_badge": "Interaktiewe simulasie",
+      "suggested_hint": "Voorgestel vir hierdie taal — jy kan dit verander.",
+      "captions_on": "Onderskrifte aan",
+      "captions_off": "Onderskrifte af",
+      "video_error": "Video kon nie laai nie",
+      "review_fit_label": "Het die karakter en omgewing vir jou streek akkuraat gevoel?",
+      "review_fit_yes": "Ja, dit het reg gevoel",
+      "review_fit_partly": "Gedeeltelik",
+      "review_fit_no": "Nee, iets het nie gepas nie",
+      "review_fit_details_label": "Wat het nie gepas nie? (name, plekke, geld, vakansies, bewoording…)",
+      "review_select_rating": "Kies 'n gradering"
+    }
+  },
+  "es-ES": {
+    "nodes": {
+      "context": {
+        "type": "context",
+        "next_node_id": "text_image",
+        "step_badge": "1 Contexto",
+        "title": "Una nueva oportunidad en Valencia",
+        "body": "Diriges el equipo de SchoolSims en Madrid. Una universidad privada de Valencia está dispuesta a firmar un contrato anual de unos 10.000 €, pero antes quiere una nueva funcionalidad. Tu equipo tiene una capacidad limitada. Tu objetivo de aprendizaje es sopesar los ingresos a corto plazo frente a la capacidad de entrega y la confianza del cliente.",
+        "learning_objective_label": "Objetivo de aprendizaje",
+        "learning_objective_body": "Sopesar los ingresos a corto plazo frente a la capacidad de entrega y la confianza del cliente."
+      },
+      "text_image": {
+        "type": "text_image",
+        "next_node_id": "video",
+        "step_badge": "2 Texto e imagen",
+        "title": "La petición de la universidad",
+        "body": "La universidad quiere la funcionalidad en cuatro semanas, antes de que empiece el curso en septiembre. Las vacaciones de agosto caen justo en ese plazo y tus desarrolladores ya tienen otros compromisos.",
+        "character_name": "Jordan Chen",
+        "character_title": "Vicerrector de Transformación Digital",
+        "character_alt": "Retrato de Jordan Chen, Vicerrector de Transformación Digital",
+        "ti_point1": "Entrega en 4 semanas, antes del inicio del curso",
+        "ti_point2": "Vacaciones de agosto y un equipo ya al límite"
+      },
+      "video": {
+        "type": "video",
+        "next_node_id": "decision",
+        "step_badge": "3 Video",
+        "quote": "¿Podemos comprometernos a cuatro semanas?",
+        "watch_listen_title": "Mira y escucha",
+        "watch_listen_body": "Fíjate en la urgencia del cliente. Marcará la presión de la decisión en la siguiente diapositiva."
+      },
+      "decision": {
+        "type": "decision",
+        "next_node_id": null,
+        "step_badge": "4 Decisión",
+        "prompt": "¿Qué harás?",
+        "keyboard_hint": "Presiona [A] o [B] para decidir",
+        "choices": [
+          {
+            "id": "A",
+            "label": "A Comprometerse con la fecha límite",
+            "target_node_id": "outcome_a"
+          },
+          {
+            "id": "B",
+            "label": "B Proponer un piloto en una sola facultad",
+            "target_node_id": "outcome_b"
+          }
+        ]
+      },
+      "outcome_a": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5A Resultado A",
+        "you_chose": "Elegiste A",
+        "title": "Presión de entrega",
+        "body": "La universidad acepta. Tu equipo tendrá que recortar las vacaciones de agosto y renegociar plazos con otros clientes.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Ingresos",
+            "direction": "up",
+            "body": "Contrato de 10.000 € cerrado antes del curso"
+          },
+          {
+            "key": "capacity",
+            "label": "Capacidad",
+            "direction": "down",
+            "body": "Equipo desbordado y vacaciones recortadas"
+          },
+          {
+            "key": "trust",
+            "label": "Confianza",
+            "direction": "mid",
+            "body": "En riesgo si la entrega falla al empezar el curso"
+          }
+        ]
+      },
+      "outcome_b": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5B Resultado B",
+        "you_chose": "Elegiste B",
+        "title": "Un primer paso más pequeño",
+        "body": "La universidad estudia un piloto en una sola facultad, con alcance y plazos acordados. La funcionalidad completa llega a la vuelta de vacaciones.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Ingresos",
+            "direction": "mid",
+            "body": "Cierre más lento: primero el piloto, después el contrato completo"
+          },
+          {
+            "key": "capacity",
+            "label": "Capacidad",
+            "direction": "up",
+            "body": "Se respetan las vacaciones y los compromisos actuales"
+          },
+          {
+            "key": "trust",
+            "label": "Confianza",
+            "direction": "up",
+            "body": "Fijar expectativas claras desde el principio genera confianza"
+          }
+        ]
+      },
+      "summary": {
+        "type": "summary",
+        "next_node_id": null,
+        "step_badge": "6 Resumen",
+        "title": "Reflexiona sobre tu decisión",
+        "reflection_prompt_label": "Pregunta de reflexión",
+        "question": "¿Cómo ha equilibrado tu decisión el contrato, las vacaciones de tu equipo y la confianza de la universidad?"
+      }
+    },
+    "ui": {
+      "start_btn": "Iniciar simulación",
+      "back_btn": "Atrás",
+      "next_btn": "Siguiente",
+      "restart_btn": "Reiniciar simulación",
+      "lang_label": "Idioma",
+      "eth_label": "Origen del personaje",
+      "ethnicity_labels": {
+        "african": "África Oriental",
+        "caucasian": "Europa",
+        "east_asian": "Asia Oriental",
+        "latin": "Latinoamérica",
+        "south_asian": "Asia del Sur"
+      },
+      "language_labels": {
+        "en": "English (International)",
+        "es": "Español",
+        "ar": "العربية (الإمارات)",
+        "zh": "中文",
+        "ne": "नेपाली",
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "es-MX": "Español (México)",
+        "es-AR": "Español (Argentina)",
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "ar-JO": "العربية (الأردن)",
+        "he": "עברית",
+        "es-CL": "Español (Chile)",
+        "zh-HK": "廣東話（香港）",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "es-ES": "Español (España)",
+        "af": "Afrikaans",
+        "pt-PT": "Português (Portugal)",
+        "eu": "Euskara"
+      },
+      "sim_title": "Simulación de Decisión de Liderazgo",
+      "setup_subtitle": "Experimenta escenarios de liderazgo realistas y desarrolla habilidades críticas de toma de decisiones en un entorno seguro y reflexivo.",
+      "before_you_begin_title": "Antes de comenzar",
+      "before_you_begin_body": "Este es un entorno seguro para practicar. No hay una sola respuesta correcta — explora ambos caminos para comprender toda la gama de compensaciones.",
+      "sim_error_title": "Error al cargar la simulación",
+      "sim_error_body": "No se pudo conectar al servicio de simulación. Verifica tu conexión e inténtalo de nuevo.",
+      "retry_btn": "Reintentar",
+      "brief_scenario_label": "Escenario",
+      "brief_scenario_body": "Diriges SchoolSims en Madrid. Una universidad privada de Valencia pide una nueva funcionalidad antes de firmar. Tu equipo tiene una capacidad limitada.",
+      "brief_objective_label": "Objetivo de aprendizaje",
+      "brief_objective_body": "Sopesar los ingresos a corto plazo frente a la capacidad de entrega y la confianza del cliente.",
+      "cast_panel_label": "Reparto",
+      "cast_panel_subtitle": "Personaje destacado",
+      "cast_panel_body": "Este personaje representa al actor externo en tu escenario. Sus decisiones moldean los resultados que experimentarás.",
+      "help_panel_title": "Antes de comenzar",
+      "help_safe_title": "Entorno seguro",
+      "help_safe_body": "Las decisiones aquí no afectan resultados reales. Practica libremente.",
+      "help_no_right_title": "No hay una sola respuesta correcta",
+      "help_no_right_body": "Ambas opciones implican compensaciones reales. Reflexiona sobre tu razonamiento.",
+      "help_replay_title": "Juega varias veces",
+      "help_replay_body": "Prueba ambos caminos para comprender toda la gama de consecuencias.",
+      "rail_brief_tip": "Resumen",
+      "rail_cast_tip": "Reparto",
+      "rail_help_tip": "Ayuda",
+      "badge_en": "ES",
+      "option_label": "Opción",
+      "speech_locale": "es-ES",
+      "review_title": "Califica esta simulación",
+      "review_rating_label": "¿Cómo calificarías esta simulación?",
+      "review_experience_label": "¿Cómo fue tu experiencia?",
+      "review_improvements_label": "¿Alguna mejora sugerida?",
+      "review_submit_btn": "Enviar comentarios",
+      "review_thank_you": "¡Gracias por tus comentarios!",
+      "setup_badge": "Simulación interactiva",
+      "suggested_hint": "Sugerido para este idioma; puedes cambiarlo.",
+      "captions_on": "Subtítulos: sí",
+      "captions_off": "Subtítulos: no",
+      "video_error": "No se pudo cargar el video",
+      "review_fit_label": "¿El personaje y el contexto te parecieron fieles a tu región?",
+      "review_fit_yes": "Sí, me pareció acertado",
+      "review_fit_partly": "En parte",
+      "review_fit_no": "No, algo no encajaba",
+      "review_fit_details_label": "¿Qué no encajaba? (nombres, lugares, dinero, días festivos, forma de hablar…)",
+      "review_select_rating": "Selecciona una calificación"
+    }
+  },
+  "pt-PT": {
+    "nodes": {
+      "context": {
+        "type": "context",
+        "next_node_id": "text_image",
+        "step_badge": "1 Contexto",
+        "title": "Uma nova oportunidade no Porto",
+        "body": "Lidera a equipa da SchoolSims em Lisboa. Um instituto politécnico privado do Porto está pronto para assinar um contrato anual de cerca de 10 mil euros, mas antes quer uma nova funcionalidade. A sua equipa tem capacidade limitada. O seu objetivo de aprendizagem é ponderar a receita a curto prazo face à capacidade de entrega e à confiança do cliente.",
+        "learning_objective_label": "Objetivo de aprendizagem",
+        "learning_objective_body": "Ponderar a receita a curto prazo face à capacidade de entrega e à confiança do cliente."
+      },
+      "text_image": {
+        "type": "text_image",
+        "next_node_id": "video",
+        "step_badge": "2 Texto e imagem",
+        "title": "O pedido do instituto",
+        "body": "O instituto quer a funcionalidade dentro de quatro semanas, antes do arranque do ano letivo em setembro. As férias de agosto calham precisamente nesse período e os seus programadores já têm outros compromissos.",
+        "character_name": "Jordan Chen",
+        "character_title": "Diretor de Ensino Digital",
+        "character_alt": "Retrato de Jordan Chen, Diretor de Ensino Digital",
+        "ti_point1": "Entrega em 4 semanas, antes do ano letivo",
+        "ti_point2": "Férias de agosto e uma equipa já no limite"
+      },
+      "video": {
+        "type": "video",
+        "next_node_id": "decision",
+        "step_badge": "3 Vídeo",
+        "quote": "Podemos comprometer-nos com quatro semanas?",
+        "watch_listen_title": "Veja e ouça",
+        "watch_listen_body": "Preste atenção à urgência do cliente. É ela que define a pressão da decisão no próximo diapositivo."
+      },
+      "decision": {
+        "type": "decision",
+        "next_node_id": null,
+        "step_badge": "4 Decisão",
+        "prompt": "O que vai fazer?",
+        "keyboard_hint": "Prima [A] ou [B] para decidir",
+        "choices": [
+          {
+            "id": "A",
+            "label": "A Comprometer-se com o prazo",
+            "target_node_id": "outcome_a"
+          },
+          {
+            "id": "B",
+            "label": "B Propor um piloto num só departamento",
+            "target_node_id": "outcome_b"
+          }
+        ]
+      },
+      "outcome_a": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5A Resultado A",
+        "you_chose": "Escolheu A",
+        "title": "Pressão de entrega",
+        "body": "O instituto aceita. A sua equipa vai ter de encurtar as férias de agosto e renegociar prazos com outros clientes.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Receita",
+            "direction": "up",
+            "body": "Contrato de 10 mil euros assinado antes do ano letivo"
+          },
+          {
+            "key": "capacity",
+            "label": "Capacidade",
+            "direction": "down",
+            "body": "Equipa sobrecarregada e férias encurtadas"
+          },
+          {
+            "key": "trust",
+            "label": "Confiança",
+            "direction": "mid",
+            "body": "Em risco se a entrega falhar no arranque do ano letivo"
+          }
+        ]
+      },
+      "outcome_b": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5B Resultado B",
+        "you_chose": "Escolheu B",
+        "title": "Um primeiro passo mais pequeno",
+        "body": "O instituto avalia um piloto num só departamento, com âmbito e calendário acordados. A funcionalidade completa chega depois das férias.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Receita",
+            "direction": "mid",
+            "body": "Fecho mais lento: primeiro o piloto, depois o contrato completo"
+          },
+          {
+            "key": "capacity",
+            "label": "Capacidade",
+            "direction": "up",
+            "body": "Férias e compromissos atuais preservados"
+          },
+          {
+            "key": "trust",
+            "label": "Confiança",
+            "direction": "up",
+            "body": "Expectativas claras desde o início geram confiança"
+          }
+        ]
+      },
+      "summary": {
+        "type": "summary",
+        "next_node_id": null,
+        "step_badge": "6 Resumo",
+        "title": "Reflita sobre a sua decisão",
+        "reflection_prompt_label": "Pergunta de reflexão",
+        "question": "Como é que a sua escolha equilibrou o contrato, as férias da equipa e a confiança do instituto?"
+      }
+    },
+    "ui": {
+      "start_btn": "Iniciar simulação",
+      "back_btn": "Voltar",
+      "next_btn": "Seguinte",
+      "restart_btn": "Recomeçar simulação",
+      "lang_label": "Idioma",
+      "eth_label": "Origem da personagem",
+      "ethnicity_labels": {
+        "african": "África Oriental",
+        "caucasian": "Europa",
+        "east_asian": "Ásia Oriental",
+        "latin": "América Latina",
+        "south_asian": "Ásia do Sul"
+      },
+      "language_labels": {
+        "en": "English (International)",
+        "es": "Español",
+        "ar": "العربية (الإمارات)",
+        "zh": "中文",
+        "ne": "नेपाली",
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "es-MX": "Español (México)",
+        "es-AR": "Español (Argentina)",
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "ar-JO": "العربية (الأردن)",
+        "he": "עברית",
+        "es-CL": "Español (Chile)",
+        "zh-HK": "廣東話（香港）",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "pt-PT": "Português (Portugal)",
+        "af": "Afrikaans",
+        "es-ES": "Español (España)",
+        "eu": "Euskara"
+      },
+      "sim_title": "Simulação de decisões de liderança",
+      "setup_subtitle": "Viva cenários de liderança realistas e desenvolva competências essenciais de tomada de decisão num ambiente seguro e de reflexão.",
+      "before_you_begin_title": "Antes de começar",
+      "before_you_begin_body": "Este é um ambiente seguro para praticar. Não existe uma única resposta certa — explore os dois caminhos para compreender todas as contrapartidas.",
+      "sim_error_title": "Não foi possível carregar a simulação",
+      "sim_error_body": "Não foi possível ligar ao serviço da simulação. Verifique a sua ligação e tente novamente.",
+      "retry_btn": "Tentar novamente",
+      "brief_scenario_label": "Cenário",
+      "brief_scenario_body": "Lidera a SchoolSims em Lisboa. Um instituto politécnico privado do Porto pede uma nova funcionalidade antes de assinar. A sua equipa tem capacidade limitada.",
+      "brief_objective_label": "Objetivo de aprendizagem",
+      "brief_objective_body": "Ponderar a receita a curto prazo face à capacidade de entrega e à confiança do cliente.",
+      "cast_panel_label": "Personagens",
+      "cast_panel_subtitle": "Personagem em destaque",
+      "cast_panel_body": "Esta personagem representa a parte interessada externa no seu cenário. As decisões dela moldam os resultados que vai viver.",
+      "help_panel_title": "Antes de começar",
+      "help_safe_title": "Ambiente seguro",
+      "help_safe_body": "Nenhuma decisão aqui tem consequências reais. Pratique à vontade.",
+      "help_no_right_title": "Não há uma única resposta certa",
+      "help_no_right_body": "As duas opções implicam contrapartidas reais. Reflita sobre o seu raciocínio.",
+      "help_replay_title": "Jogue várias vezes",
+      "help_replay_body": "Experimente os dois caminhos para compreender todas as consequências.",
+      "rail_brief_tip": "Resumo",
+      "rail_cast_tip": "Personagens",
+      "rail_help_tip": "Ajuda",
+      "badge_en": "PT",
+      "option_label": "Opção",
+      "speech_locale": "pt-PT",
+      "review_title": "Avalie esta simulação",
+      "review_rating_label": "Como avalia esta simulação?",
+      "review_experience_label": "Como foi a sua experiência?",
+      "review_improvements_label": "Alguma sugestão de melhoria?",
+      "review_submit_btn": "Enviar opinião",
+      "review_thank_you": "Obrigado pela sua opinião!",
+      "setup_badge": "Simulação interativa",
+      "suggested_hint": "Sugerido para este idioma — pode alterar.",
+      "captions_on": "Legendas: sim",
+      "captions_off": "Legendas: não",
+      "video_error": "Não foi possível carregar o vídeo",
+      "review_fit_label": "A personagem e o contexto pareceram-lhe fiéis à sua região?",
+      "review_fit_yes": "Sim, pareceu-me certo",
+      "review_fit_partly": "Em parte",
+      "review_fit_no": "Não, algo não batia certo",
+      "review_fit_details_label": "O que não batia certo? (nomes, lugares, dinheiro, feriados, linguagem…)",
+      "review_select_rating": "Escolha uma classificação"
+    }
+  },
+  "eu": {
+    "nodes": {
+      "context": {
+        "type": "context",
+        "next_node_id": "text_image",
+        "step_badge": "1 Testuingurua",
+        "title": "Aukera berri bat Donostian",
+        "body": "SchoolSimsen Bilboko taldea zuzentzen duzu. Donostiako unibertsitate pribatu bat urteko 10.000 euro inguruko kontratua sinatzeko prest dago, baina lehenik funtzionalitate berri bat nahi du. Zure taldearen ahalmena mugatua da. Zure ikaskuntza-helburua epe laburreko diru-sarrerak entregatzeko ahalmenarekin eta bezeroaren konfiantzarekin haztatzea da.",
+        "learning_objective_label": "Ikaskuntza-helburua",
+        "learning_objective_body": "Epe laburreko diru-sarrerak entregatzeko ahalmenarekin eta bezeroaren konfiantzarekin haztatzea."
+      },
+      "text_image": {
+        "type": "text_image",
+        "next_node_id": "video",
+        "step_badge": "2 Testua eta irudia",
+        "title": "Unibertsitatearen eskaera",
+        "body": "Unibertsitateak lau asteren buruan nahi du funtzionalitatea, irailean ikasturtea hasi aurretik. Abuztuko oporrak tarte horretan bertan daude, eta zure garatzaileek beste konpromiso batzuk dituzte jada.",
+        "character_name": "Jordan Chen",
+        "character_title": "Ikaskuntza Digitaleko zuzendaria",
+        "character_alt": "Erretratua: Jordan Chen, Ikaskuntza Digitaleko zuzendaria",
+        "ti_point1": "Entrega 4 asteko epean, ikasturtea hasi aurretik",
+        "ti_point2": "Abuztuko oporrak, eta taldea dagoeneko gainezka"
+      },
+      "video": {
+        "type": "video",
+        "next_node_id": "decision",
+        "step_badge": "3 Bideoa",
+        "quote": "Lau asteko konpromisoa har dezakegu?",
+        "watch_listen_title": "Ikusi eta entzun",
+        "watch_listen_body": "Erreparatu bezeroaren presari. Hurrengo diapositiban sentituko duzun erabaki-presioa hark markatuko du."
+      },
+      "decision": {
+        "type": "decision",
+        "next_node_id": null,
+        "step_badge": "4 Erabakia",
+        "prompt": "Zer egingo duzu?",
+        "keyboard_hint": "Sakatu [A] edo [B] erabakitzeko",
+        "choices": [
+          {
+            "id": "A",
+            "label": "A Epea betetzeko konpromisoa hartu",
+            "target_node_id": "outcome_a"
+          },
+          {
+            "id": "B",
+            "label": "B Sail bakar batean proba pilotu bat proposatu",
+            "target_node_id": "outcome_b"
+          }
+        ]
+      },
+      "outcome_a": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5A A emaitza",
+        "you_chose": "A aukeratu duzu",
+        "title": "Entregatzeko presioa",
+        "body": "Unibertsitateak onartu egiten du. Zure taldeak abuztuko oporrak laburtu eta beste bezero batzuekin epeak berriro negoziatu beharko ditu.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Diru-sarrerak",
+            "direction": "up",
+            "body": "10.000 euroko kontratua sinatuta ikasturtea hasi aurretik"
+          },
+          {
+            "key": "capacity",
+            "label": "Ahalmena",
+            "direction": "down",
+            "body": "Taldea gainkargatuta, oporrak laburtuta"
+          },
+          {
+            "key": "trust",
+            "label": "Konfiantza",
+            "direction": "mid",
+            "body": "Arriskuan, ikasturte hasieran entrega atzeratzen bada"
+          }
+        ]
+      },
+      "outcome_b": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5B B emaitza",
+        "you_chose": "B aukeratu duzu",
+        "title": "Lehen urrats txikiagoa",
+        "body": "Unibertsitateak sail bakar bateko proba pilotua aztertzen du, adostutako irismen eta egutegiarekin. Funtzionalitate osoa oporren ondoren iritsiko da.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Diru-sarrerak",
+            "direction": "mid",
+            "body": "Itxiera motelagoa: lehenik proba pilotua, gero kontratu osoa"
+          },
+          {
+            "key": "capacity",
+            "label": "Ahalmena",
+            "direction": "up",
+            "body": "Oporrak eta egungo konpromisoak babestuta"
+          },
+          {
+            "key": "trust",
+            "label": "Konfiantza",
+            "direction": "up",
+            "body": "Hasieratik itxaropen argiak ezartzeak konfiantza sortzen du"
+          }
+        ]
+      },
+      "summary": {
+        "type": "summary",
+        "next_node_id": null,
+        "step_badge": "6 Laburpena",
+        "title": "Hausnartu zure erabakiaz",
+        "reflection_prompt_label": "Hausnarketarako galdera",
+        "question": "Nola orekatu ditu zure aukerak kontratua, taldearen oporrak eta unibertsitatearen konfiantza?"
+      }
+    },
+    "ui": {
+      "start_btn": "Hasi simulazioa",
+      "back_btn": "Atzera",
+      "next_btn": "Hurrengoa",
+      "restart_btn": "Berrabiarazi simulazioa",
+      "lang_label": "Hizkuntza",
+      "eth_label": "Pertsonaiaren jatorria",
+      "ethnicity_labels": {
+        "african": "Ekialdeko Afrika",
+        "caucasian": "Europa",
+        "east_asian": "Ekialdeko Asia",
+        "latin": "Latinoamerika",
+        "south_asian": "Hego Asia"
+      },
+      "language_labels": {
+        "en": "English (International)",
+        "es": "Español",
+        "ar": "العربية (الإمارات)",
+        "zh": "中文",
+        "ne": "नेपाली",
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "es-MX": "Español (México)",
+        "es-AR": "Español (Argentina)",
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "ar-JO": "العربية (الأردن)",
+        "he": "עברית",
+        "es-CL": "Español (Chile)",
+        "zh-HK": "廣東話（香港）",
+        "en-US": "English (US)",
+        "en-GB": "English (UK)",
+        "eu": "Euskara",
+        "af": "Afrikaans",
+        "es-ES": "Español (España)",
+        "pt-PT": "Português (Portugal)"
+      },
+      "sim_title": "Lidergo-erabakien simulazioa",
+      "setup_subtitle": "Bizi lidergo-egoera errealistak eta garatu erabakiak hartzeko funtsezko trebetasunak ingurune seguru eta hausnartzaile batean.",
+      "before_you_begin_title": "Hasi aurretik",
+      "before_you_begin_body": "Praktikatzeko ingurune segurua da hau. Ez dago erantzun zuzen bakarra: arakatu bi bideak, aukera bakoitzaren alde onak eta txarrak ulertzeko.",
+      "sim_error_title": "Ezin izan da simulazioa kargatu",
+      "sim_error_body": "Ezin izan da simulazio-zerbitzuarekin konektatu. Egiaztatu konexioa eta saiatu berriro.",
+      "retry_btn": "Saiatu berriro",
+      "brief_scenario_label": "Egoera",
+      "brief_scenario_body": "SchoolSimsen Bilboko taldea zuzentzen duzu. Donostiako unibertsitate pribatu batek funtzionalitate berri bat eskatzen du sinatu aurretik. Zure taldearen ahalmena mugatua da.",
+      "brief_objective_label": "Ikaskuntza-helburua",
+      "brief_objective_body": "Epe laburreko diru-sarrerak entregatzeko ahalmenarekin eta bezeroaren konfiantzarekin haztatzea.",
+      "cast_panel_label": "Pertsonaiak",
+      "cast_panel_subtitle": "Pertsonaia nagusia",
+      "cast_panel_body": "Pertsonaia honek zure egoerako kanpoko interes-taldea ordezkatzen du. Haren erabakiek bizituko dituzun emaitzak moldatzen dituzte.",
+      "help_panel_title": "Hasi aurretik",
+      "help_safe_title": "Ingurune segurua",
+      "help_safe_body": "Hemengo erabakiek ez dute ondorio errealik. Praktikatu lasai.",
+      "help_no_right_title": "Ez dago erantzun zuzen bakarra",
+      "help_no_right_body": "Bi aukerek dituzte alde onak eta txarrak. Hausnartu zure arrazoibideaz.",
+      "help_replay_title": "Jokatu behin baino gehiagotan",
+      "help_replay_body": "Probatu bi bideak ondorio guztiak ulertzeko.",
+      "rail_brief_tip": "Laburpena",
+      "rail_cast_tip": "Pertsonaiak",
+      "rail_help_tip": "Laguntza",
+      "badge_en": "EU",
+      "option_label": "Aukera",
+      "speech_locale": "eu",
+      "review_title": "Baloratu simulazio hau",
+      "review_rating_label": "Nola baloratzen duzu simulazio hau?",
+      "review_experience_label": "Nolakoa izan da zure esperientzia?",
+      "review_improvements_label": "Hobetzeko proposamenik?",
+      "review_submit_btn": "Bidali iritzia",
+      "review_thank_you": "Eskerrik asko zure iritziagatik!",
+      "setup_badge": "Simulazio interaktiboa",
+      "suggested_hint": "Hizkuntza honetarako iradokia; alda dezakezu.",
+      "captions_on": "Azpitituluak: bai",
+      "captions_off": "Azpitituluak: ez",
+      "video_error": "Ezin izan da bideoa kargatu",
+      "review_fit_label": "Pertsonaia eta testuingurua zure eskualdearekiko zehatzak iruditu zaizkizu?",
+      "review_fit_yes": "Bai, egokia iruditu zait",
+      "review_fit_partly": "Neurri batean",
+      "review_fit_no": "Ez, zerbaitek ez zuen bat egiten",
+      "review_fit_details_label": "Zerk ez zuen bat egiten? (izenak, lekuak, dirua, jaiegunak, hizkera…)",
+      "review_select_rating": "Aukeratu balorazio bat"
     }
   }
 }
