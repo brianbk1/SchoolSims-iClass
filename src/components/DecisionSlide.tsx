@@ -24,7 +24,7 @@ export default function DecisionSlide({ node, chosenId, onChoose, audioUrl, spee
             onClick={() => onChoose(choice.target_node_id, choice.id)}
             className={`choice-card${chosenId === choice.id ? ' selected' : ''}`}
             data-letter={choice.id}
-            style={{ textAlign: 'left', padding: 32 }}
+            style={{ textAlign: 'start', padding: 32 }}
           >
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20 }}>
               <span className="choice-letter" style={{ width: 48, height: 48, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700 }}>{choice.id}</span>

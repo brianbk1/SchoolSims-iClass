@@ -60,8 +60,8 @@ body {
 
 /* ── Purple left-rule accent ── */
 .purple-rule {
-  border-left: 3px solid var(--purple);
-  padding-left: 1rem;
+  border-inline-start: 3px solid var(--purple);
+  padding-inline-start: 1rem;
 }
 
 /* ── Step badge ── */
@@ -91,7 +91,7 @@ body {
   content: attr(data-letter);
   position: absolute;
   bottom: -20px;
-  right: -8px;
+  inset-inline-end: -8px;
   font-family: 'DM Sans', sans-serif;
   font-size: 120px;
   font-weight: 700;
@@ -147,7 +147,7 @@ body {
   font-size: 11px;
   font-weight: 500;
   position: absolute;
-  left: 48px;
+  inset-inline-start: 48px;
   top: 50%;
   transform: translateY(-50%);
   padding: 5px 10px;
@@ -278,7 +278,7 @@ kbd {
   content: '\201C';
   position: absolute;
   top: -6px;
-  left: 12px;
+  inset-inline-start: 12px;
   font-size: 72px;
   color: rgba(107,70,193,0.25);
   line-height: 1;
@@ -298,7 +298,7 @@ kbd {
 #sum-recap {
   background: rgba(107,70,193,0.04);
   border: 1px solid rgba(107,70,193,0.2);
-  border-left: 3px solid var(--purple);
+  border-inline-start: 3px solid var(--purple);
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 20px;
@@ -332,7 +332,7 @@ kbd {
 /* ── Rail bar ── */
 .rail-bar {
   background: var(--surface);
-  border-right: 1px solid var(--border);
+  border-inline-end: 1px solid var(--border);
 }
 
 /* ── Primary button ── */
@@ -452,7 +452,7 @@ kbd {
   .rail-bar {
     width: auto !important; flex-direction: row !important; justify-content: center;
     padding: 4px 8px !important; gap: 14px !important;
-    border-right: none !important; border-bottom: 1px solid var(--border);
+    border-inline-end: none !important; border-bottom: 1px solid var(--border);
   }
 
   /* Slides use the full width. */
@@ -473,3 +473,11 @@ kbd {
   .cast-body { flex-direction: column !important; align-items: stretch !important; gap: 16px !important; padding: 18px !important; }
   .modal-panel { width: calc(100% - 24px) !important; max-height: calc(100dvh - 48px); overflow-y: auto; }
 }
+
+/* ── Right-to-left languages (Arabic, Hebrew, Urdu) ──
+   <html dir="rtl"> mirrors the layout; arrows that mean "back"/"next" must flip too.
+   Video controls and the timer stay left-to-right, as they do in RTL apps. */
+[dir="rtl"] #back-btn svg,
+[dir="rtl"] #next-btn svg { transform: scaleX(-1); }
+[dir="rtl"] video,
+[dir="rtl"] #timer { direction: ltr; }

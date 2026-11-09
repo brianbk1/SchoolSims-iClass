@@ -140,7 +140,10 @@
         "es-MX": "Español (México)",
         "es-AR": "Español (Argentina)",
         "sw-TZ": "Kiswahili (Tanzania)",
-        "ar-JO": "العربية (الأردن)"
+        "ar-JO": "العربية (الأردن)",
+        "he": "עברית",
+        "es-CL": "Español (Chile)",
+        "zh-HK": "廣東話（香港）"
       },
       "sim_title": "Leadership Decision Simulation",
       "setup_subtitle": "Experience realistic leadership scenarios and develop critical decision-making skills in a safe, reflective environment.",
@@ -328,7 +331,10 @@
         "es-MX": "Español (México)",
         "es-AR": "Español (Argentina)",
         "sw-TZ": "Kiswahili (Tanzania)",
-        "ar-JO": "العربية (الأردن)"
+        "ar-JO": "العربية (الأردن)",
+        "he": "עברית",
+        "es-CL": "Español (Chile)",
+        "zh-HK": "廣東話（香港）"
       },
       "sim_title": "Simulación de Decisión de Liderazgo",
       "setup_subtitle": "Experimenta escenarios de liderazgo realistas y desarrolla habilidades críticas de toma de decisiones en un entorno seguro y reflexivo.",
@@ -516,7 +522,10 @@
         "es-MX": "Español (México)",
         "es-AR": "Español (Argentina)",
         "sw-TZ": "Kiswahili (Tanzania)",
-        "ar-JO": "العربية (الأردن)"
+        "ar-JO": "العربية (الأردن)",
+        "he": "עברית",
+        "es-CL": "Español (Chile)",
+        "zh-HK": "廣東話（香港）"
       },
       "sim_title": "محاكاة قرار القيادة",
       "setup_subtitle": "عش سيناريوهات قيادية واقعية وطور مهارات اتخاذ القرارات الحاسمة في بيئة آمنة وتأملية.",
@@ -704,7 +713,10 @@
         "es-MX": "Español (México)",
         "es-AR": "Español (Argentina)",
         "sw-TZ": "Kiswahili (Tanzania)",
-        "ar-JO": "العربية (الأردن)"
+        "ar-JO": "العربية (الأردن)",
+        "he": "עברית",
+        "es-CL": "Español (Chile)",
+        "zh-HK": "廣東話（香港）"
       },
       "sim_title": "领导力决策模拟",
       "setup_subtitle": "体验真实的领导力场景，在安全、反思的环境中培养关键的决策能力。",
@@ -892,7 +904,10 @@
         "es-MX": "Español (México)",
         "es-AR": "Español (Argentina)",
         "sw-TZ": "Kiswahili (Tanzania)",
-        "ar-JO": "العربية (الأردن)"
+        "ar-JO": "العربية (الأردن)",
+        "he": "עברית",
+        "es-CL": "Español (Chile)",
+        "zh-HK": "廣東話（香港）"
       },
       "sim_title": "नेतृत्व निर्णय सिमुलेसन",
       "setup_subtitle": "यथार्थपरक नेतृत्व परिदृश्यहरू अनुभव गर्नुहोस् र सुरक्षित, चिन्तनशील वातावरणमा महत्वपूर्ण निर्णय लिने सीपहरू विकास गर्नुहोस्।",
@@ -1080,7 +1095,10 @@
         "es-MX": "Español (México)",
         "es-AR": "Español (Argentina)",
         "sw-TZ": "Kiswahili (Tanzania)",
-        "ar-JO": "العربية (الأردن)"
+        "ar-JO": "العربية (الأردن)",
+        "he": "עברית",
+        "es-CL": "Español (Chile)",
+        "zh-HK": "廣東話（香港）"
       },
       "sim_title": "Uigizaji wa Uamuzi wa Uongozi",
       "setup_subtitle": "Pitia hali halisi za uongozi na kuendeleza ujuzi muhimu wa kufanya maamuzi katika mazingira salama na ya kutafakari.",
@@ -1268,7 +1286,10 @@
         "es-MX": "Español (México)",
         "es-AR": "Español (Argentina)",
         "sw-TZ": "Kiswahili (Tanzania)",
-        "ar-JO": "العربية (الأردن)"
+        "ar-JO": "العربية (الأردن)",
+        "he": "עברית",
+        "es-CL": "Español (Chile)",
+        "zh-HK": "廣東話（香港）"
       },
       "sim_title": "قیادت کے فیصلے کی سمیولیشن",
       "setup_subtitle": "حقیقت پسندانہ قیادت کے منظرناموں کا تجربہ کریں اور محفوظ، غور و فکر والے ماحول میں اہم فیصلہ سازی کی مہارتیں تیار کریں۔",
@@ -1355,6 +1376,21 @@
     "ar-JO": {
       "setting": "Amman, Jordan — private university; second semester in February, winter break; JOD",
       "approved_at": "2026-11-08T18:04:22+00:00",
+      "source": "written by Claude; needs native-speaker review"
+    },
+    "he": {
+      "setting": "Ramat Gan, Israel — private academic college; academic year opens in October after the Tishrei holidays; ILS",
+      "approved_at": "2026-11-09T01:56:53+00:00",
+      "source": "written by Claude; needs native-speaker review"
+    },
+    "es-CL": {
+      "setting": "Valparaíso, Chile — universidad privada; clases en marzo, vacaciones de febrero; contrato en UF",
+      "approved_at": "2026-11-09T01:56:53+00:00",
+      "source": "written by Claude; needs native-speaker review"
+    },
+    "zh-HK": {
+      "setting": "Hong Kong — self-financing post-secondary institution; September start, summer leave; HKD; written Cantonese",
+      "approved_at": "2026-11-09T01:56:53+00:00",
       "source": "written by Claude; needs native-speaker review"
     }
   },
@@ -1498,7 +1534,10 @@
         "es-MX": "Español (México)",
         "es-AR": "Español (Argentina)",
         "sw-TZ": "Kiswahili (Tanzania)",
-        "ar-JO": "العربية (الأردن)"
+        "ar-JO": "العربية (الأردن)",
+        "he": "עברית",
+        "es-CL": "Español (Chile)",
+        "zh-HK": "廣東話（香港）"
       },
       "sim_title": "Simulación de Decisión de Liderazgo",
       "setup_subtitle": "Experimenta escenarios de liderazgo realistas y desarrolla habilidades críticas de toma de decisiones en un entorno seguro y reflexivo.",
@@ -1686,7 +1725,10 @@
         "es-AR": "Español (Argentina)",
         "es-MX": "Español (México)",
         "sw-TZ": "Kiswahili (Tanzania)",
-        "ar-JO": "العربية (الأردن)"
+        "ar-JO": "العربية (الأردن)",
+        "he": "עברית",
+        "es-CL": "Español (Chile)",
+        "zh-HK": "廣東話（香港）"
       },
       "sim_title": "Simulación de Decisión de Liderazgo",
       "setup_subtitle": "Viví escenarios de liderazgo realistas y desarrollá habilidades clave para tomar decisiones en un entorno seguro y reflexivo.",
@@ -1874,7 +1916,10 @@
         "sw-TZ": "Kiswahili (Tanzania)",
         "es-MX": "Español (México)",
         "es-AR": "Español (Argentina)",
-        "ar-JO": "العربية (الأردن)"
+        "ar-JO": "العربية (الأردن)",
+        "he": "עברית",
+        "es-CL": "Español (Chile)",
+        "zh-HK": "廣東話（香港）"
       },
       "sim_title": "Uigizaji wa Uamuzi wa Uongozi",
       "setup_subtitle": "Pitia hali halisi za uongozi na kuendeleza ujuzi muhimu wa kufanya maamuzi katika mazingira salama na ya kutafakari.",
@@ -2062,7 +2107,10 @@
         "ar-JO": "العربية (الأردن)",
         "es-MX": "Español (México)",
         "es-AR": "Español (Argentina)",
-        "sw-TZ": "Kiswahili (Tanzania)"
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "he": "עברית",
+        "es-CL": "Español (Chile)",
+        "zh-HK": "廣東話（香港）"
       },
       "sim_title": "محاكاة قرار القيادة",
       "setup_subtitle": "عش سيناريوهات قيادية واقعية وطور مهارات اتخاذ القرارات الحاسمة في بيئة آمنة وتأملية.",
@@ -2108,6 +2156,579 @@
       "review_fit_no": "لا، شيء ما لم يكن مناسباً",
       "review_fit_details_label": "ما الذي لم يكن مناسباً؟ (الأسماء، الأماكن، العملة، العطل، الصياغة…)",
       "review_select_rating": "اختر تقييماً"
+    }
+  },
+  "he": {
+    "nodes": {
+      "context": {
+        "type": "context",
+        "next_node_id": "text_image",
+        "step_badge": "1 הקשר",
+        "title": "הזדמנות חדשה ממכללה ברמת גן",
+        "body": "אתם מובילים את צוות SchoolSims בתל אביב. מכללה אקדמית פרטית ברמת גן מוכנה לחתום על חוזה שנתי של כ-40 אלף ₪, אבל רוצה פיצ'ר חדש לפני החתימה. לצוות שלכם יש קיבולת מוגבלת. מטרת הלמידה: לשקול הכנסות לטווח הקצר מול יכולת האספקה ואמון הלקוח.",
+        "learning_objective_label": "מטרת הלמידה",
+        "learning_objective_body": "לשקול הכנסות לטווח הקצר מול יכולת האספקה ואמון הלקוח."
+      },
+      "text_image": {
+        "type": "text_image",
+        "next_node_id": "video",
+        "step_badge": "2 טקסט ותמונה",
+        "title": "הבקשה של המכללה",
+        "body": "המכללה רוצה את הפיצ'ר בתוך ארבעה שבועות, לפני פתיחת שנת הלימודים באוקטובר. חגי תשרי נופלים בדיוק בתקופה הזו, ולמפתחים שלכם כבר יש התחייבויות אחרות.",
+        "character_name": "Jordan Chen",
+        "character_title": "סמנכ\"ל למידה דיגיטלית",
+        "character_alt": "דיוקן של Jordan Chen, סמנכ\"ל למידה דיגיטלית",
+        "ti_point1": "נדרשת אספקה בתוך 4 שבועות, לפני פתיחת השנה",
+        "ti_point2": "חגי תשרי, וצוות הפיתוח כבר בעומס מלא"
+      },
+      "video": {
+        "type": "video",
+        "next_node_id": "decision",
+        "step_badge": "3 וידאו",
+        "quote": "אפשר להתחייב לארבעה שבועות?",
+        "watch_listen_title": "צפו והקשיבו",
+        "watch_listen_body": "שימו לב לדחיפות של הלקוח. היא תקבע את הלחץ שתרגישו בהחלטה בשקופית הבאה."
+      },
+      "decision": {
+        "type": "decision",
+        "next_node_id": null,
+        "step_badge": "4 החלטה",
+        "prompt": "מה תעשו?",
+        "keyboard_hint": "הקישו [A] או [B] כדי להחליט",
+        "choices": [
+          {
+            "id": "A",
+            "label": "A להתחייב למועד",
+            "target_node_id": "outcome_a"
+          },
+          {
+            "id": "B",
+            "label": "B להציע פיילוט בפקולטה אחת",
+            "target_node_id": "outcome_b"
+          }
+        ]
+      },
+      "outcome_a": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5A תוצאה A",
+        "you_chose": "בחרתם ב-A",
+        "title": "לחץ אספקה",
+        "body": "המכללה מסכימה. הצוות שלכם יצטרך לעבוד בחול המועד ולתאם מחדש מועדים מול לקוחות אחרים.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "הכנסות",
+            "direction": "up",
+            "body": "חוזה של 40 אלף ₪ נחתם לפני פתיחת השנה"
+          },
+          {
+            "key": "capacity",
+            "label": "קיבולת",
+            "direction": "down",
+            "body": "הצוות בעומס יתר, עבודה בחול המועד"
+          },
+          {
+            "key": "trust",
+            "label": "אמון",
+            "direction": "mid",
+            "body": "בסיכון אם האספקה תתעכב בפתיחת השנה"
+          }
+        ]
+      },
+      "outcome_b": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5B תוצאה B",
+        "you_chose": "בחרתם ב-B",
+        "title": "צעד ראשון קטן יותר",
+        "body": "המכללה בוחנת פיילוט בפקולטה אחת, עם היקף ולוח זמנים מוסכמים. הפיצ'ר המלא יגיע אחרי החגים.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "הכנסות",
+            "direction": "mid",
+            "body": "סגירה איטית יותר: קודם פיילוט, אחר כך חוזה מלא"
+          },
+          {
+            "key": "capacity",
+            "label": "קיבולת",
+            "direction": "up",
+            "body": "החגים וההתחייבויות הקיימות נשמרים"
+          },
+          {
+            "key": "trust",
+            "label": "אמון",
+            "direction": "up",
+            "body": "תיאום ציפיות שקוף מההתחלה בונה אמון"
+          }
+        ]
+      },
+      "summary": {
+        "type": "summary",
+        "next_node_id": null,
+        "step_badge": "6 סיכום",
+        "title": "חשבו על ההחלטה שלכם",
+        "reflection_prompt_label": "שאלה לרפלקציה",
+        "question": "איך הבחירה שלכם איזנה בין החוזה, החגים של הצוות והאמון של המכללה?"
+      }
+    },
+    "ui": {
+      "start_btn": "התחלת הסימולציה",
+      "back_btn": "חזרה",
+      "next_btn": "הבא",
+      "restart_btn": "התחלה מחדש",
+      "lang_label": "שפה",
+      "eth_label": "רקע הדמות",
+      "ethnicity_labels": {
+        "african": "מזרח אפריקה",
+        "caucasian": "אירופה",
+        "east_asian": "מזרח אסיה",
+        "latin": "אמריקה הלטינית",
+        "south_asian": "דרום אסיה"
+      },
+      "language_labels": {
+        "en": "English",
+        "es": "Español",
+        "ar": "العربية (الإمارات)",
+        "zh": "中文",
+        "ne": "नेपाली",
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "es-MX": "Español (México)",
+        "es-AR": "Español (Argentina)",
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "ar-JO": "العربية (الأردن)",
+        "he": "עברית",
+        "es-CL": "Español (Chile)",
+        "zh-HK": "廣東話（香港）"
+      },
+      "sim_title": "סימולציית החלטות ניהוליות",
+      "setup_subtitle": "התנסו בתרחישי ניהול מציאותיים ופתחו מיומנויות של קבלת החלטות בסביבה בטוחה שמזמינה חשיבה.",
+      "before_you_begin_title": "לפני שמתחילים",
+      "before_you_begin_body": "זו סביבה בטוחה לתרגול. אין תשובה נכונה אחת — נסו את שני המסלולים כדי להבין את מלוא השיקולים.",
+      "sim_error_title": "טעינת הסימולציה נכשלה",
+      "sim_error_body": "לא ניתן להתחבר לשירות הסימולציה. בדקו את החיבור ונסו שוב.",
+      "retry_btn": "ניסיון חוזר",
+      "brief_scenario_label": "התרחיש",
+      "brief_scenario_body": "אתם מובילים את SchoolSims בתל אביב. מכללה פרטית ברמת גן מבקשת פיצ'ר חדש לפני החתימה. לצוות שלכם יש קיבולת מוגבלת.",
+      "brief_objective_label": "מטרת הלמידה",
+      "brief_objective_body": "לשקול הכנסות לטווח הקצר מול יכולת האספקה ואמון הלקוח.",
+      "cast_panel_label": "דמויות",
+      "cast_panel_subtitle": "הדמות בתרחיש",
+      "cast_panel_body": "הדמות מייצגת את בעל העניין החיצוני בתרחיש. ההחלטות שלה משפיעות על התוצאות שתחוו.",
+      "help_panel_title": "לפני שמתחילים",
+      "help_safe_title": "סביבה בטוחה",
+      "help_safe_body": "ההחלטות כאן לא משפיעות על תוצאות אמיתיות. תרגלו בחופשיות.",
+      "help_no_right_title": "אין תשובה נכונה אחת",
+      "help_no_right_body": "בשתי האפשרויות יש פשרות אמיתיות. חשבו על השיקולים שלכם.",
+      "help_replay_title": "אפשר לשחק כמה פעמים",
+      "help_replay_body": "נסו את שני המסלולים כדי להבין את כל ההשלכות.",
+      "rail_brief_tip": "תקציר",
+      "rail_cast_tip": "דמויות",
+      "rail_help_tip": "עזרה",
+      "badge_en": "HE",
+      "option_label": "אפשרות",
+      "speech_locale": "he",
+      "review_title": "דרגו את הסימולציה",
+      "review_rating_label": "איך הייתם מדרגים את הסימולציה?",
+      "review_experience_label": "איך הייתה החוויה?",
+      "review_improvements_label": "יש הצעות לשיפור?",
+      "review_submit_btn": "שליחת משוב",
+      "review_thank_you": "תודה על המשוב!",
+      "setup_badge": "סימולציה אינטראקטיבית",
+      "suggested_hint": "מוצע לשפה הזו — אפשר לשנות.",
+      "captions_on": "כתוביות: מופעל",
+      "captions_off": "כתוביות: כבוי",
+      "video_error": "טעינת הווידאו נכשלה",
+      "review_fit_label": "האם הדמות והסביבה הרגישו מדויקות לאזור שלכם?",
+      "review_fit_yes": "כן, זה הרגיש נכון",
+      "review_fit_partly": "חלקית",
+      "review_fit_no": "לא, משהו לא הסתדר",
+      "review_fit_details_label": "מה לא הסתדר? (שמות, מקומות, כסף, חגים, ניסוח…)",
+      "review_select_rating": "בחרו דירוג"
+    }
+  },
+  "es-CL": {
+    "nodes": {
+      "context": {
+        "type": "context",
+        "next_node_id": "text_image",
+        "step_badge": "1 Contexto",
+        "title": "Una nueva oportunidad en Valparaíso",
+        "body": "Lideras el equipo de SchoolSims en Santiago. Una universidad privada de Valparaíso está lista para firmar un contrato anual de unas 280 UF, pero antes quiere una nueva funcionalidad. Tu equipo tiene capacidad limitada. Tu objetivo de aprendizaje es sopesar los ingresos de corto plazo frente a la capacidad de entrega y la confianza del cliente.",
+        "learning_objective_label": "Objetivo de aprendizaje",
+        "learning_objective_body": "Sopesar los ingresos a corto plazo frente a la capacidad de entrega y la confianza del cliente."
+      },
+      "text_image": {
+        "type": "text_image",
+        "next_node_id": "video",
+        "step_badge": "2 Texto e imagen",
+        "title": "La solicitud de la universidad",
+        "body": "La universidad quiere la funcionalidad en cuatro semanas, antes del inicio de clases en marzo. Las vacaciones de febrero caen justo en ese período y tus desarrolladores ya tienen otros compromisos.",
+        "character_name": "Jordan Chen",
+        "character_title": "Director de Innovación Docente",
+        "character_alt": "Retrato de Jordan Chen, Director de Innovación Docente",
+        "ti_point1": "Entrega en 4 semanas, antes del inicio de clases",
+        "ti_point2": "Vacaciones de febrero y un equipo ya al máximo"
+      },
+      "video": {
+        "type": "video",
+        "next_node_id": "decision",
+        "step_badge": "3 Video",
+        "quote": "¿Podemos comprometernos a cuatro semanas?",
+        "watch_listen_title": "Mira y escucha",
+        "watch_listen_body": "Pon atención a la urgencia del cliente. Va a marcar la presión de la decisión en la siguiente diapositiva."
+      },
+      "decision": {
+        "type": "decision",
+        "next_node_id": null,
+        "step_badge": "4 Decisión",
+        "prompt": "¿Qué harás?",
+        "keyboard_hint": "Presiona [A] o [B] para decidir",
+        "choices": [
+          {
+            "id": "A",
+            "label": "A Comprometerse con la fecha límite",
+            "target_node_id": "outcome_a"
+          },
+          {
+            "id": "B",
+            "label": "B Proponer un piloto en una sola facultad",
+            "target_node_id": "outcome_b"
+          }
+        ]
+      },
+      "outcome_a": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5A Resultado A",
+        "you_chose": "Elegiste A",
+        "title": "Presión de entrega",
+        "body": "La universidad acepta. Tu equipo va a tener que acortar sus vacaciones de febrero y renegociar entregas con otros clientes.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Ingresos",
+            "direction": "up",
+            "body": "Contrato de 280 UF asegurado antes de marzo"
+          },
+          {
+            "key": "capacity",
+            "label": "Capacidad",
+            "direction": "down",
+            "body": "Equipo sobrepasado y vacaciones acortadas"
+          },
+          {
+            "key": "trust",
+            "label": "Confianza",
+            "direction": "mid",
+            "body": "En riesgo si la entrega falla al partir el año académico"
+          }
+        ]
+      },
+      "outcome_b": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5B Resultado B",
+        "you_chose": "Elegiste B",
+        "title": "Un primer paso más pequeño",
+        "body": "La universidad evalúa un piloto en una sola facultad, con alcance y plazos acordados. La funcionalidad completa llega después de las vacaciones.",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "Ingresos",
+            "direction": "mid",
+            "body": "Cierre más lento: primero el piloto, después el contrato completo"
+          },
+          {
+            "key": "capacity",
+            "label": "Capacidad",
+            "direction": "up",
+            "body": "Se respetan las vacaciones y los compromisos actuales"
+          },
+          {
+            "key": "trust",
+            "label": "Confianza",
+            "direction": "up",
+            "body": "Expectativas claras desde el inicio generan confianza"
+          }
+        ]
+      },
+      "summary": {
+        "type": "summary",
+        "next_node_id": null,
+        "step_badge": "6 Resumen",
+        "title": "Reflexiona sobre tu decisión",
+        "reflection_prompt_label": "Pregunta de reflexión",
+        "question": "¿Cómo equilibró tu decisión el contrato, las vacaciones de tu equipo y la confianza de la universidad?"
+      }
+    },
+    "ui": {
+      "start_btn": "Iniciar simulación",
+      "back_btn": "Atrás",
+      "next_btn": "Siguiente",
+      "restart_btn": "Reiniciar simulación",
+      "lang_label": "Idioma",
+      "eth_label": "Origen del personaje",
+      "ethnicity_labels": {
+        "african": "África Oriental",
+        "caucasian": "Europa",
+        "east_asian": "Asia Oriental",
+        "latin": "Latinoamérica",
+        "south_asian": "Asia del Sur"
+      },
+      "language_labels": {
+        "en": "English",
+        "es": "Español",
+        "ar": "العربية (الإمارات)",
+        "zh": "中文",
+        "ne": "नेपाली",
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "es-MX": "Español (México)",
+        "es-AR": "Español (Argentina)",
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "ar-JO": "العربية (الأردن)",
+        "es-CL": "Español (Chile)",
+        "he": "עברית",
+        "zh-HK": "廣東話（香港）"
+      },
+      "sim_title": "Simulación de Decisión de Liderazgo",
+      "setup_subtitle": "Experimenta escenarios de liderazgo realistas y desarrolla habilidades críticas de toma de decisiones en un entorno seguro y reflexivo.",
+      "before_you_begin_title": "Antes de comenzar",
+      "before_you_begin_body": "Este es un entorno seguro para practicar. No hay una sola respuesta correcta — explora ambos caminos para comprender toda la gama de compensaciones.",
+      "sim_error_title": "Error al cargar la simulación",
+      "sim_error_body": "No se pudo conectar al servicio de simulación. Verifica tu conexión e inténtalo de nuevo.",
+      "retry_btn": "Reintentar",
+      "brief_scenario_label": "Escenario",
+      "brief_scenario_body": "Lideras SchoolSims en Santiago. Una universidad privada de Valparaíso pide una nueva funcionalidad antes de firmar. Tu equipo tiene capacidad limitada.",
+      "brief_objective_label": "Objetivo de aprendizaje",
+      "brief_objective_body": "Sopesar los ingresos a corto plazo frente a la capacidad de entrega y la confianza del cliente.",
+      "cast_panel_label": "Reparto",
+      "cast_panel_subtitle": "Personaje destacado",
+      "cast_panel_body": "Este personaje representa al actor externo en tu escenario. Sus decisiones moldean los resultados que experimentarás.",
+      "help_panel_title": "Antes de comenzar",
+      "help_safe_title": "Entorno seguro",
+      "help_safe_body": "Las decisiones aquí no afectan resultados reales. Practica libremente.",
+      "help_no_right_title": "No hay una sola respuesta correcta",
+      "help_no_right_body": "Ambas opciones implican compensaciones reales. Reflexiona sobre tu razonamiento.",
+      "help_replay_title": "Juega varias veces",
+      "help_replay_body": "Prueba ambos caminos para comprender toda la gama de consecuencias.",
+      "rail_brief_tip": "Resumen",
+      "rail_cast_tip": "Reparto",
+      "rail_help_tip": "Ayuda",
+      "badge_en": "ES",
+      "option_label": "Opción",
+      "speech_locale": "es-ES",
+      "review_title": "Califica esta simulación",
+      "review_rating_label": "¿Cómo calificarías esta simulación?",
+      "review_experience_label": "¿Cómo fue tu experiencia?",
+      "review_improvements_label": "¿Alguna mejora sugerida?",
+      "review_submit_btn": "Enviar comentarios",
+      "review_thank_you": "¡Gracias por tus comentarios!",
+      "setup_badge": "Simulación interactiva",
+      "suggested_hint": "Sugerido para este idioma; puedes cambiarlo.",
+      "captions_on": "Subtítulos: sí",
+      "captions_off": "Subtítulos: no",
+      "video_error": "No se pudo cargar el video",
+      "review_fit_label": "¿El personaje y el contexto te parecieron fieles a tu región?",
+      "review_fit_yes": "Sí, me pareció acertado",
+      "review_fit_partly": "En parte",
+      "review_fit_no": "No, algo no encajaba",
+      "review_fit_details_label": "¿Qué no encajaba? (nombres, lugares, dinero, días festivos, forma de hablar…)",
+      "review_select_rating": "Selecciona una calificación"
+    }
+  },
+  "zh-HK": {
+    "nodes": {
+      "context": {
+        "type": "context",
+        "next_node_id": "text_image",
+        "step_badge": "1 背景",
+        "title": "香港一間院校嘅新機會",
+        "body": "你帶領 SchoolSims 喺香港嘅團隊。一間自資專上院校準備簽一份大約 8 萬 5 千港元嘅年度合約，不過想你哋先加一個新功能。你嘅團隊人手有限。今次嘅學習目標，係要權衡短期收入、交付能力同埋客戶信任。",
+        "learning_objective_label": "學習目標",
+        "learning_objective_body": "權衡短期收入與交付能力和客戶信任之間的關係。"
+      },
+      "text_image": {
+        "type": "text_image",
+        "next_node_id": "video",
+        "step_badge": "2 圖文",
+        "title": "院校嘅要求",
+        "body": "院校想喺四個星期內攞到呢個功能，趕喺九月開學之前用。不過暑假正好喺呢段時間，好多同事已經約咗放年假，開發團隊手頭上亦都有其他工作。",
+        "character_name": "Jordan Chen",
+        "character_title": "數碼學習總監",
+        "character_alt": "Jordan Chen 嘅肖像，數碼學習總監",
+        "ti_point1": "要喺 4 個星期內交付，趕九月開學",
+        "ti_point2": "暑假年假，開發團隊已經滿晒"
+      },
+      "video": {
+        "type": "video",
+        "next_node_id": "decision",
+        "step_badge": "3 影片",
+        "quote": "我哋可唔可以承諾四個星期內搞掂？",
+        "watch_listen_title": "觀看並聆聽",
+        "watch_listen_body": "留意吓客戶有幾心急，佢會影響你喺下一頁要面對嘅決策壓力。"
+      },
+      "decision": {
+        "type": "decision",
+        "next_node_id": null,
+        "step_badge": "4 決策",
+        "prompt": "你會點做？",
+        "keyboard_hint": "按 [A] 或 [B] 做出決定",
+        "choices": [
+          {
+            "id": "A",
+            "label": "A 承諾按期交付",
+            "target_node_id": "outcome_a"
+          },
+          {
+            "id": "B",
+            "label": "B 建議先喺一個學系試行",
+            "target_node_id": "outcome_b"
+          }
+        ]
+      },
+      "outcome_a": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5A 結果A",
+        "you_chose": "你揀咗 A",
+        "title": "交付壓力",
+        "body": "院校答應咗。你嘅團隊要縮短暑假，仲要同其他客戶重新傾交貨日期。",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "收入",
+            "direction": "up",
+            "body": "開學前簽到 8 萬 5 千港元嘅合約"
+          },
+          {
+            "key": "capacity",
+            "label": "人手",
+            "direction": "down",
+            "body": "團隊超負荷，年假要取消"
+          },
+          {
+            "key": "trust",
+            "label": "信任",
+            "direction": "mid",
+            "body": "如果開學時交唔到貨，信任會受損"
+          }
+        ]
+      },
+      "outcome_b": {
+        "type": "outcome",
+        "next_node_id": "summary",
+        "step_badge": "5B 結果B",
+        "you_chose": "你揀咗 B",
+        "title": "更小的第一步",
+        "body": "院校考慮先喺一個學系試行，範圍同時間表都講好晒。完整功能會喺開學之後推出。",
+        "impacts": [
+          {
+            "key": "revenue",
+            "label": "收入",
+            "direction": "mid",
+            "body": "成交慢啲：先試行，之後先簽完整合約"
+          },
+          {
+            "key": "capacity",
+            "label": "人手",
+            "direction": "up",
+            "body": "同事嘅假期同現有工作都保得住"
+          },
+          {
+            "key": "trust",
+            "label": "信任",
+            "direction": "up",
+            "body": "一開始講清楚期望，會建立信任"
+          }
+        ]
+      },
+      "summary": {
+        "type": "summary",
+        "next_node_id": null,
+        "step_badge": "6 總結",
+        "title": "反思你的決策",
+        "reflection_prompt_label": "反思提示",
+        "question": "你嘅選擇點樣平衡合約、團隊嘅假期同院校嘅信任？"
+      }
+    },
+    "ui": {
+      "start_btn": "開始模擬",
+      "back_btn": "返回",
+      "next_btn": "下一步",
+      "restart_btn": "重新開始模擬",
+      "lang_label": "語言",
+      "eth_label": "角色背景",
+      "ethnicity_labels": {
+        "african": "東非",
+        "caucasian": "歐洲",
+        "east_asian": "東亞",
+        "latin": "拉丁美洲",
+        "south_asian": "南亞"
+      },
+      "language_labels": {
+        "en": "English",
+        "es": "Español",
+        "ar": "العربية (الإمارات)",
+        "zh": "中文",
+        "ne": "नेपाली",
+        "sw": "Kiswahili (Kenya)",
+        "ur": "اردو",
+        "es-MX": "Español (México)",
+        "es-AR": "Español (Argentina)",
+        "sw-TZ": "Kiswahili (Tanzania)",
+        "ar-JO": "العربية (الأردن)",
+        "zh-HK": "廣東話（香港）",
+        "he": "עברית",
+        "es-CL": "Español (Chile)"
+      },
+      "sim_title": "領導力決策模擬",
+      "setup_subtitle": "體驗真實的領導力場景，在安全、反思的環境中培養關鍵的決策能力。",
+      "before_you_begin_title": "開始之前",
+      "before_you_begin_body": "這是一個安全的練習環境。沒有唯一正確的答案——探索兩條路徑以理解完整的權衡範圍。",
+      "sim_error_title": "模擬載入失敗",
+      "sim_error_body": "無法連接到模擬服務。請檢查網絡連線後重試。",
+      "retry_btn": "重試",
+      "brief_scenario_label": "場景",
+      "brief_scenario_body": "你帶領 SchoolSims 喺香港嘅團隊。一間自資專上院校要求簽約前先加新功能。你嘅團隊人手有限。",
+      "brief_objective_label": "學習目標",
+      "brief_objective_body": "權衡短期收入與交付能力和客戶信任之間的關係。",
+      "cast_panel_label": "角色",
+      "cast_panel_subtitle": "主要角色",
+      "cast_panel_body": "該角色代表場景中的外部利益相關者。他們的決定塑造了你將經歷的結果。",
+      "help_panel_title": "開始之前",
+      "help_safe_title": "安全環境",
+      "help_safe_body": "這裡的決定不會影響真實結果。放心練習。",
+      "help_no_right_title": "沒有唯一正確答案",
+      "help_no_right_body": "兩個選項都涉及真實的權衡。反思你的推理過程。",
+      "help_replay_title": "多次嘗試",
+      "help_replay_body": "嘗試兩條路徑以了解完整的後果範圍。",
+      "rail_brief_tip": "簡報",
+      "rail_cast_tip": "角色",
+      "rail_help_tip": "幫助",
+      "badge_en": "HK",
+      "option_label": "選項",
+      "speech_locale": "zh-CN",
+      "review_title": "評價此模擬",
+      "review_rating_label": "你如何評價此模擬？",
+      "review_experience_label": "你的體驗如何？",
+      "review_improvements_label": "有什麼改進建議嗎？",
+      "review_submit_btn": "提交意見",
+      "review_thank_you": "感謝你的意見！",
+      "setup_badge": "互動模擬",
+      "suggested_hint": "根據所選語言推薦，可自行更改。",
+      "captions_on": "字幕：開",
+      "captions_off": "字幕：關",
+      "video_error": "影片載入失敗",
+      "review_fit_label": "角色和情境是否符合你所在地區的實際情況？",
+      "review_fit_yes": "是，很貼切",
+      "review_fit_partly": "部分符合",
+      "review_fit_no": "不，有些地方不對",
+      "review_fit_details_label": "哪裏不對？（姓名、地點、貨幣、節假日、用語等）",
+      "review_select_rating": "請選擇評分"
     }
   }
 }

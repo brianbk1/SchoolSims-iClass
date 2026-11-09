@@ -21,7 +21,9 @@
         "ne": "डेनियल म्वाङ्गी",
         "sw": "Daniel Mwangi",
         "ur": "ڈینیئل موانگی",
-        "sw-TZ": "Baraka Mwakyusa"
+        "sw-TZ": "Baraka Mwakyusa",
+        "he": "דניאל מוואנגי",
+        "zh-HK": "丹尼爾·姆萬吉"
       },
       "photo": {
         "default": "/assets/african.png"
@@ -39,7 +41,8 @@
     "caucasian": {
       "gender": "male",
       "suggested_for_langs": [
-        "en"
+        "en",
+        "he"
       ],
       "name": {
         "en": "James Mitchell",
@@ -48,7 +51,9 @@
         "zh": "詹姆斯·米切尔",
         "ne": "जेम्स मिचेल",
         "sw": "James Mitchell",
-        "ur": "جیمز مچل"
+        "ur": "جیمز مچل",
+        "he": "יונתן לוי",
+        "zh-HK": "詹姆斯·米切爾"
       },
       "photo": {
         "default": "/assets/caucasian.png"
@@ -75,7 +80,9 @@
         "zh": "陈乔丹",
         "ne": "जोर्डन चेन",
         "sw": "Jordan Chen",
-        "ur": "جورڈن چن"
+        "ur": "جورڈن چن",
+        "he": "ג'ורדן צ'ן",
+        "zh-HK": "陳家明"
       },
       "photo": {
         "default": "/assets/east_asian.png"
@@ -104,7 +111,10 @@
         "sw": "Carlos Rivera",
         "ur": "کارلوس ریویرا",
         "es-MX": "Carlos Hernández",
-        "es-AR": "Martín Pereyra"
+        "es-AR": "Martín Pereyra",
+        "he": "קרלוס ריברה",
+        "es-CL": "Felipe Muñoz",
+        "zh-HK": "卡洛斯·里維拉"
       },
       "photo": {
         "default": "/assets/latin.png"
@@ -129,7 +139,9 @@
         "zh": "阿尔琼·夏尔马",
         "ne": "अर्जुन शर्मा",
         "sw": "Arjun Sharma",
-        "ur": "بلال احمد"
+        "ur": "بلال احمد",
+        "he": "ארג'ון שארמה",
+        "zh-HK": "阿爾瓊·夏爾馬"
       },
       "photo": {
         "default": "/assets/south_asian.png"

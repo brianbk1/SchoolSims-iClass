@@ -19,10 +19,16 @@ const PROGRESS: Record<string, number> = {
   decision: 67, outcome_a: 83, outcome_b: 83, summary: 100,
 };
 
+const RTL_LANGS = new Set(['ar', 'he', 'ur', 'fa']);
+
 export default function App() {
   const [lang, setLang] = useState<Lang>('en');
-  // Tell the browser which language the page is in (fonts, hyphenation, screen readers).
-  useEffect(() => { document.documentElement.lang = lang; }, [lang]);
+  // Tell the browser which language the page is in (fonts, hyphenation, screen readers),
+  // and lay the page out right-to-left for Arabic, Hebrew and Urdu.
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = RTL_LANGS.has(lang.split('-')[0]) ? 'rtl' : 'ltr';
+  }, [lang]);
   const [ethnicity, setEthnicity] = useState<Ethnicity>('african');
   const [simData, setSimData] = useState<SimData | null>(null);
   const [currentNodeId, setCurrentNodeId] = useState<string>('setup');
@@ -276,7 +282,7 @@ export default function App() {
                   <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--purple)', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 3px' }}>{ui.brief_scenario_label}</p>
                   <p style={{ fontSize: 13, color: 'var(--text-2)', margin: 0 }}>{ui.brief_scenario_body}</p>
                 </div>
-                <button onClick={() => setModal(null)} className="rail-btn" style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginLeft: 12 }}>
+                <button onClick={() => setModal(null)} className="rail-btn" style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginInlineStart: 12 }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
               </div>
