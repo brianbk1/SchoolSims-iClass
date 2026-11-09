@@ -11,7 +11,9 @@ Run from the repo root (needs HEYGEN_API_KEY in .env.local or the environment):
 
 For each clip in scripts/heygen/clips.json it:
   1. uploads the character's photo (once) and the region's background image (if present),
-  2. asks HeyGen for a 1280x720 video of the character saying the lines in the chosen voice,
+  2. asks HeyGen (v3 API, POST /v3/videos with type "image") for a 720p 16:9 video of the
+     photo speaking the lines in the chosen voice, with the photo's own background removed
+     and the regional one placed behind,
   3. waits for it, downloads it to public/assets/<character>_<locale>.mp4,
   4. writes matching subtitles (public/assets/captions_<character>_<locale>.vtt),
   5. records both in backend/personas.json so the app plays them for that language.
@@ -38,7 +40,6 @@ PERSONAS_FILE = REPO / "backend/personas.json"
 ASSETS = REPO / "public/assets"
 
 API = "https://api.heygen.com"
-UPLOAD = "https://upload.heygen.com"
 
 
 # --------------------------------------------------------------------------- setup
@@ -76,19 +77,23 @@ class HeyGen:
         d = self._json(self.c.get(f"{API}/v2/voices", headers=self.h))
         return d.get("voices", d) if isinstance(d, dict) else d
 
-    def upload_photo(self, path: Path) -> str:
-        r = self.c.post(f"{UPLOAD}/v1/talking_photo", headers={**self.h, "Content-Type": mime(path)}, content=path.read_bytes())
-        return self._json(r)["talking_photo_id"]
-
-    def upload_image(self, path: Path) -> str:
-        r = self.c.post(f"{UPLOAD}/v1/asset", headers={**self.h, "Content-Type": mime(path)}, content=path.read_bytes())
-        return self._json(r)["id"]
+    def upload_asset(self, path: Path) -> str:
+        """POST /v3/assets (multipart, field 'file') -> asset id."""
+        r = self.c.post(f"{API}/v3/assets", headers=self.h,
+                        files={"file": (path.name, path.read_bytes(), mime(path))})
+        d = self._json(r)
+        aid = d.get("asset_id") or d.get("id")
+        if not aid:
+            raise RuntimeError(f"HeyGen upload returned no asset id: {json.dumps(d)[:300]}")
+        return aid
 
     def generate(self, payload: dict) -> str:
-        return self._json(self.c.post(f"{API}/v2/video/generate", headers=self.h, json=payload))["video_id"]
+        """POST /v3/videos -> video id."""
+        return self._json(self.c.post(f"{API}/v3/videos", headers=self.h, json=payload))["video_id"]
 
     def status(self, video_id: str) -> dict:
-        return self._json(self.c.get(f"{API}/v1/video_status.get", headers=self.h, params={"video_id": video_id}))
+        """GET /v3/videos/{id} -> {status: pending|processing|completed|failed, video_url, failure_message}."""
+        return self._json(self.c.get(f"{API}/v3/videos/{video_id}", headers=self.h))
 
     def download(self, url: str, dest: Path) -> None:
         with self.c.stream("GET", url) as r:
@@ -255,30 +260,31 @@ def main(argv=None, client: httpx.Client | None = None) -> int:
         print(f"\n[{loc}] {c['character_name']}: ", end="", flush=True)
         try:
             char = cfg["characters"][pid]
+            payload = {
+                "script": " ".join(c["lines"]),
+                "voice_id": voice["voice_id"],
+                "resolution": settings.get("resolution", "720p"),
+                "aspect_ratio": "16:9",
+                "output_format": "mp4",
+                "title": f"iClass {pid} {loc}",
+            }
             if char.get("heygen_avatar_id"):
-                character = {"type": "avatar", "avatar_id": char["heygen_avatar_id"], "avatar_style": "normal"}
+                payload.update({"type": "avatar", "avatar_id": char["heygen_avatar_id"]})
             else:
-                key = f"photo:{char['photo']}"
+                key = f"v3photo:{char['photo']}"
                 if key not in cache:
                     print("uploading photo… ", end="", flush=True)
-                    cache[key] = hg.upload_photo(photo)
+                    cache[key] = hg.upload_asset(photo)
                     CACHE_FILE.write_text(json.dumps(cache, indent=2))
-                character = {"type": "talking_photo", "talking_photo_id": cache[key]}
-            video_input = {
-                "character": character,
-                "voice": {"type": "text", "input_text": " ".join(c["lines"]), "voice_id": voice["voice_id"]},
-            }
+                payload.update({"type": "image", "image": {"type": "asset_id", "asset_id": cache[key]}})
             if bg and bg.exists():
-                key = f"bg:{c['background']}"
+                key = f"v3bg:{c['background']}"
                 if key not in cache:
                     print("uploading background… ", end="", flush=True)
-                    cache[key] = hg.upload_image(bg)
+                    cache[key] = hg.upload_asset(bg)
                     CACHE_FILE.write_text(json.dumps(cache, indent=2))
-                video_input["background"] = {"type": "image", "image_asset_id": cache[key]}
-                if character["type"] == "talking_photo" and settings.get("remove_photo_background", True):
-                    character["matting"] = True
-            payload = {"video_inputs": [video_input],
-                       "dimension": {"width": settings.get("width", 1280), "height": settings.get("height", 720)}}
+                payload["background"] = {"type": "image", "asset_id": cache[key]}
+                payload["remove_background"] = bool(settings.get("remove_photo_background", True))
             vid = hg.generate(payload)
             print(f"generating ({vid})", end="", flush=True)
             while True:
@@ -288,7 +294,8 @@ def main(argv=None, client: httpx.Client | None = None) -> int:
                 if s == "completed":
                     break
                 if s == "failed":
-                    raise RuntimeError(f"HeyGen could not make this video: {json.dumps(st.get('error'))}")
+                    why = st.get("failure_message") or st.get("error")
+                    raise RuntimeError(f"HeyGen could not make this video: {json.dumps(why)}")
                 print(".", end="", flush=True)
             hg.download(st["video_url"], out)
             duration = mp4_duration(out) or 10.0
