@@ -4,11 +4,14 @@
     "lines: what the character says (shown as subtitles too). The first line matches the quote on the video slide.",
     "voice: picked automatically from HeyGen voices by language + accent; set voice_id to force a specific voice (see --list-voices).",
     "background: image to put behind the character. If the file is missing, the character keeps the background from its photo.",
-    "background_brief: description for making that image (see BACKGROUNDS.md)."
+    "background_brief: description for making that image (see BACKGROUNDS.md).",
+    "settings.person_height: how tall the photo is in the frame (0.9 = 90%). Lower = smaller person, more background. Change it, then remake with --force."
   ],
   "settings": {
     "resolution": "720p",
-    "remove_photo_background": true
+    "remove_photo_background": true,
+    "frame_photo": true,
+    "person_height": 0.9
   },
   "characters": {
     "african": {
