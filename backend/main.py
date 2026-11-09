@@ -150,6 +150,8 @@ def get_simulation(
             # True when the video is in this language or its base language (not English fallback).
             "has_video": any(videos.get(c) for c in lang_chain(lang)[:2]),
             "base_lang": lang.split("-")[0],
+            # Subtitles made for this exact clip (scripts/make_videos.py); else the language's file.
+            "captions": pick(persona.get("captions", {}), lang),
         },
     }
 

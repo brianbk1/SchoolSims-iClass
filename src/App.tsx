@@ -210,7 +210,7 @@ export default function App() {
               key={currentNodeId}
               node={currentNode}
               videoUrl={simData.media.video_template.replace('{lang}', lang)}
-              captionsUrl={`/assets/captions_${lang.split('-')[0]}.vtt`}
+              captionsUrl={simData.media.captions ?? `/assets/captions_${lang.split('-')[0]}.vtt`}
               captionsOn={captionsOn}
               onToggleCaptions={() => setCaptionsOn(c => !c)}
               audioUrl={audioMap['video'] ?? null}
