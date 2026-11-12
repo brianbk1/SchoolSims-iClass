@@ -211,23 +211,33 @@ def generator_ready() -> bool:
 
 
 def call_claude(user_prompt: str) -> dict:
-    """Ask Claude for a localization. Isolated so tests can replace it."""
+    """Ask Claude for a localization. Isolated so tests can replace it.
+
+    Newer models reject forced tool use, so the tool is offered with tool_choice
+    "auto" and the prompt asks for it; one retry if the model answers in text."""
     import anthropic  # lazy: app starts without the SDK or a key
 
     client = anthropic.Anthropic()
-    # Streamed: the SDK refuses long non-streaming requests.
-    with client.messages.stream(
-        model=os.getenv("ANTHROPIC_MODEL", DEFAULT_MODEL),
-        max_tokens=32000,
-        system=SYSTEM_PROMPT,
-        tools=[TOOL],
-        tool_choice={"type": "tool", "name": TOOL["name"]},
-        messages=[{"role": "user", "content": user_prompt}],
-    ) as stream:
-        msg = stream.get_final_message()
-    for part in msg.content:
-        if getattr(part, "type", "") == "tool_use":
-            return part.input
+    messages = [{"role": "user", "content": user_prompt + f"\n\nRespond only by calling the {TOOL['name']} tool."}]
+    for attempt in range(2):
+        # Streamed: the SDK refuses long non-streaming requests.
+        with client.messages.stream(
+            model=os.getenv("ANTHROPIC_MODEL", DEFAULT_MODEL),
+            max_tokens=32000,
+            system=SYSTEM_PROMPT,
+            tools=[TOOL],
+            tool_choice={"type": "auto"},
+            messages=messages,
+        ) as stream:
+            msg = stream.get_final_message()
+        for part in msg.content:
+            if getattr(part, "type", "") == "tool_use" and part.name == TOOL["name"]:
+                return part.input
+        if attempt == 0:
+            messages = messages + [
+                {"role": "assistant", "content": [p.model_dump() for p in msg.content if getattr(p, "type", "") == "text"] or "OK."},
+                {"role": "user", "content": f"Please call the {TOOL['name']} tool now with every field."},
+            ]
     raise RuntimeError("The model did not return a localization.")
 
 
