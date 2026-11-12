@@ -553,3 +553,4 @@ kbd {
 
 /* The player is a fixed full-screen app; the admin is a normal scrolling page. */
 body.admin-page { height: auto; min-height: 100vh; overflow: auto; }
+.sb-langs { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 4px 14px; }

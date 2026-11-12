@@ -97,6 +97,7 @@ def summary(sim: dict) -> dict:
         "context_summary": sim.get("context_summary", ""), "languages": langs,
         "decisions": sum(1 for n in nodes.values() if n.get("type") == "decision"),
         "slides": len(nodes), "problems": len(sim.get("problems", [])),
+        "pending_langs": sim.get("pending_langs") or [],
     }
 
 

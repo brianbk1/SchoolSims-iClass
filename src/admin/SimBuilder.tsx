@@ -18,13 +18,15 @@ interface SimDetail extends SimRow {
   review_notes: string[]; problems_list?: string[];
   translation_notes: Record<string, string[]>;
   ada: { passed: boolean; issues: string[]; notes: string[] };
-  default_look: string; accent: string;
+  default_look: string; accent: string; pending_langs: string[];
 }
 interface Who {
   role: 'reviewer' | 'builder'; reviewer_email: string; generator_ready: boolean; images_ready: boolean;
   email_ready: boolean; storage: string; persistent: boolean; review_days: number;
   personas: { id: string; label: string; photo: string }[]; app_languages: string[];
+  language_options: LangOpt[];
 }
+interface LangOpt { code: string; label: string; native: string; place: string }
 interface ReportRow { id: string; title: string; context_summary: string; created_by: string; created_at: string; status: Status; languages: string[]; decisions: number; source: string }
 interface Note { to: string; subject: string; text: string; at: string; sent: boolean; error: string }
 
@@ -84,6 +86,44 @@ function trackSlides(nodes: Record<string, AnyNode>, first: string): string[] {
   const out: string[] = []; let id: string | null = first;
   while (id && nodes[id] && !['decision', 'summary'].includes(nodes[id].type) && !out.includes(id)) { out.push(id); id = nodes[id].next_node_id; }
   return out;
+}
+
+/** Translate a sim into several languages, a few at a time (each is one request). */
+async function translateMany(id: string, codes: string[], onProgress: (done: number, current: string, errors: string[]) => void): Promise<{ last: any; errors: string[] }> {
+  const queue = [...codes]; const errors: string[] = []; let done = 0; let last: any = null;
+  const worker = async () => {
+    while (queue.length) {
+      const code = queue.shift()!;
+      onProgress(done, code, errors);
+      try {
+        last = await api(`/api/admin/sims/${encodeURIComponent(id)}/languages`, { method: 'POST', body: JSON.stringify({ code }) });
+      } catch (e: any) { errors.push(`${code}: ${e.message}`); }
+      done += 1; onProgress(done, '', errors);
+    }
+  };
+  await Promise.all([worker(), worker(), worker()]);
+  return { last, errors };
+}
+
+function LangPicker({ options, chosen, setChosen, exclude = [] }: { options: LangOpt[]; chosen: string[]; setChosen: (c: string[]) => void; exclude?: string[] }) {
+  const list = options.filter(o => o.code !== 'en' && !exclude.includes(o.code));
+  const all = list.length > 0 && list.every(o => chosen.includes(o.code));
+  return (
+    <div>
+      <label className="sb-check" style={{ fontWeight: 600, marginBottom: 6 }}>
+        <input type="checkbox" checked={all} onChange={e => setChosen(e.target.checked ? list.map(o => o.code) : [])} /> All languages ({list.length})
+      </label>
+      <div className="sb-langs">
+        {list.map(o => (
+          <label key={o.code} className="sb-check" title={o.place ? `Set in ${o.place}` : ''}>
+            <input type="checkbox" checked={chosen.includes(o.code)}
+              onChange={e => setChosen(e.target.checked ? [...chosen, o.code] : chosen.filter(c => c !== o.code))} />
+            <bdi>{o.native}</bdi> <span style={{ color: 'var(--text-3)', fontSize: 12 }}>{o.code}</span>
+          </label>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 // ---- styles -----------------------------------------------------------------
@@ -209,6 +249,8 @@ function NewSimForm({ who, onCreated, onError }: { who: Who; onCreated: (id: str
     created_by: recall('iclass_builder_name'), creator_email: recall('iclass_builder_email'),
   });
   const [busy, setBusy] = useState(false);
+  const [extraLangs, setExtraLangs] = useState<string[]>([]);
+  const [progress, setProgress] = useState('');
   const set = (patch: Partial<typeof f>) => setF(x => ({ ...x, ...patch }));
 
   const maxTracks = f.decisions * f.options_per_decision;
@@ -231,9 +273,15 @@ function NewSimForm({ who, onCreated, onError }: { who: Who; onCreated: (id: str
         ...f, slides_per_track: f.follow_up_tracks ? f.slides_per_track : 1,
         characters: f.characters.filter(c => c.name.trim()),
       }) });
+      const extra = extraLangs.filter(c => c !== f.language);
+      if (extra.length) {
+        const { errors } = await translateMany(sim.id, extra, (done, cur) =>
+          setProgress(`Sim written. Translating ${done}/${extra.length}${cur ? ` (${cur})` : ''}…`));
+        if (errors.length) onError(`Some languages didn't finish; add them again from the preview: ${errors.join('; ')}`);
+      }
       onCreated(sim.id);
     } catch (e: any) { onError(e.message); }
-    finally { setBusy(false); }
+    finally { setBusy(false); setProgress(''); }
   };
 
   const num = (key: 'decisions' | 'options_per_decision' | 'total_tracks' | 'slides_per_track', min: number, max: number) => (
@@ -314,18 +362,24 @@ function NewSimForm({ who, onCreated, onError }: { who: Who; onCreated: (id: str
         ))}
         <button style={{ ...ghost, marginTop: 6 }} onClick={() => set({ characters: [...f.characters, { name: '', role: '' }] })}>+ Add character</button>
         <div className="sb-grid3" style={{ marginTop: 14 }}>
-          <div><label style={lbl} htmlFor="f-lang">Language</label>
+          <div><label style={lbl} htmlFor="f-lang">Main language</label>
             <input id="f-lang" style={inp} list="app-langs" value={f.language} onChange={e => set({ language: e.target.value.trim() })} />
-            <datalist id="app-langs">{who.app_languages.map(l => <option key={l} value={l} />)}</datalist></div>
+            <datalist id="app-langs">{who.language_options.map(l => <option key={l.code} value={l.code}>{l.native}</option>)}</datalist></div>
           <div><label style={lbl} htmlFor="f-lname">Language name</label>
             <input id="f-lname" style={inp} value={f.language_name} onChange={e => set({ language_name: e.target.value })} placeholder={f.language === 'en' ? 'English' : 'e.g. Español (México)'} /></div>
           <div><label style={lbl} htmlFor="f-acc">Accent / variety</label>
             <input id="f-acc" style={inp} value={f.accent} onChange={e => set({ accent: e.target.value })} placeholder="e.g. Mexican Spanish" /></div>
         </div>
         <p style={{ fontSize: 12, color: 'var(--text-3)', margin: '6px 2px 0' }}>
-          English is always written first (it's the fallback). Any other language is drafted from it right away; add more languages later from the preview.
-          The accent is saved for narration and video voices.
+          English is always written first (it's the fallback). The accent is saved for narration and video voices.
         </p>
+        <div style={{ width: '100%', marginTop: 12 }}>
+          <label style={lbl}>Also make it available in (learners pick these in the language menu)</label>
+          <LangPicker options={who.language_options} chosen={extraLangs} setChosen={setExtraLangs} exclude={[f.language]} />
+          <p style={{ fontSize: 12, color: 'var(--text-3)', margin: '6px 2px 0' }}>
+            Each language is localized for its region (names, places, school terms), using the same regions as the built-in sim. You can add more later.
+          </p>
+        </div>
       </fieldset>
 
       <div style={{ marginTop: 14 }}>
@@ -340,7 +394,7 @@ function NewSimForm({ who, onCreated, onError }: { who: Who; onCreated: (id: str
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 12, marginTop: 20 }}>
-        {busy && <span style={{ fontSize: 13, color: 'var(--text-3)' }}>Writing the sim… this takes 1–3 minutes.</span>}
+        {busy && <span style={{ fontSize: 13, color: 'var(--text-3)' }}>{progress || 'Writing the sim… this takes 1–3 minutes.'}</span>}
         <button style={{ ...primary, opacity: busy || !who.generator_ready ? 0.6 : 1 }} disabled={busy || !who.generator_ready} onClick={submit}>
           {busy ? 'Generating…' : '✦ Generate Sim Shell'}
         </button>
@@ -361,7 +415,8 @@ function SimView({ id, who, onChanged, onOpen, onDeleted, setError, setNotice }:
   const [note, setNote] = useState('');
   const [reviewer, setReviewer] = useState(recall('iclass_reviewer_name'));
   const [extendOpen, setExtendOpen] = useState(false);
-  const [tr, setTr] = useState({ code: '', language_name: '', setting: '', notes: '' });
+  const [addLangs, setAddLangs] = useState<string[]>([]);
+  const [langProgress, setLangProgress] = useState('');
   const [problems, setProblems] = useState<string[]>([]);
 
   const fetchSim = useCallback(async () => {
@@ -379,6 +434,10 @@ function SimView({ id, who, onChanged, onOpen, onDeleted, setError, setNotice }:
   const order = slideOrder(en.nodes, start);
   const editable = !sim.builtin && (sim.status === 'draft' || sim.status === 'expired' || sim.status === 'pending_review');
   const isReviewer = who.role === 'reviewer';
+  const pending = sim.pending_langs ?? [];
+  // Published sims stay live; a language added to them waits for review and can be edited meanwhile.
+  const canEdit = editable || (sim.status === 'published' && pending.includes(lang));
+  const canAddLangs = !sim.builtin && sim.status !== 'superseded';
   const dirty = Object.keys(edits).length > 0;
 
   const run = async (label: string, fn: () => Promise<any>, ok?: string) => {
@@ -544,31 +603,53 @@ function SimView({ id, who, onChanged, onOpen, onDeleted, setError, setNotice }:
       {/* Languages */}
       <div style={card}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <span style={{ ...lbl, margin: 0 }}>Language</span>
-          {sim.languages.map(l => (
-            <button key={l} onClick={() => { setLang(l); setEdits({}); }}
-              style={{ ...ghost, padding: '4px 12px', background: l === lang ? '#1e2a5a' : 'var(--surface)', color: l === lang ? '#fff' : 'var(--text-2)' }}>{l}</button>
-          ))}
-          {editable && lang !== 'en' && (
+          <span style={{ ...lbl, margin: 0 }}>Languages ({sim.languages.length})</span>
+          {sim.languages.map(l => {
+            const pend = pending.includes(l);
+            return (
+              <button key={l} onClick={() => { setLang(l); setEdits({}); }} title={pend ? 'Waiting for review: learners don\'t see it yet' : ''}
+                style={{ ...ghost, padding: '4px 12px', background: l === lang ? '#1e2a5a' : pend ? '#fffbeb' : 'var(--surface)', color: l === lang ? '#fff' : 'var(--text-2)', borderColor: pend ? '#fde68a' : undefined }}>
+                {l}{pend ? ' · pending' : ''}
+              </button>
+            );
+          })}
+          {canEdit && lang !== 'en' && (
             <button style={{ ...ghost, padding: '4px 10px', fontSize: 12, color: '#b91c1c' }}
               onClick={() => { if (confirm(`Remove ${lang}?`)) run('rmlang', async () => { const r = await api(`/api/admin/sims/${encodeURIComponent(id)}/languages/${lang}`, { method: 'DELETE' }); setLang('en'); return r; }); }}>
               Remove {lang}
             </button>
           )}
+          {pending.includes(lang) && isReviewer && (
+            <button style={{ ...primary, background: '#166534', padding: '5px 12px', fontSize: 13 }} disabled={!!busy || dirty}
+              onClick={() => run('applang', () => post(`/languages/${lang}/approve`), `${lang} is now available to learners.`)}>
+              Approve {lang} for learners
+            </button>
+          )}
         </div>
+        {pending.length > 0 && (
+          <p style={{ fontSize: 12, color: '#92400e', margin: '8px 0 0' }}>
+            Pending languages were added after publishing. Learners see them once a reviewer approves each one.
+          </p>
+        )}
         {(sim.translation_notes[lang] ?? []).length > 0 && (
           <ul className="sb-list" style={{ marginTop: 8 }}>{sim.translation_notes[lang].map(n => <li key={n}>{n}</li>)}</ul>
         )}
-        {editable && (
-          <div className="sb-grid-lang" style={{ marginTop: 12 }}>
-            <input style={inp} list="app-langs2" value={tr.code} onChange={e => setTr({ ...tr, code: e.target.value.trim() })} placeholder="Code, e.g. es-MX" aria-label="Language code" />
-            <datalist id="app-langs2">{who.app_languages.filter(l => !sim.languages.includes(l)).map(l => <option key={l} value={l} />)}</datalist>
-            <input style={inp} value={tr.language_name} onChange={e => setTr({ ...tr, language_name: e.target.value })} placeholder="Name, e.g. Español (México)" aria-label="Language name" />
-            <input style={inp} value={tr.setting} onChange={e => setTr({ ...tr, setting: e.target.value })} placeholder="Setting, e.g. Public secundaria in Guadalajara" aria-label="Setting" />
-            <button style={navy} disabled={!!busy || !tr.code}
-              onClick={() => run('tr', async () => { const r = await post('/languages', tr); setLang(tr.code); setTr({ code: '', language_name: '', setting: '', notes: '' }); return r; }, 'Language drafted. Read it through before submitting.')}>
-              {busy === 'tr' ? 'Translating…' : 'Add language'}
-            </button>
+        {canAddLangs && (
+          <div style={{ marginTop: 14, borderTop: '1px solid var(--border)', paddingTop: 12 }}>
+            <LangPicker options={who.language_options} chosen={addLangs} setChosen={setAddLangs} exclude={sim.languages} />
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginTop: 10, flexWrap: 'wrap' }}>
+              <button style={navy} disabled={!!busy || addLangs.length === 0}
+                onClick={() => run('tr', async () => {
+                  const { last, errors } = await translateMany(id, addLangs, (done, cur) =>
+                    setLangProgress(`Translating ${done}/${addLangs.length}${cur ? ` (${cur})` : ''}…`));
+                  setLangProgress(''); setAddLangs([]);
+                  if (errors.length) setError(`Some languages didn't finish: ${errors.join('; ')}`);
+                  return last;
+                }, sim.status === 'published' ? 'Languages added. A reviewer approves each one before learners see it.' : 'Languages added. Read them through before submitting.')}>
+                {busy === 'tr' ? (langProgress || 'Translating…') : `Translate into ${addLangs.length || ''} language${addLangs.length === 1 ? '' : 's'}`}
+              </button>
+              <span style={{ fontSize: 12, color: 'var(--text-3)' }}>Each language takes about a minute; three run at a time.</span>
+            </div>
           </div>
         )}
       </div>
@@ -577,8 +658,8 @@ function SimView({ id, who, onChanged, onOpen, onDeleted, setError, setNotice }:
       {block && (
         <div style={card}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-            <p style={{ ...lbl, margin: 0, flex: 1 }}>Slides ({lang}) {editable ? '— click any text to edit' : ''}</p>
-            {editable && <button style={{ ...navy, opacity: dirty ? 1 : 0.5 }} disabled={!dirty || !!busy} onClick={save}>{busy === 'save' ? 'Saving…' : `Save ${Object.keys(edits).length || ''} edit(s)`}</button>}
+            <p style={{ ...lbl, margin: 0, flex: 1 }}>Slides ({lang}) {canEdit ? '— click any text to edit' : ''}</p>
+            {canEdit && <button style={{ ...navy, opacity: dirty ? 1 : 0.5 }} disabled={!dirty || !!busy} onClick={save}>{busy === 'save' ? 'Saving…' : `Save ${Object.keys(edits).length || ''} edit(s)`}</button>}
           </div>
           {order.map(nid => {
             const node = block.nodes[nid];
@@ -595,7 +676,7 @@ function SimView({ id, who, onChanged, onOpen, onDeleted, setError, setNotice }:
                     {img ? <img src={img} alt={node.image_alt ?? ''} /> : <div className="sb-img-empty">No image yet</div>}
                     <div style={{ fontSize: 12, color: 'var(--text-3)', flex: 1 }}>
                       <div><b>Image prompt:</b> {node.image_prompt}</div>
-                      {editable && who.images_ready && (
+                      {canEdit && who.images_ready && (
                         <button style={{ ...ghost, marginTop: 6, fontSize: 12 }} disabled={!!busy}
                           onClick={() => run(`img-${nid}`, () => post(`/images/${nid}`), 'Image created.')}>
                           {busy === `img-${nid}` ? 'Creating…' : img ? 'Recreate image' : 'Create image'}
@@ -608,7 +689,7 @@ function SimView({ id, who, onChanged, onOpen, onDeleted, setError, setNotice }:
                 {nodeFields(nid, node).filter(([p]) => !p.endsWith('.image_prompt')).map(([path, text]) => (
                   <div key={path} className="sb-field">
                     <span className="sb-fl">{fieldLabel(path)}</span>
-                    {editable ? (
+                    {canEdit ? (
                       <textarea dir="auto" className="sb-ta" rows={Math.min(5, Math.max(1, Math.ceil((edits[path] ?? text).length / 90)))}
                         value={edits[path] ?? text}
                         onChange={e => setEdits(x => {

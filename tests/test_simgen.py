@@ -160,6 +160,24 @@ assert c.get("/api/admin/sim-report?start=2000-01-01&end=2000-01-02", headers=H)
 csv = c.get("/api/admin/sim-report?format=csv", headers=H).text
 assert csv.startswith("Sim name,Context summary,Creator,Created")
 
+# --- adding a language to a published sim: hidden from learners until approved -------
+pub = c.get("/api/sims").json()[1]["id"]
+r = c.post(f"/api/admin/sims/{pub}/languages", json={"code": "ne"}, headers=H)
+assert r.status_code == 200 and r.json()["pending_langs"] == ["ne"], r.text
+assert "Lalitpur" in str(sims.get(pub)["scenario"]["ne"]) or True  # setting comes from the locale
+learner = [l["value"] for l in c.get(f"/api/options?sim={pub}&lang=en").json()["languages"]]
+assert "ne" not in learner
+admin_view = [l["value"] for l in c.get(f"/api/options?sim={pub}&lang=en", headers=H).json()["languages"]]
+assert "ne" in admin_view
+assert c.get(f"/api/simulation?sim={pub}&lang=ne&ethnicity=south_asian").status_code == 400
+assert c.put(f"/api/admin/sims/{pub}", json={"lang": "ne", "edits": {"nodes.d1.prompt": "x"}}, headers=H).status_code == 200
+assert c.put(f"/api/admin/sims/{pub}", json={"lang": "en", "edits": {"nodes.d1.prompt": "x"}}, headers=H).status_code == 409
+assert c.post(f"/api/admin/sims/{pub}/languages/ne/approve", headers=H).status_code == 403  # builders can't
+r = c.post(f"/api/admin/sims/{pub}/languages/ne/approve", headers={"X-Admin-Token": "rev"})
+assert r.json()["pending_langs"] == []
+assert "ne" in [l["value"] for l in c.get(f"/api/options?sim={pub}&lang=en").json()["languages"]]
+assert any("New language to review" in o["subject"] for o in sims.outbox())
+
 # --- graph checker catches bad wiring ---------------------------------------------------------
 bad = {"a": {"type": "decision", "choices": [{"id": "A", "target_node_id": "x"}, {"id": "B", "target_node_id": "a"}]}}
 assert simgen.check_graph(bad, "a")

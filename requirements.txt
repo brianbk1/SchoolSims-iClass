@@ -4,3 +4,4 @@ httpx
 python-dotenv
 elevenlabs
 anthropic
+redis
