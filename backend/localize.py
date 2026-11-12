@@ -304,11 +304,19 @@ def generate_draft(scenario: dict, code: str, language_name: str, setting: str, 
         raise ValueError("English is the master version; edit scenario.json directly.")
     wanted = paths_to_localize(scenario, code)
     result = (model_call or call_claude)(build_prompt(scenario, code, language_name, setting, notes))
-    strings: dict = result.get("strings", {}) if isinstance(result, dict) else {}
+    strings = result.get("strings", {}) if isinstance(result, dict) else {}
+    if isinstance(strings, str):  # sometimes returned as a JSON string
+        try:
+            strings = json.loads(strings)
+        except ValueError:
+            strings = {}
+    strings = strings if isinstance(strings, dict) else {}
 
     texts, back = {}, {}
     for path in wanted:
         item = strings.get(path)
+        if isinstance(item, str):
+            item = {"text": item}
         if isinstance(item, dict) and isinstance(item.get("text"), str):
             texts[path] = item["text"]
             back[path] = item.get("back_translation", "")
