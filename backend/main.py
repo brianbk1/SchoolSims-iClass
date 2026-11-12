@@ -105,6 +105,21 @@ def sim_langs(scenario: dict) -> set[str]:
     return {k for k, v in scenario.items() if isinstance(v, dict) and not k.startswith("_") and "nodes" in v}
 
 
+def visible_langs(rec: dict, token: str | None = None) -> set[str]:
+    """Languages learners can pick. A language added to a published sim waits for a
+    reviewer (pending_langs); admins can still preview it."""
+    langs = sim_langs(rec["scenario"])
+    if is_admin_token(token):
+        return langs
+    return langs - set(rec.get("pending_langs") or [])
+
+
+def locale_place(code: str) -> str:
+    """Where a language's regional version is set (from the built-in sim), e.g. 'Lalitpur, Nepal'."""
+    setting = SCENARIO.get("_locale_meta", {}).get(code, {}).get("setting", "")
+    return setting.split(" — ")[0].strip()
+
+
 def is_admin_token(token: str | None) -> bool:
     expected = [t for t in (os.getenv("ADMIN_TOKEN"), os.getenv("REVIEWER_TOKEN")) if t]
     if expected:
@@ -140,7 +155,7 @@ def list_published_sims(lang: str = Query("en")):
             (s for s in sims.all_generated() if s.get("status") == "published"),
             key=lambda s: s.get("reviewed_at", ""), reverse=True):
         sc = rec["scenario"]
-        langs = sim_langs(sc)
+        langs = visible_langs(rec)
         block = sc.get(pick({c: c for c in langs}, lang) or "en", sc["en"])
         out.append({"id": rec["id"], "title": block["ui"].get("sim_title", rec["title"]),
                     "summary": block["ui"].get("brief_scenario_body", ""), "languages": sorted(langs)})
@@ -152,7 +167,7 @@ def get_options(lang: str = Query("en"), sim: str = Query(sims.BUILTIN_ID),
                 x_admin_token: str | None = Header(default=None)):
     rec = load_sim(sim, x_admin_token)
     sc = rec["scenario"]
-    langs = sim_langs(sc)
+    langs = visible_langs(rec, x_admin_token)
     display_lang = lang if lang in langs else "en"
     ui = sc[display_lang]["ui"]
     needs_video = has_video_slides(sc)
@@ -201,8 +216,8 @@ def get_simulation(
 ):
     rec = load_sim(sim, x_admin_token)
     sc = rec["scenario"]
-    if lang not in sim_langs(sc):
-        raise HTTPException(400, detail=f"lang must be one of {sorted(sim_langs(sc))}")
+    if lang not in visible_langs(rec, x_admin_token):
+        raise HTTPException(400, detail=f"lang must be one of {sorted(visible_langs(rec, x_admin_token))}")
     if ethnicity not in VALID_ETHNICITIES:
         raise HTTPException(400, detail=f"ethnicity must be one of {sorted(VALID_ETHNICITIES)}")
 
@@ -612,10 +627,14 @@ def require_storage():
     disk, so a sim saved there is gone on the next request. Don't spend API credit
     generating until real storage (Upstash Redis) is connected."""
     if not store.is_persistent():
+        seen = store.storage_vars_seen()
         raise HTTPException(503, detail=(
             "Connect storage first: in Vercel open this project's Storage tab, add Upstash "
-            "Redis and connect it to the project, then redeploy. Without it, new sims "
-            "disappear straight after they are created."))
+            "Redis (or Redis) and connect it to this project for Production, then redeploy. "
+            "Without it, new sims disappear straight after they are created. "
+            + (f"Storage settings this deployment can see: {', '.join(seen)}." if seen
+               else "This deployment can't see any storage settings yet; if you already connected "
+                    "it, redeploy (Deployments > ... > Redeploy).")))
 
 
 def base_url(request: Request) -> str:
@@ -642,7 +661,8 @@ def sim_detail(sim: dict) -> dict:
             "images": sim.get("images", {}), "review_notes": sim.get("review_notes", []),
             "problems": sim.get("problems", []), "translation_notes": sim.get("translation_notes", {}),
             "ada": simgen.ada_check(sim.get("scenario", {}), tts_enabled("en")),
-            "default_look": sim.get("default_look", ""), "accent": sim.get("accent", "")}
+            "default_look": sim.get("default_look", ""), "accent": sim.get("accent", ""),
+            "pending_langs": sim.get("pending_langs") or []}
 
 
 def _gen_error(e: Exception):
@@ -662,7 +682,10 @@ def admin_whoami(request: Request, x_admin_token: str | None = Header(default=No
             "review_days": sims.REVIEW_DAYS,
             "personas": [{"id": k, "label": SCENARIO["en"]["ui"]["ethnicity_labels"].get(k, k),
                           "photo": v.get("photo", {}).get("default", "")} for k, v in PERSONAS.items()],
-            "app_languages": sorted(c for c in valid_langs())}
+            "app_languages": sorted(c for c in valid_langs()),
+            "language_options": [
+                {"code": c, "label": language_label(c, "en"), "native": language_label(c, c), "place": locale_place(c)}
+                for c in sorted(valid_langs())]}
 
 
 @app.get("/api/admin/sims", dependencies=[Depends(require_admin)])
@@ -699,7 +722,8 @@ def admin_create_sim(body: SimInputs):
     # requested language is drafted from it straight away.
     if body.language and body.language != "en":
         try:
-            tr = simgen.translate(sim["scenario"], body.language, body.language_name, body.setting,
+            tr = simgen.translate(sim["scenario"], body.language, body.language_name,
+                                  body.setting or locale_place(body.language),
                                   f"Accent/variety: {body.accent}" if body.accent else "", app_ui(body.language))
             sim["scenario"][body.language] = tr["block"]
             sim["problems"] += tr["problems"]
@@ -720,7 +744,7 @@ def admin_get_sim(sim_id: str):
 @app.put("/api/admin/sims/{sim_id}", dependencies=[Depends(require_admin)])
 def admin_edit_sim(sim_id: str, body: SimEdits):
     sim = editable_sim(sim_id)
-    if sim["status"] == "published":
+    if sim["status"] == "published" and body.lang not in (sim.get("pending_langs") or []):
         raise HTTPException(409, detail="Published sims can't be edited. Unpublish it first, or extend it.")
     block = sim["scenario"].get(body.lang)
     if not block:
@@ -833,25 +857,47 @@ def admin_extend_sim(sim_id: str, body: ExtendInputs):
 
 
 @app.post("/api/admin/sims/{sim_id}/languages", dependencies=[Depends(require_admin)])
-def admin_translate_sim(sim_id: str, body: TranslateRequest):
+def admin_translate_sim(sim_id: str, body: TranslateRequest, request: Request):
+    """Add (or redo) one language. On a published sim the language waits for a
+    reviewer before learners see it; the rest of the sim stays live."""
     require_storage()
     sim = editable_sim(sim_id)
-    if sim["status"] == "published":
-        raise HTTPException(409, detail="Unpublish the sim (or extend it) to add languages; it then goes back through review.")
     if not simgen.generator_ready():
         raise HTTPException(503, detail="Set ANTHROPIC_API_KEY to translate sims.")
     code = body.code.strip()
     if code == "en":
         raise HTTPException(400, detail="English is the master version.")
+    setting = body.setting.strip() or locale_place(code)
+    name = body.language_name.strip() or (language_label(code, code) if code in valid_langs() else "")
     try:
-        tr = simgen.translate(sim["scenario"], code, body.language_name.strip(), body.setting.strip(),
-                              body.notes.strip(), app_ui(code))
+        tr = simgen.translate(sim["scenario"], code, name, setting, body.notes.strip(), app_ui(code))
     except Exception as e:
         _gen_error(e)
+    sim = editable_sim(sim_id)  # re-read: other languages may have been added meanwhile
     sim["scenario"][code] = tr["block"]
     sim["problems"] = [p for p in sim.get("problems", []) if not p.startswith(f"[{code}]")] + \
         [f"[{code}] {p}" for p in tr["problems"]]
     sim.setdefault("translation_notes", {})[code] = tr["review_notes"]
+    if sim["status"] == "published":
+        pending = set(sim.get("pending_langs") or [])
+        if code not in pending:
+            pending.add(code)
+            sims.notify(sims.REVIEWER_EMAIL, f"New language to review: {sim['title']} ({code})",
+                        f"{name or code} was added to the published sim \"{sim['title']}\". Learners won't see it "
+                        f"until it's approved: {base_url(request)}/admin#sim={sim['id']}")
+        sim["pending_langs"] = sorted(pending)
+    sims.save(sim)
+    return sim_detail(sim)
+
+
+@app.post("/api/admin/sims/{sim_id}/languages/{code}/approve", dependencies=[Depends(require_reviewer)])
+def admin_approve_language(sim_id: str, code: str):
+    sim = editable_sim(sim_id)
+    if code not in (sim.get("pending_langs") or []):
+        raise HTTPException(409, detail="That language isn't waiting for review.")
+    if any(p.startswith(f"[{code}]") for p in sim.get("problems", [])):
+        raise HTTPException(400, detail=f"Resolve the {code} problems first.")
+    sim["pending_langs"] = [c for c in sim["pending_langs"] if c != code]
     sims.save(sim)
     return sim_detail(sim)
 
@@ -861,9 +907,10 @@ def admin_remove_language(sim_id: str, code: str):
     sim = editable_sim(sim_id)
     if code == "en" or code not in sim["scenario"]:
         raise HTTPException(400, detail="Can't remove that language.")
-    if sim["status"] == "published":
+    if sim["status"] == "published" and code not in (sim.get("pending_langs") or []):
         raise HTTPException(409, detail="Unpublish first.")
     del sim["scenario"][code]
+    sim["pending_langs"] = [c for c in sim.get("pending_langs") or [] if c != code]
     sim["problems"] = [p for p in sim.get("problems", []) if not p.startswith(f"[{code}]")]
     sims.save(sim)
     return sim_detail(sim)
