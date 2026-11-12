@@ -57,7 +57,7 @@
         "gender": "male",
         "voice_id": null
       },
-      "background": "scripts/heygen/backgrounds/en-US.jpg",
+      "background": "public/backgrounds/en-US.jpg",
       "background_brief": "Bright administrative office at a community college in Columbus, Ohio. Through a large window: red-brick campus buildings, a green quad, maple trees. Light wood desk, bookshelf with binders, a small potted plant. Late-summer daylight."
     },
     {
@@ -82,7 +82,7 @@
         "gender": "male",
         "voice_id": null
       },
-      "background": "scripts/heygen/backgrounds/en-GB.jpg",
+      "background": "public/backgrounds/en-GB.jpg",
       "background_brief": "Office at a further education college in Leeds, England. Through the window: Victorian red-brick buildings and an overcast sky. Modern grey furniture, whiteboard, mug on the desk. Soft, diffuse daylight."
     },
     {
@@ -106,7 +106,7 @@
         "gender": "male",
         "voice_id": null
       },
-      "background": "scripts/heygen/backgrounds/es-ES.jpg",
+      "background": "public/backgrounds/es-ES.jpg",
       "background_brief": "Modern university office in Valencia, Spain. Through the window: whitewashed buildings, a palm tree and bright Mediterranean sunlight. Light stone floor, minimalist white furniture, a few books."
     },
     {
@@ -130,7 +130,7 @@
         "gender": "male",
         "voice_id": null
       },
-      "background": "scripts/heygen/backgrounds/es-MX.jpg",
+      "background": "public/backgrounds/es-MX.jpg",
       "background_brief": "University office in Guadalajara, Mexico. Through the window: a colonial-style courtyard with warm ochre walls, arches and jacaranda trees. Dark wood furniture, terracotta tones, warm afternoon light."
     },
     {
@@ -153,7 +153,7 @@
         "gender": "male",
         "voice_id": null
       },
-      "background": "scripts/heygen/backgrounds/es-AR.jpg",
+      "background": "public/backgrounds/es-AR.jpg",
       "background_brief": "University office in Córdoba, Argentina. Through the window: European-style historic façades and tall plane trees. High ceiling, wooden bookshelves, a mate gourd on the desk (subtle, small). Soft morning light."
     },
     {
@@ -176,7 +176,7 @@
         "gender": "male",
         "voice_id": null
       },
-      "background": "scripts/heygen/backgrounds/es-CL.jpg",
+      "background": "public/backgrounds/es-CL.jpg",
       "background_brief": "University office in Valparaíso, Chile. Through the window: colourful houses climbing the hills and the Pacific harbour in the distance. Simple modern furniture, clear coastal daylight."
     },
     {
@@ -199,7 +199,7 @@
         "gender": "male",
         "voice_id": null
       },
-      "background": "scripts/heygen/backgrounds/pt-PT.jpg",
+      "background": "public/backgrounds/pt-PT.jpg",
       "background_brief": "Office at a private polytechnic in Porto, Portugal. Through the window: terracotta rooftops and the Douro river. Blue-and-white azulejo tile panel on one wall (subtle). Light wood desk, soft daylight."
     },
     {
@@ -219,7 +219,7 @@
         "gender": "male",
         "voice_id": null
       },
-      "background": "scripts/heygen/backgrounds/eu.jpg",
+      "background": "public/backgrounds/eu.jpg",
       "background_brief": "University office in Donostia–San Sebastián, Basque Country. Through the window: the bay of La Concha, green hills and a cloudy Atlantic sky. Contemporary wood-and-glass interior, calm natural light."
     },
     {
@@ -239,7 +239,7 @@
         "gender": "male",
         "voice_id": null
       },
-      "background": "scripts/heygen/backgrounds/af.jpg",
+      "background": "public/backgrounds/af.jpg",
       "background_brief": "Office at a private higher-education institution in Stellenbosch, South Africa. Through the window: white Cape Dutch gables, oak trees and the mountains behind. Light wood furniture, bright summer light."
     },
     {
@@ -259,7 +259,7 @@
         "gender": "male",
         "voice_id": null
       },
-      "background": "scripts/heygen/backgrounds/he.jpg",
+      "background": "public/backgrounds/he.jpg",
       "background_brief": "Office at a private academic college in Ramat Gan, Israel. Through the window: modern glass high-rises and a few palm trees under a clear sky. White walls, contemporary furniture, strong daylight."
     },
     {
@@ -283,7 +283,7 @@
         "gender": "male",
         "voice_id": null
       },
-      "background": "scripts/heygen/backgrounds/zh-HK.jpg",
+      "background": "public/backgrounds/zh-HK.jpg",
       "background_brief": "Office at a college in Hong Kong. Through a floor-to-ceiling window: a dense skyline of high-rise towers and green hills. Compact, efficient modern office, cool daylight."
     },
     {
@@ -303,7 +303,7 @@
         "gender": "male",
         "voice_id": null
       },
-      "background": "scripts/heygen/backgrounds/ne.jpg",
+      "background": "public/backgrounds/ne.jpg",
       "background_brief": "Office at a private college in Lalitpur, Nepal. Through the window: brick buildings, a pagoda-style temple roof in the distance and green hills. Simple wooden furniture, warm daylight."
     },
     {
@@ -325,7 +325,7 @@
         "gender": "male",
         "voice_id": null
       },
-      "background": "scripts/heygen/backgrounds/ur.jpg",
+      "background": "public/backgrounds/ur.jpg",
       "background_brief": "Office at a private university in Lahore, Pakistan. Through the window: red-brick Mughal-influenced campus arches and lush lawns. Dark wood desk, warm afternoon light."
     },
     {
@@ -347,7 +347,7 @@
         "gender": "male",
         "voice_id": null
       },
-      "background": "scripts/heygen/backgrounds/sw.jpg",
+      "background": "public/backgrounds/sw.jpg",
       "background_brief": "Office at a private university in Nairobi, Kenya. Through the window: modern campus buildings, jacaranda trees and the city skyline. Bright, contemporary furniture, clear highland daylight."
     },
     {
@@ -369,7 +369,7 @@
         "gender": "male",
         "voice_id": null
       },
-      "background": "scripts/heygen/backgrounds/sw-TZ.jpg",
+      "background": "public/backgrounds/sw-TZ.jpg",
       "background_brief": "Office at a private university in Dar es Salaam, Tanzania. Through the window: coastal palms, low white buildings and the Indian Ocean in the distance. Light airy furniture, warm tropical light."
     }
   ]

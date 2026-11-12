@@ -63,6 +63,8 @@ def check_inputs(inp: dict) -> dict:
         if not str(out.get(key, "")).strip():
             raise ValueError(f"{key.capitalize()} is required.")
     out.setdefault("pros_cons", True)
+    if out.get("video_slides") not in ("tracks", "intro", "none"):
+        out["video_slides"] = "tracks"
     out.setdefault("summary", True)
     out.setdefault("language", "en")
     return out
@@ -97,6 +99,12 @@ _SLIDE = {"type": "object", "required": ["kind", "title", "body"], "properties":
     "point1": {"type": "string", "description": "character slides: a key fact"},
     "point2": {"type": "string", "description": "character slides: a risk or tension"},
     "image_prompt": {"type": "string"}, "image_alt": {"type": "string"}}}
+_VIDEO = {"type": "object", "required": ["script", "quote"], "properties": {
+    "script": {"type": "string", "description": "What the featured character says on camera, first person, "
+                                                 "spoken to the learner: 2-3 short sentences, at most 45 words."},
+    "quote": {"type": "string", "description": "The key line, at most 12 words."},
+    "watch_for": {"type": "string", "description": "One sentence: what the learner should notice."}}}
+
 _DECISION = {"type": "object", "required": ["short_title", "prompt", "options", "track_summaries"], "properties": {
     "short_title": {"type": "string", "description": "2-4 words, e.g. 'Initial response'"},
     "prompt": {"type": "string", "description": "The situation at this point and the question, 1-3 sentences."},
@@ -131,6 +139,7 @@ TOOL = {
             "character_title": {"type": "string", "description": "The featured character's role, e.g. 'Parent of a 7th grader'"},
             "point1": {"type": "string"}, "point2": {"type": "string"}}},
         "cast_note": {"type": "string", "description": "One or two sentences on who the featured character is."},
+        "intro_video": _VIDEO,
         "decisions": {"type": "array", "items": _DECISION},
         "summary": _SUMMARY,
         "review_notes": {"type": "array", "items": {"type": "string"},
@@ -142,6 +151,7 @@ TRACKS_TOOL = {
     "description": "Submit the slides for every track of one decision point.",
     "input_schema": {"type": "object", "required": ["tracks"], "properties": {
         "tracks": {"type": "array", "items": {"type": "object", "required": ["slides"], "properties": {
+            "video": _VIDEO,
             "slides": {"type": "array", "items": _SLIDE}}}}}},
 }
 
@@ -256,7 +266,10 @@ def _clean_tracks(tracks: Any) -> list:
         slides = t.get("slides")
         if slides is None and ("title" in t or "body" in t):  # a single slide
             slides = [t]
-        out.append({"slides": [_clean_slide(x) for x in _list(slides)]})
+        track = {"slides": [_clean_slide(x) for x in _list(slides)]}
+        if t.get("video"):
+            track["video"] = _obj(t["video"], "script")
+        out.append(track)
     return out
 
 
@@ -276,7 +289,7 @@ def clean_output(out: Any) -> dict:
     out = _unjson(out)
     if not isinstance(out, dict):
         raise RuntimeError("The model returned nothing usable.")
-    for key, text_key in (("intro", "body"), ("featured_slide", "body"), ("summary", "body")):
+    for key, text_key in (("intro", "body"), ("featured_slide", "body"), ("summary", "body"), ("intro_video", "script")):
         if key in out:
             out[key] = _obj(out[key], text_key)
     out["impact_dimensions"] = [d if isinstance(d, dict) else {"key": str(d), "label": str(d)}
@@ -318,6 +331,8 @@ def build_prompt(inp: dict) -> str:
         "- Each option: pros and cons (1-2 each)." if inp.get("pros_cons", True) else "- Leave pros and cons empty.",
         "- Summary: debrief, one reflection question, 2-3 takeaways." if inp.get("summary", True)
         else "- Summary: keep it to a short closing and one reflection question.",
+        ("- intro_video: what [[FEATURED]] says on camera when the learner first meets them (it is filmed)."
+         if inp.get("video_slides", "tracks") != "none" else ""),
         f"\nExtra guidance: {inp['notes']}" if inp.get("notes") else "",
     ]))
 
@@ -349,8 +364,20 @@ def _keyboard_hint(n: int) -> str:
     return "Press " + ", ".join(keys[:-1]) + f" or {keys[-1]} to decide"
 
 
+def video_node(v: dict, next_id: str, badge: str) -> dict | None:
+    v = v if isinstance(v, dict) else {}
+    script = _clean(v.get("script"))
+    if not script:
+        return None
+    return {"type": "video", "next_node_id": next_id, "step_badge": badge,
+            "quote": _clean(v.get("quote")) or script.split(".")[0][:90],
+            "script": script, "watch_listen_title": "Watch & Listen",
+            "watch_listen_body": _clean(v.get("watch_for")) or "Notice how they react to your decision."}
+
+
 def build_decisions(decisions: list[dict], dims: dict[str, str], featured: dict, *, first_number: int,
-                    next_after_last: str, pros_cons: bool, used_ids: set[str]) -> tuple[dict, list[str], list[str]]:
+                    next_after_last: str, pros_cons: bool, used_ids: set[str],
+                    videos: bool = False) -> tuple[dict, list[str], list[str]]:
     """Turn the model's decisions into wired nodes. Returns (nodes, problems, ids of each decision)."""
     nodes: dict[str, dict] = {}
     problems: list[str] = []
@@ -376,7 +403,13 @@ def build_decisions(decisions: list[dict], dims: dict[str, str], featured: dict,
                 problems.append(f"Decision {num}, track {t_idx + 1} has no slides.")
                 slides = [{"kind": "outcome", "title": "", "body": ""}]
             ids = [uid(f"d{num}t{t_idx + 1}s{s + 1}") for s in range(len(slides))]
-            track_first.append(ids[0])
+            vnode = video_node(track.get("video"), ids[0], f"Decision {num} · Track {t_idx + 1}") if videos else None
+            if vnode:
+                vid = uid(f"d{num}t{t_idx + 1}v")
+                nodes[vid] = vnode
+                track_first.append(vid)
+            else:
+                track_first.append(ids[0])
             for s, slide in enumerate(slides):
                 kind = "outcome" if s == 0 else (slide.get("kind") if slide.get("kind") in ("scene", "character") else "scene")
                 badge = f"Decision {num} · Track {t_idx + 1}"
@@ -479,11 +512,19 @@ def assemble(inp: dict, out: dict, app_ui_en: dict) -> dict:
         nodes["intro"]["image_alt"] = _clean(intro.get("image_alt"))
 
     decs = out.get("decisions") or []
+    first_after_intro = "intro_char"
+    if inp.get("video_slides", "tracks") != "none":
+        iv = video_node(out.get("intro_video"), "d1", "Introduction")
+        if iv:
+            nodes["intro_video"] = iv
+            nodes["intro_char"]["next_node_id"] = "intro_video"
+            first_after_intro = "intro_video"
     dnodes, dprob, dec_ids = build_decisions(decs, dims, featured, first_number=1, next_after_last="summary",
-                                             pros_cons=inp.get("pros_cons", True), used_ids=set(nodes) | {"summary"})
+                                             pros_cons=inp.get("pros_cons", True), used_ids=set(nodes) | {"summary"},
+                                             videos=inp.get("video_slides", "tracks") == "tracks")
     problems += dprob
     if dec_ids:
-        nodes["intro_char"]["next_node_id"] = dec_ids[0]
+        nodes[first_after_intro]["next_node_id"] = dec_ids[0]
     nodes.update(dnodes)
     nodes["summary"] = summary_node(summ, inp.get("summary", True))
 
@@ -573,6 +614,9 @@ def write_tracks(story: str, decisions: list[dict], inp: dict, first_number: int
             f"Write exactly {n_tracks} track(s), each with exactly {slides} slide(s). The first slide of every "
             "track is kind 'outcome' (the immediate consequence of the choice); any later slides are 'scene' or "
             "'character' and show how the situation develops.",
+            ("Also give every track a 'video': what [[FEATURED]] says on camera right after the choice, reacting "
+             "to it in their own voice (this is filmed and shown before the track's slides)."
+             if inp.get("video_slides", "tracks") == "tracks" else ""),
         ])
         last_err = ""
         for _ in range(2):  # one retry
@@ -708,7 +752,8 @@ def extend(scenario: dict, ext: dict, model_call: Callable[..., dict] | None = N
     out = _fix_name(out, featured["name"])
     new_nodes, problems, dec_ids = build_decisions(
         out.get("decisions") or [], dims, featured, first_number=n_existing + 1, next_after_last=summary_id,
-        pros_cons=inp.get("pros_cons", True), used_ids=set(nodes))
+        pros_cons=inp.get("pros_cons", True), used_ids=set(nodes),
+        videos=inp.get("video_slides", "tracks") == "tracks" and any(n.get("type") == "video" for n in nodes.values()))
     if not dec_ids:
         raise RuntimeError("The model returned no new decisions.")
     for k in ends:
@@ -781,7 +826,7 @@ def narration_text(node: dict) -> str:
     if t == "summary":
         return " ".join(p for p in [node.get("title"), node.get("body"), node.get("question")] if p)
     if t == "video":
-        return node.get("quote", "")
+        return ""  # the video speaks; its captions (and the on-screen script) are the transcript
     return " ".join(p for p in [node.get("title"), node.get("body")] if p)
 
 
@@ -792,14 +837,16 @@ def ada_check(scenario: dict, tts_ready: bool) -> dict:
         if not isinstance(block, dict) or "nodes" not in block:
             continue
         for nid, n in block["nodes"].items():
+            if n.get("type") == "video":
+                if not (n.get("script") or n.get("quote") or "").strip():
+                    issues.append(f"[{code}] {nid}: video has no script for captions.")
+                continue
             if not narration_text(n).strip():
                 issues.append(f"[{code}] {nid}: no narration text.")
             if n.get("image_prompt") and not (n.get("image_alt") or "").strip():
                 issues.append(f"[{code}] {nid}: image has no alt text.")
             if n.get("type") == "text_image" and not (n.get("character_alt") or "").strip():
                 issues.append(f"[{code}] {nid}: character portrait has no alt text.")
-            if n.get("type") == "video" and not n.get("quote"):
-                issues.append(f"[{code}] {nid}: video has no caption script.")
     return {
         "passed": not issues,
         "issues": issues,

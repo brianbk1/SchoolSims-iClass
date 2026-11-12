@@ -15,9 +15,10 @@ interface Props {
   captionsOffLabel: string;
   videoErrorLabel: string;
   retryLabel: string;
+  photoUrl?: string;
 }
 
-export default function VideoSlide({ node, videoUrl, captionsUrl, captionsOn, onToggleCaptions, audioUrl, speechEnabled, speakerName, captionsOnLabel, captionsOffLabel, videoErrorLabel, retryLabel }: Props) {
+export default function VideoSlide({ node, videoUrl, captionsUrl, captionsOn, onToggleCaptions, audioUrl, speechEnabled, speakerName, captionsOnLabel, captionsOffLabel, videoErrorLabel, retryLabel, photoUrl }: Props) {
   useSpeech(audioUrl, speechEnabled);
   const [vidErr, setVidErr] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
@@ -29,7 +30,13 @@ export default function VideoSlide({ node, videoUrl, captionsUrl, captionsOn, on
       <span id="vid-badge" className="step-badge" style={{ marginBottom: 20, display: 'inline-block' }}>{node.step_badge}</span>
       <div className="slide-grid-video" style={{ gap: 36 }}>
         <div className="video-wrap">
-          {!vidErr ? (
+          {!videoUrl ? (
+            // No clip for this look + language yet: show the character and what they say.
+            <div className="video-fallback">
+              {photoUrl && <img src={photoUrl} alt={speakerName} />}
+              {node.script && <p dir="auto">“{node.script}”</p>}
+            </div>
+          ) : !vidErr ? (
             <video
               key={retryKey}
               controls
@@ -37,7 +44,7 @@ export default function VideoSlide({ node, videoUrl, captionsUrl, captionsOn, on
               onError={() => setVidErr(true)}
             >
               <source src={videoUrl} type="video/mp4" />
-              {captionsOn && <track default kind="captions" src={captionsUrl} />}
+              {captionsOn && captionsUrl && <track default kind="captions" src={captionsUrl} />}
             </video>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 12 }}>

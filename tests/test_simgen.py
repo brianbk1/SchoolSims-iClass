@@ -57,7 +57,10 @@ nodes = sim["scenario"]["en"]["nodes"]
 decisions = [k for k, v in nodes.items() if v["type"] == "decision"]
 assert decisions == ["d1", "d2", "d3"], decisions
 assert len(nodes["d1"]["choices"]) == 3 and nodes["d1"]["choices"][0]["pros"] == ["Fast"]
-assert {ch["target_node_id"] for ch in nodes["d3"]["choices"]} == {"d3t1s1"}  # 1 track at decision 3
+assert {ch["target_node_id"] for ch in nodes["d3"]["choices"]} == {"d3t1v"}  # 1 track at decision 3, video first
+assert nodes["d3t1v"]["type"] == "video" and nodes["d3t1v"]["next_node_id"] == "d3t1s1"
+assert nodes["intro_char"]["next_node_id"] == "intro_video" and nodes["intro_video"]["next_node_id"] == "d1"
+assert simgen.narration_text(nodes["intro_video"]) == "" and nodes["intro_video"]["script"]
 assert nodes["d1t2s2"]["next_node_id"] == "d2" and nodes["d3t1s2"]["next_node_id"] == "summary"
 assert "Jordan Chen" in nodes["intro_char"]["body"], "featured token -> placeholder"
 assert nodes["d1"]["choices"][0]["impacts"][0]["key"] == "trust"  # 'Trust' normalised

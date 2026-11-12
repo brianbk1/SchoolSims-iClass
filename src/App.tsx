@@ -242,8 +242,9 @@ export default function App() {
             <VideoSlide
               key={currentNodeId}
               node={currentNode}
-              videoUrl={simData.media.video_template.replace('{lang}', lang)}
-              captionsUrl={simData.media.captions ?? `/assets/captions_${lang.split('-')[0]}.vtt`}
+              videoUrl={currentNode.own_video ? (currentNode.video_url ?? '') : simData.media.video_template.replace('{lang}', lang)}
+              captionsUrl={currentNode.own_video ? (currentNode.captions_url ?? '') : (simData.media.captions ?? `/assets/captions_${lang.split('-')[0]}.vtt`)}
+              photoUrl={simData.media.photo}
               captionsOn={captionsOn}
               onToggleCaptions={() => setCaptionsOn(c => !c)}
               audioUrl={audioMap[currentNodeId] ?? null}

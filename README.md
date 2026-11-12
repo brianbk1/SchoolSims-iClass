@@ -167,7 +167,7 @@ Setup: put `ANTHROPIC_API_KEY=...` in `.env.local` at the repo root (optional: `
 `scripts/make_videos.py` makes each version's video with HeyGen: the character speaks the lines in that language and accent, in front of a region-appropriate background, with matching subtitles. The list of clips (character, lines, voice, background) is in `scripts/heygen/clips.json`; background image briefs are in `scripts/heygen/BACKGROUNDS.md`.
 
 1. Put `HEYGEN_API_KEY=...` in `.env.local` (repo root).
-2. Optional: add background images to `scripts/heygen/backgrounds/<locale>.jpg` (without one, the character keeps its photo's background).
+2. Optional: add background images to `public/backgrounds/<locale>.jpg` (without one, the character keeps its photo's background).
 3. `python scripts/make_videos.py --check` (key + credits), then `--dry-run` (what would be made, which voice; spends nothing).
 4. `python scripts/make_videos.py --only es-AR` to make and review one clip, then run without `--only` for the rest.
 5. Commit `public/assets`, `backend/personas.json` and push.
@@ -197,10 +197,14 @@ Open `/admin` → **Sim Builder** → **Create Sim from AI**.
 | `RESEND_API_KEY` + `SIM_MAIL_FROM` | Send the review emails. Without them, notifications are kept in **Notifications** only |
 | `KV_REST_API_URL` / `KV_REST_API_TOKEN` | Upstash Redis (Vercel → Storage). **Needed on Vercel**, otherwise sims are lost when the server restarts. Locally they're in `backend/data/` |
 | `CRON_SECRET` | Protects the daily `/api/cron/sims` job (reminders + expiry), scheduled in `vercel.json` |
-| `OPENAI_API_KEY` (optional) | Creates slide illustrations from the image prompts (`OPENAI_IMAGE_MODEL`, default `gpt-image-1`) |
+| `OPENAI_API_KEY` | Creates the scene images from each slide's image prompt (`OPENAI_IMAGE_MODEL`, default `gpt-image-1`) |
+| `HEYGEN_API_KEY` | Character videos: the intro and every track get a clip of the character speaking, per language and look |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob (Storage → Create → Blob → connect). Keeps the videos, captions and images (HeyGen's links expire) |
+
+**Images and character videos** (sim preview → *Images and character videos*): create the missing scene images, then pick a character look per language and click *Make video clips*. Each clip is rendered by HeyGen (`backend/media_gen.py`): the look's portrait is framed on a 16:9 canvas in front of the region's background (`public/backgrounds/`), speaking the slide's script with a voice for that language and region. Renders take a few minutes; the page checks every 20 seconds and the daily cron finishes any left over. Finished clips and WebVTT captions are copied to Blob. Editing a script marks its clip out of date. A video slide without a clip for the learner's look shows the portrait with the script.
 
 Generation takes 1–3 minutes, so `vercel.json` gives the API function up to 300 s.
-Phase 1 is text and images; character portraits already change with the learner's language and look. Videos can be added later with the HeyGen pipeline.
+Character portraits, names, backgrounds and voices change with the learner's language and look.
 
 Test without spending API credit: `cd backend && python ../tests/test_simgen.py` (uses a fake model).
 
