@@ -550,3 +550,6 @@ kbd {
   .sb-field { grid-template-columns: 1fr; gap: 2px; }
   .adm-header { flex-wrap: wrap; padding: 10px 14px; }
 }
+
+/* The player is a fixed full-screen app; the admin is a normal scrolling page. */
+body.admin-page { height: auto; min-height: 100vh; overflow: auto; }
