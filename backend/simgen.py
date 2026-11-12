@@ -191,6 +191,103 @@ def call_claude(prompt: str, tool: dict = TOOL) -> dict:
     raise RuntimeError("The model did not return a simulation.")
 
 
+# ---------------------------------------------------------------------------
+# Tolerate loosely shaped tool output
+# ---------------------------------------------------------------------------
+# Without forced tool use, models sometimes return a nested object or list as a
+# JSON string, or a list item as plain text. Normalise before using the output.
+
+def _unjson(v: Any) -> Any:
+    """Recursively turn JSON-looking strings into objects/lists."""
+    if isinstance(v, str):
+        t = v.strip()
+        if t[:1] in "{[" and t[-1:] in "}]":
+            try:
+                return _unjson(json.loads(t))
+            except ValueError:
+                return v
+        return v
+    if isinstance(v, list):
+        return [_unjson(x) for x in v]
+    if isinstance(v, dict):
+        return {k: _unjson(x) for k, x in v.items()}
+    return v
+
+
+def _obj(v: Any, text_key: str = "body") -> dict:
+    if isinstance(v, dict):
+        return v
+    return {text_key: str(v)} if isinstance(v, (str, int, float)) and str(v).strip() else {}
+
+
+def _list(v: Any) -> list:
+    if isinstance(v, list):
+        return v
+    if isinstance(v, dict):  # {"1": {...}, "2": {...}} or a single item
+        vals = list(v.values())
+        return vals if vals and all(isinstance(x, (dict, list)) for x in vals) else [v]
+    if isinstance(v, str) and v.strip():
+        return [v]
+    return []
+
+
+def _clean_option(o: Any) -> dict:
+    o = _obj(o, "label")
+    o["impacts"] = [i for i in _list(o.get("impacts")) if isinstance(i, dict)]
+    o["pros"] = [str(x) for x in _list(o.get("pros"))]
+    o["cons"] = [str(x) for x in _list(o.get("cons"))]
+    try:
+        o["track"] = int(o.get("track"))
+    except (TypeError, ValueError):
+        o["track"] = None
+    return o
+
+
+def _clean_slide(sl: Any) -> dict:
+    return _obj(sl, "body")
+
+
+def _clean_tracks(tracks: Any) -> list:
+    out = []
+    for t in _list(tracks):
+        if isinstance(t, list):  # a track given directly as its slides
+            t = {"slides": t}
+        t = _obj(t, "body")
+        slides = t.get("slides")
+        if slides is None and ("title" in t or "body" in t):  # a single slide
+            slides = [t]
+        out.append({"slides": [_clean_slide(x) for x in _list(slides)]})
+    return out
+
+
+def _clean_decision(d: Any) -> dict | None:
+    d = _obj(d, "prompt")
+    if not d:
+        return None
+    d["options"] = [_clean_option(o) for o in _list(d.get("options"))]
+    d["track_summaries"] = [str(x) for x in _list(d.get("track_summaries"))]
+    if "tracks" in d:
+        d["tracks"] = _clean_tracks(d["tracks"])
+    return d
+
+
+def clean_output(out: Any) -> dict:
+    """Shape the model's reply the way assemble() expects."""
+    out = _unjson(out)
+    if not isinstance(out, dict):
+        raise RuntimeError("The model returned nothing usable.")
+    for key, text_key in (("intro", "body"), ("featured_slide", "body"), ("summary", "body")):
+        if key in out:
+            out[key] = _obj(out[key], text_key)
+    out["impact_dimensions"] = [d if isinstance(d, dict) else {"key": str(d), "label": str(d)}
+                                for d in _list(out.get("impact_dimensions"))]
+    out["decisions"] = [d for d in (_clean_decision(x) for x in _list(out.get("decisions"))) if d]
+    if "summary" in out:
+        out["summary"]["takeaways"] = [str(x) for x in _list(out["summary"].get("takeaways"))]
+    out["review_notes"] = [str(x) for x in _list(out.get("review_notes"))]
+    return out
+
+
 def _structure_lines(split: list[int], options: int, slides: int, start: int = 1) -> str:
     lines = []
     for i, t in enumerate(split):
@@ -480,8 +577,8 @@ def write_tracks(story: str, decisions: list[dict], inp: dict, first_number: int
         last_err = ""
         for _ in range(2):  # one retry
             try:
-                out = call(prompt, TRACKS_TOOL)
-                got = out.get("tracks") if isinstance(out, dict) else None
+                out = _unjson(call(prompt, TRACKS_TOOL))
+                got = _clean_tracks(out.get("tracks") if isinstance(out, dict) else out)
                 if got:
                     return i, got, ""
                 last_err = "no tracks returned"
@@ -522,9 +619,7 @@ def generate(inp: dict, app_ui_en: dict, model_call: Callable[..., dict] | None 
     one line per track, summary; (2) every decision's track slides, in parallel."""
     inp = check_inputs(inp)
     call = model_call or call_claude
-    out = call(build_prompt(inp), TOOL)
-    if not isinstance(out, dict):
-        raise RuntimeError("The model returned nothing usable.")
+    out = clean_output(call(build_prompt(inp), TOOL))
     track_problems = write_tracks(story_brief(inp, out), out.get("decisions") or [], inp, 1, "the summary", call)
     result = assemble(inp, out, app_ui_en)
     result["problems"] = track_problems + result["problems"]
@@ -599,9 +694,7 @@ def extend(scenario: dict, ext: dict, model_call: Callable[..., dict] | None = N
         f"Extra guidance: {ext['notes']}" if ext.get("notes") else "",
     ]))
     call = model_call or call_claude
-    out = call(prompt, EXTEND_TOOL)
-    if not isinstance(out, dict):
-        raise RuntimeError("The model returned nothing usable.")
+    out = clean_output(call(prompt, EXTEND_TOOL))
     story = "\n".join([f"Simulation: {en['ui'].get('sim_title', '')}",
                        f"Background: {en['ui'].get('brief_scenario_body', '')}",
                        f"Featured character (write their name as [[FEATURED]]): {featured['title']}",
@@ -765,7 +858,9 @@ def translate(scenario: dict, code: str, language_name: str, setting: str, notes
     strings: dict = {}
     result = {"review_notes": []}
     for part in parts:
-        strings.update(part.get("strings", {}) or {})
+        part = _unjson(part) if isinstance(part, dict) else {}
+        got = part.get("strings", {})
+        strings.update(got if isinstance(got, dict) else {})
         result["review_notes"] += part.get("review_notes", []) or []
     block = copy.deepcopy(en)
     if app_ui:
@@ -776,9 +871,11 @@ def translate(scenario: dict, code: str, language_name: str, setting: str, notes
     back, missing = {}, []
     for p in wanted:
         item = strings.get(p)
+        if isinstance(item, str):
+            item = {"text": item}
         if isinstance(item, dict) and isinstance(item.get("text"), str) and item["text"].strip():
             localize.set_path(block, p, item["text"])
-            back[p] = item.get("back_translation", "")
+            back[p] = str(item.get("back_translation", ""))
         else:
             missing.append(p)
     if language_name:
