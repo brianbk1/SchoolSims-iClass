@@ -215,14 +215,16 @@ def call_claude(user_prompt: str) -> dict:
     import anthropic  # lazy: app starts without the SDK or a key
 
     client = anthropic.Anthropic()
-    msg = client.messages.create(
+    # Streamed: the SDK refuses long non-streaming requests.
+    with client.messages.stream(
         model=os.getenv("ANTHROPIC_MODEL", DEFAULT_MODEL),
-        max_tokens=16000,
+        max_tokens=32000,
         system=SYSTEM_PROMPT,
         tools=[TOOL],
         tool_choice={"type": "tool", "name": TOOL["name"]},
         messages=[{"role": "user", "content": user_prompt}],
-    )
+    ) as stream:
+        msg = stream.get_final_message()
     for part in msg.content:
         if getattr(part, "type", "") == "tool_use":
             return part.input

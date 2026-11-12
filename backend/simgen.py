@@ -97,7 +97,7 @@ _SLIDE = {"type": "object", "required": ["kind", "title", "body"], "properties":
     "point1": {"type": "string", "description": "character slides: a key fact"},
     "point2": {"type": "string", "description": "character slides: a risk or tension"},
     "image_prompt": {"type": "string"}, "image_alt": {"type": "string"}}}
-_DECISION = {"type": "object", "required": ["short_title", "prompt", "options", "tracks"], "properties": {
+_DECISION = {"type": "object", "required": ["short_title", "prompt", "options", "track_summaries"], "properties": {
     "short_title": {"type": "string", "description": "2-4 words, e.g. 'Initial response'"},
     "prompt": {"type": "string", "description": "The situation at this point and the question, 1-3 sentences."},
     "options": {"type": "array", "items": {"type": "object", "required": ["label", "track", "impacts"], "properties": {
@@ -106,8 +106,8 @@ _DECISION = {"type": "object", "required": ["short_title", "prompt", "options", 
         "pros": {"type": "array", "items": {"type": "string"}},
         "cons": {"type": "array", "items": {"type": "string"}},
         "impacts": {"type": "array", "items": _IMPACT}}}},
-    "tracks": {"type": "array", "items": {"type": "object", "required": ["slides"], "properties": {
-        "slides": {"type": "array", "items": _SLIDE}}}}}}
+    "track_summaries": {"type": "array", "items": {"type": "string"},
+                        "description": "One sentence per track: what happens on it. The slides are written later."}}}
 _SUMMARY = {"type": "object", "required": ["title", "body", "question"], "properties": {
     "title": {"type": "string"}, "body": {"type": "string", "description": "Debrief: what the decisions were really about."},
     "question": {"type": "string", "description": "One reflection question."},
@@ -137,6 +137,14 @@ TOOL = {
                          "description": "Anything a human reviewer should check (facts, policy, sensitivity)."}}},
 }
 
+TRACKS_TOOL = {
+    "name": "submit_tracks",
+    "description": "Submit the slides for every track of one decision point.",
+    "input_schema": {"type": "object", "required": ["tracks"], "properties": {
+        "tracks": {"type": "array", "items": {"type": "object", "required": ["slides"], "properties": {
+            "slides": {"type": "array", "items": _SLIDE}}}}}},
+}
+
 EXTEND_TOOL = {
     "name": "submit_extension",
     "description": "Submit the new decision points that continue the simulation.",
@@ -155,14 +163,16 @@ def call_claude(prompt: str, tool: dict = TOOL) -> dict:
     import anthropic  # lazy
 
     client = anthropic.Anthropic()
-    msg = client.messages.create(
+    # Streamed: the SDK refuses long non-streaming requests, and big sims are long.
+    with client.messages.stream(
         model=DEFAULT_MODEL,
         max_tokens=32000,
         system=SYSTEM_PROMPT,
         tools=[tool],
         tool_choice={"type": "tool", "name": tool["name"]},
         messages=[{"role": "user", "content": prompt}],
-    )
+    ) as stream:
+        msg = stream.get_final_message()
     for part in msg.content:
         if getattr(part, "type", "") == "tool_use":
             return part.input
@@ -172,8 +182,8 @@ def call_claude(prompt: str, tool: dict = TOOL) -> dict:
 def _structure_lines(split: list[int], options: int, slides: int, start: int = 1) -> str:
     lines = []
     for i, t in enumerate(split):
-        lines.append(f"- Decision {start + i}: exactly {options} options and exactly {t} track(s), "
-                     f"each track exactly {slides} slide(s). Every track must be used by at least one option.")
+        lines.append(f"- Decision {start + i}: exactly {options} options and exactly {t} track(s) "
+                     f"(give one track_summaries line per track). Every track must be used by at least one option.")
     return "\n".join(lines)
 
 
@@ -427,12 +437,85 @@ def sim_ui(app_ui: dict, *, title: str, audience: str, scenario: str, objective:
     return ui
 
 
-def generate(inp: dict, app_ui_en: dict, model_call: Callable[[str], dict] | None = None) -> dict:
+def write_tracks(story: str, decisions: list[dict], inp: dict, first_number: int, after_last: str,
+                 call: Callable[..., dict]) -> list[str]:
+    """Second pass: write every decision's track slides, all decisions at the same time.
+    Fills dec["tracks"] in place; returns problems."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    slides = inp["slides_per_track"]
+
+    def one(i: int) -> tuple[int, list | None, str]:
+        dec = decisions[i]
+        summaries = dec.get("track_summaries") or []
+        n_tracks = max(1, len(summaries))
+        nxt = (f"the next decision point: \"{decisions[i + 1].get('prompt', '')}\""
+               if i + 1 < len(decisions) else after_last)
+        opts = "\n".join(f"  {LETTERS[k]}. {o.get('label', '')} -> track {o.get('track')}"
+                          for k, o in enumerate(dec.get("options") or []))
+        tracks = "\n".join(f"  Track {t + 1}: {s}" for t, s in enumerate(summaries)) or "  Track 1"
+        prompt = "\n".join([
+            story,
+            "",
+            f"Write the tracks for decision point {first_number + i}: {dec.get('prompt', '')}",
+            "Options and the track each leads to:", opts,
+            "Tracks to write:", tracks,
+            f"After each track the learner goes to {nxt}. End each track so that this follows naturally.",
+            f"Write exactly {n_tracks} track(s), each with exactly {slides} slide(s). The first slide of every "
+            "track is kind 'outcome' (the immediate consequence of the choice); any later slides are 'scene' or "
+            "'character' and show how the situation develops.",
+        ])
+        last_err = ""
+        for _ in range(2):  # one retry
+            try:
+                out = call(prompt, TRACKS_TOOL)
+                got = out.get("tracks") if isinstance(out, dict) else None
+                if got:
+                    return i, got, ""
+                last_err = "no tracks returned"
+            except Exception as e:  # keep the rest of the sim
+                last_err = str(e)[:200]
+        return i, None, last_err
+
+    problems = []
+    with ThreadPoolExecutor(max_workers=min(6, max(1, len(decisions)))) as pool:
+        for i, got, err in pool.map(one, range(len(decisions))):
+            if got is None:
+                decisions[i]["tracks"] = [{"slides": []} for _ in decisions[i].get("track_summaries") or [1]]
+                problems.append(f"Decision {first_number + i}: couldn't write its tracks ({err}). Regenerate the sim.")
+            else:
+                decisions[i]["tracks"] = got
+    return problems
+
+
+def story_brief(inp: dict, out: dict) -> str:
+    """Context every track-writing call gets."""
+    dims = ", ".join(f"{d.get('key')} ({d.get('label')})" for d in out.get("impact_dimensions") or [])
+    others = "; ".join(f"{c['name']} ({c.get('role', '')})" for c in inp.get("characters") or [] if c.get("name"))
+    return "\n".join(filter(None, [
+        f"Simulation: {out.get('title') or inp['title']}",
+        f"Audience: {inp.get('audience') or 'school leaders'}; tone: {inp.get('tone') or 'realistic'}",
+        f"Background: {inp['context']}",
+        f"Setting: {inp['setting']}" if inp.get("setting") else "",
+        f"Featured character (write their name as [[FEATURED]]): {(out.get('featured_slide') or {}).get('character_title', '')}",
+        f"Other characters: {others}" if others else "",
+        f"Impact dimensions: {dims}" if dims else "",
+        "Decision points in order:",
+        *[f"  {k + 1}. {d.get('prompt', '')}" for k, d in enumerate(out.get("decisions") or [])],
+    ]))
+
+
+def generate(inp: dict, app_ui_en: dict, model_call: Callable[..., dict] | None = None) -> dict:
+    """Two passes so big sims stay fast: (1) outline - intro, decisions, options, scores,
+    one line per track, summary; (2) every decision's track slides, in parallel."""
     inp = check_inputs(inp)
-    out = (model_call or call_claude)(build_prompt(inp))
+    call = model_call or call_claude
+    out = call(build_prompt(inp), TOOL)
     if not isinstance(out, dict):
         raise RuntimeError("The model returned nothing usable.")
+    track_problems = write_tracks(story_brief(inp, out), out.get("decisions") or [], inp, 1, "the summary", call)
     result = assemble(inp, out, app_ui_en)
+    result["problems"] = track_problems + result["problems"]
     result["inputs"] = inp
     result["model"] = DEFAULT_MODEL
     return result
@@ -503,7 +586,15 @@ def extend(scenario: dict, ext: dict, model_call: Callable[..., dict] | None = N
         "Also return an updated summary that covers the whole simulation." if inp.get("summary", True) else "",
         f"Extra guidance: {ext['notes']}" if ext.get("notes") else "",
     ]))
-    out = (model_call or (lambda p: call_claude(p, EXTEND_TOOL)))(prompt)
+    call = model_call or call_claude
+    out = call(prompt, EXTEND_TOOL)
+    if not isinstance(out, dict):
+        raise RuntimeError("The model returned nothing usable.")
+    story = "\n".join([f"Simulation: {en['ui'].get('sim_title', '')}",
+                       f"Background: {en['ui'].get('brief_scenario_body', '')}",
+                       f"Featured character (write their name as [[FEATURED]]): {featured['title']}",
+                       "The story so far:", story_so_far(nodes, start)])
+    track_problems = write_tracks(story, out.get("decisions") or [], inp, n_existing + 1, "the closing summary", call)
     if not dims:  # sim had no scores yet; take what the model used
         for dec in out.get("decisions") or []:
             for opt in dec.get("options") or []:
@@ -523,7 +614,7 @@ def extend(scenario: dict, ext: dict, model_call: Callable[..., dict] | None = N
         new = summary_node(out["summary"], True)
         new["step_badge"] = old.get("step_badge", new["step_badge"])
         nodes[summary_id] = new
-    problems += check_graph(nodes, start)
+    problems = track_problems + problems + check_graph(nodes, start)
     return {"scenario": {"start_node_id": start, "en": en}, "problems": problems,
             "review_notes": [str(n) for n in out.get("review_notes") or []], "inputs": inp}
 
@@ -639,12 +730,31 @@ def translate(scenario: dict, code: str, language_name: str, setting: str, notes
     else:
         wanted = en_flat
     rows = [{"path": p, "english": t} for p, t in wanted.items()]
-    prompt = (f"Target language: {language_name or code} (code: {code})\n"
-              f"Target setting: {setting or 'a typical school in a region where this language is spoken'}\n"
-              + (f"Extra guidance from the reviewer: {notes}\n" if notes else "")
-              + "\nFields to write (JSON):\n" + json.dumps(rows, ensure_ascii=False, indent=1))
-    result = (model_call or localize.call_claude)(prompt)
-    strings = result.get("strings", {}) if isinstance(result, dict) else {}
+    head = (f"Target language: {language_name or code} (code: {code})\n"
+            f"Target setting: {setting or 'a typical school in a region where this language is spoken'}\n"
+            + (f"Extra guidance from the reviewer: {notes}\n" if notes else ""))
+    # Big sims are translated in chunks at the same time (keeps each request short).
+    chunks = [rows[i:i + 70] for i in range(0, len(rows), 70)] or [[]]
+    call = model_call or (lambda p: localize.call_claude(p))
+
+    def one(chunk: list) -> dict:
+        for attempt in range(2):
+            try:
+                r = call(head + "\nFields to write (JSON):\n" + json.dumps(chunk, ensure_ascii=False, indent=1))
+                return r if isinstance(r, dict) else {}
+            except Exception:
+                if attempt:
+                    return {}
+        return {}
+
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=min(6, len(chunks))) as pool:
+        parts = list(pool.map(one, chunks))
+    strings: dict = {}
+    result = {"review_notes": []}
+    for part in parts:
+        strings.update(part.get("strings", {}) or {})
+        result["review_notes"] += part.get("review_notes", []) or []
     block = copy.deepcopy(en)
     if app_ui:
         story = {k: en["ui"][k] for k in STORY_UI if k in en["ui"]}

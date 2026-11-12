@@ -4,11 +4,19 @@ import re
 
 
 def fake_sim(prompt: str, tool=None) -> dict:
-    """Builds a sim matching the requested structure lines in the prompt."""
+    """Outline call: decisions matching the requested structure. Tracks call: slides."""
+    name = (tool or {}).get("name", "")
+    if name == "submit_tracks":
+        m = re.search(r"Write exactly (\d+) track\(s\), each with exactly (\d+) slide", prompt)
+        t, s = map(int, m.groups())
+        num = int(re.search(r"decision point (\d+):", prompt).group(1))
+        return {"tracks": [{"slides": [{"kind": ["outcome", "character", "scene"][i % 3], "title": f"T{tr} slide {i}",
+                                        "body": f"[[FEATURED]] reacts ({num}.{tr}.{i}).",
+                                        "image_prompt": "A quiet school office", "image_alt": "An empty school office"}
+                                       for i in range(s)]} for tr in range(t)]}
     decs = []
-    for m in re.finditer(r"Decision (\d+): exactly (\d+) options and exactly (\d+) track\(s\), each track exactly (\d+) slide",
-                         prompt):
-        num, k, t, s = map(int, m.groups())
+    for m in re.finditer(r"Decision (\d+): exactly (\d+) options and exactly (\d+) track\(s\)", prompt):
+        num, k, t = map(int, m.groups())
         decs.append({
             "short_title": f"Step {num}",
             "prompt": f"[[FEATURED]] is waiting. What do you do at step {num}?",
@@ -17,12 +25,9 @@ def fake_sim(prompt: str, tool=None) -> dict:
                          "impacts": [{"key": "Trust", "direction": "up", "body": "Builds trust"},
                                      {"key": "policy_risk", "direction": "down", "body": "Some risk"}]}
                         for o in range(k)],
-            "tracks": [{"slides": [{"kind": ["outcome", "character", "scene"][i % 3], "title": f"T{tr} slide {i}",
-                                    "body": f"[[FEATURED]] reacts ({num}.{tr}.{i}).",
-                                    "image_prompt": "A quiet school office", "image_alt": "An empty school office"}
-                                   for i in range(s)]} for tr in range(t)],
+            "track_summaries": [f"What happens on track {tr + 1}" for tr in range(t)],
         })
-    if tool and tool.get("name") == "submit_extension" or "NEW decision point" in prompt:
+    if name == "submit_extension":
         return {"decisions": decs, "summary": {"title": "Wrap up", "body": "All of it.", "question": "Now what?",
                                                "takeaways": ["One", "Two"]}}
     return {
