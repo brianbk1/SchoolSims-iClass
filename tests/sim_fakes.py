@@ -10,7 +10,9 @@ def fake_sim(prompt: str, tool=None) -> dict:
         m = re.search(r"Write exactly (\d+) track\(s\), each with exactly (\d+) slide", prompt)
         t, s = map(int, m.groups())
         num = int(re.search(r"decision point (\d+):", prompt).group(1))
-        return {"tracks": [{"slides": [{"kind": ["outcome", "character", "scene"][i % 3], "title": f"T{tr} slide {i}",
+        return {"tracks": [{"video": {"script": f"I hear you. That changes things ({num}.{tr}). Let's see.", "quote": "I hear you.",
+                                      "watch_for": "Their tone."},
+                            "slides": [{"kind": ["outcome", "character", "scene"][i % 3], "title": f"T{tr} slide {i}",
                                         "body": f"[[FEATURED]] reacts ({num}.{tr}.{i}).",
                                         "image_prompt": "A quiet school office", "image_alt": "An empty school office"}
                                        for i in range(s)]} for tr in range(t)]}
@@ -40,6 +42,8 @@ def fake_sim(prompt: str, tool=None) -> dict:
         "featured_slide": {"title": "Meet the parent", "body": "[[FEATURED]] calls, upset.",
                            "character_title": "Parent of a 7th grader", "point1": "Child upset", "point2": "Second complaint"},
         "cast_note": "[[FEATURED]] is the parent.",
+        "intro_video": {"script": "Thank you for seeing me. My child came home in tears.", "quote": "My child came home in tears.",
+                        "watch_for": "How upset they are."},
         "decisions": decs,
         "summary": {"title": "Reflect", "body": "Debrief.", "question": "What mattered most?", "takeaways": ["A", "B"]},
         "review_notes": ["Check district policy wording."],

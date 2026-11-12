@@ -19,12 +19,20 @@ interface SimDetail extends SimRow {
   translation_notes: Record<string, string[]>;
   ada: { passed: boolean; issues: string[]; notes: string[] };
   default_look: string; accent: string; pending_langs: string[];
+  media: Media | null;
 }
 interface Who {
   role: 'reviewer' | 'builder'; reviewer_email: string; generator_ready: boolean; images_ready: boolean;
   email_ready: boolean; storage: string; persistent: boolean; review_days: number;
+  heygen_ready?: boolean; blob_ready?: boolean;
   personas: { id: string; label: string; photo: string }[]; app_languages: string[];
   language_options: LangOpt[];
+}
+interface Cell { ready: number; rendering: number; failed: number; stale: number; total: number; errors: string[] }
+interface Media {
+  video_nodes: string[]; grid: Record<string, Record<string, Cell>>; seconds_per_set: number;
+  suggested: Record<string, string>; images: { total: number; done: number; missing: string[] };
+  heygen_ready: boolean; blob_ready: boolean; images_ready: boolean; looks: { id: string; label: string }[];
 }
 interface LangOpt { code: string; label: string; native: string; place: string }
 interface ReportRow { id: string; title: string; context_summary: string; created_by: string; created_at: string; status: Status; languages: string[]; decisions: number; source: string }
@@ -242,7 +250,7 @@ function NewSimForm({ who, onCreated, onError }: { who: Who; onCreated: (id: str
   const [f, setF] = useState({
     title: '', audience: '', context: '', objective: '', tone: TONES[0], setting: '',
     decisions: 3, options_per_decision: 3, total_tracks: 6, slides_per_track: 2,
-    pros_cons: true, follow_up_tracks: true, summary: true,
+    pros_cons: true, follow_up_tracks: true, summary: true, video_slides: 'tracks',
     featured: { role: '', name: '', ethnicity: '' },
     characters: [{ name: '', role: '' }],
     language: 'en', language_name: '', accent: '', notes: '',
@@ -250,6 +258,7 @@ function NewSimForm({ who, onCreated, onError }: { who: Who; onCreated: (id: str
   });
   const [busy, setBusy] = useState(false);
   const [extraLangs, setExtraLangs] = useState<string[]>([]);
+  const [makeImages, setMakeImages] = useState(true);
   const [progress, setProgress] = useState('');
   const set = (patch: Partial<typeof f>) => setF(x => ({ ...x, ...patch }));
 
@@ -273,6 +282,18 @@ function NewSimForm({ who, onCreated, onError }: { who: Who; onCreated: (id: str
         ...f, slides_per_track: f.follow_up_tracks ? f.slides_per_track : 1,
         characters: f.characters.filter(c => c.name.trim()),
       }) });
+      if (makeImages && who.images_ready) {
+        const d = await api<{ media: Media | null }>(`/api/admin/sims/${encodeURIComponent(sim.id)}`);
+        const missing = d.media?.images.missing ?? [];
+        let done = 0;
+        await Promise.all([0, 1, 2].map(async w => {
+          for (let i = w; i < missing.length; i += 3) {
+            setProgress(`Sim written. Creating images ${done}/${missing.length}…`);
+            try { await api(`/api/admin/sims/${encodeURIComponent(sim.id)}/images/${missing[i]}`, { method: 'POST' }); } catch { /* listed in the preview */ }
+            done += 1;
+          }
+        }));
+      }
       const extra = extraLangs.filter(c => c !== f.language);
       if (extra.length) {
         const { errors } = await translateMany(sim.id, extra, (done, cur) =>
@@ -332,6 +353,18 @@ function NewSimForm({ who, onCreated, onError }: { who: Who; onCreated: (id: str
         <label className="sb-check"><input type="checkbox" checked={f.follow_up_tracks} onChange={e => set({ follow_up_tracks: e.target.checked })} /> Follow-up slides in each track</label>
         {f.follow_up_tracks && <span className="sb-check">Slides per track <span style={{ width: 70, display: 'inline-block' }}>{num('slides_per_track', 1, 3)}</span></span>}
         <label className="sb-check"><input type="checkbox" checked={f.summary} onChange={e => set({ summary: e.target.checked })} /> Summary with debrief and takeaways</label>
+        <span className="sb-check" style={{ width: '100%' }}>
+          Character video
+          <select style={{ ...inp, width: 'auto' }} value={f.video_slides} onChange={e => set({ video_slides: e.target.value })} aria-label="Character video">
+            <option value="tracks">In the intro and after every choice (like our current sims)</option>
+            <option value="intro">Intro only</option>
+            <option value="none">No video</option>
+          </select>
+        </span>
+        <label className="sb-check" style={{ width: '100%' }}>
+          <input type="checkbox" checked={makeImages} disabled={!who.images_ready} onChange={e => setMakeImages(e.target.checked)} />
+          Create the scene images after writing {who.images_ready ? '' : '(needs OPENAI_API_KEY)'}
+        </label>
       </fieldset>
 
       <fieldset className="sb-fieldset">
@@ -654,6 +687,10 @@ function SimView({ id, who, onChanged, onOpen, onDeleted, setError, setNotice }:
         )}
       </div>
 
+      {sim.media && !sim.builtin && (
+        <MediaPanel sim={sim} onUpdate={d => { setSim(d); }} setError={setError} setNotice={setNotice} />
+      )}
+
       {/* Slides */}
       {block && (
         <div style={card}>
@@ -711,6 +748,136 @@ function SimView({ id, who, onChanged, onOpen, onDeleted, setError, setNotice }:
         <div className="modal-backdrop-sb" onClick={e => { if (e.target === e.currentTarget) setExtendOpen(false); }}>
           <ExtendSimPanel simId={sim.id} simTitle={sim.title} onClose={() => { setExtendOpen(false); onChanged(); }} />
         </div>
+      )}
+    </div>
+  );
+}
+
+// ---- Images and videos -------------------------------------------------------------
+function MediaPanel({ sim, onUpdate, setError, setNotice }: {
+  sim: SimDetail; onUpdate: (d: SimDetail) => void;
+  setError: (m: string | null) => void; setNotice: (m: string | null) => void;
+}) {
+  const media = sim.media!;
+  const [busy, setBusy] = useState('');
+  const [pick, setPick] = useState<Record<string, string>>(() => ({ ...media.suggested }));
+  const [chosen, setChosen] = useState<string[]>(() => sim.languages);
+  const enc = encodeURIComponent(sim.id);
+  const reload = async () => onUpdate(await api<SimDetail>(`/api/admin/sims/${enc}`));
+  const rendering = Object.values(media.grid).some(row => Object.values(row).some(c => c.rendering > 0));
+
+  // While HeyGen renders, check every 20 s and copy finished clips.
+  useEffect(() => {
+    if (!rendering) return;
+    const t = setInterval(async () => {
+      try { await api(`/api/admin/sims/${enc}/videos/refresh`, { method: 'POST' }); await reload(); } catch { /* next tick */ }
+    }, 20000);
+    return () => clearInterval(t);
+  }, [rendering, enc]);
+
+  const images = async () => {
+    setBusy('img'); setError(null);
+    let done = 0; const missing = [...media.images.missing]; const errs: string[] = [];
+    await Promise.all([0, 1, 2].map(async w => {
+      for (let i = w; i < missing.length; i += 3) {
+        try { await api(`/api/admin/sims/${enc}/images/${missing[i]}`, { method: 'POST' }); }
+        catch (e: any) { errs.push(`${missing[i]}: ${e.message}`); }
+        done += 1; setBusy(`img ${done}/${missing.length}`);
+      }
+    }));
+    await reload(); setBusy('');
+    if (errs.length) setError(errs.slice(0, 3).join('; ')); else setNotice('Images created.');
+  };
+
+  const videos = async () => {
+    setBusy('vid'); setError(null);
+    const errs: string[] = [];
+    for (const [i, lang] of chosen.entries()) {
+      setBusy(`vid ${i + 1}/${chosen.length}`);
+      try {
+        const r = await api<{ errors: string[] }>(`/api/admin/sims/${enc}/videos`, { method: 'POST', body: JSON.stringify({ persona: pick[lang], lang }) });
+        errs.push(...r.errors.map(e => `${lang}: ${e}`));
+        if (r.errors.some(e => /credit/i.test(e))) break;
+      } catch (e: any) { errs.push(`${lang}: ${e.message}`); if (e.status === 503) break; }
+    }
+    await reload(); setBusy('');
+    if (errs.length) setError(errs.slice(0, 4).join('; '));
+    else setNotice('Videos started. HeyGen takes a few minutes per clip; this page checks every 20 seconds (or come back later).');
+  };
+
+  const clips = chosen.length * media.video_nodes.length;
+  const lookLabel = (id: string) => media.looks.find(l => l.id === id)?.label ?? id;
+  return (
+    <div style={card}>
+      <p style={{ ...lbl, marginBottom: 10 }}>Images and character videos</p>
+
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap', marginBottom: 16 }}>
+        <span style={{ fontSize: 14 }}>Scene images: <b>{media.images.done}/{media.images.total}</b></span>
+        {media.images.missing.length > 0 && (
+          <button style={ghost} disabled={!!busy || !media.images_ready} onClick={images}>
+            {busy.startsWith('img') ? `Creating ${busy.slice(4)}…` : `Create ${media.images.missing.length} missing image(s)`}
+          </button>
+        )}
+        {!media.images_ready && <span style={{ fontSize: 12, color: 'var(--text-3)' }}>Needs OPENAI_API_KEY in Vercel.</span>}
+      </div>
+
+      {media.video_nodes.length === 0 ? (
+        <p style={{ fontSize: 13, color: 'var(--text-3)' }}>This sim has no video slides.</p>
+      ) : (
+        <>
+          {(!media.heygen_ready || !media.blob_ready) && (
+            <div style={banner('warn')}>
+              To make videos here, add in Vercel: {!media.heygen_ready && <><code>HEYGEN_API_KEY</code> (Settings → Environment Variables) </>}
+              {!media.blob_ready && <>Blob storage (Storage → Create → Blob → connect to this project) </>}then redeploy.
+              Until then, video slides show the character's portrait with what they say.
+            </div>
+          )}
+          <p style={{ fontSize: 13, color: 'var(--text-2)', margin: '0 0 10px' }}>
+            {media.video_nodes.length} video slides, about {media.seconds_per_set}s of speech per language.
+            Each language gets one look (the learner's chosen look falls back to the portrait if it has no clip).
+          </p>
+          <table className="sb-table">
+            <thead><tr><th style={{ width: 30 }}></th><th>Language</th><th>Character look</th><th>Status</th></tr></thead>
+            <tbody>
+              {sim.languages.map(lang => {
+                const all = media.grid[lang] ?? {};
+                const look = pick[lang] ?? media.suggested[lang];
+                const c = all[look];
+                const others = Object.entries(all).filter(([id, x]) => id !== look && x.ready > 0).map(([id, x]) => `${lookLabel(id)} ${x.ready}/${x.total}`);
+                return (
+                  <tr key={lang}>
+                    <td><input type="checkbox" aria-label={`Videos for ${lang}`} checked={chosen.includes(lang)}
+                      onChange={e => setChosen(e.target.checked ? [...chosen, lang] : chosen.filter(x => x !== lang))} /></td>
+                    <td>{lang}</td>
+                    <td>
+                      <select style={{ ...inp, padding: '4px 8px' }} value={look} onChange={e => setPick({ ...pick, [lang]: e.target.value })} aria-label={`Look for ${lang}`}>
+                        {media.looks.map(l => <option key={l.id} value={l.id}>{l.label}</option>)}
+                      </select>
+                    </td>
+                    <td style={{ fontSize: 13 }}>
+                      {c ? <>
+                        <b style={{ color: c.ready === c.total ? '#166534' : 'var(--text-1)' }}>{c.ready}/{c.total} ready</b>
+                        {c.rendering > 0 && <span> · {c.rendering} rendering…</span>}
+                        {c.stale > 0 && <span style={{ color: '#92400e' }}> · {c.stale} out of date (script edited)</span>}
+                        {c.failed > 0 && <span style={{ color: '#b91c1c' }} title={c.errors.join('\n')}> · {c.failed} failed</span>}
+                      </> : '—'}
+                      {others.length > 0 && <div style={{ color: 'var(--text-3)', fontSize: 12 }}>Also: {others.join(', ')}</div>}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginTop: 12, flexWrap: 'wrap' }}>
+            <button style={navy} disabled={!!busy || clips === 0 || !media.heygen_ready || !media.blob_ready} onClick={videos}>
+              {busy.startsWith('vid') ? `Starting ${busy.slice(4)}…` : `Make ${clips} video clip(s)`}
+            </button>
+            <span style={{ fontSize: 12, color: 'var(--text-3)' }}>
+              Uses HeyGen API credit (about {Math.round(chosen.length * media.seconds_per_set / 60 * 10) / 10} min of video). Clips already made are skipped.
+            </span>
+            {rendering && <span style={{ fontSize: 12, color: '#3730a3' }}>Rendering… checking every 20 seconds.</span>}
+          </div>
+        </>
       )}
     </div>
   );

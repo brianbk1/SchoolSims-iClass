@@ -11,6 +11,7 @@ import localize
 import simgen
 import store
 import sims
+import media_gen
 
 BASE_DIR = Path(__file__).parent
 load_dotenv(BASE_DIR / ".env")  # backend/.env
@@ -230,6 +231,19 @@ def get_simulation(
     for nid, url in (rec.get("images") or {}).items():
         if nid in nodes:
             nodes[nid]["image_url"] = url
+    if not rec.get("builtin"):
+        # Each video slide of an AI-built sim has its own clip per look + language;
+        # fall back to the base language, then English, with the same character.
+        clips = rec.get("videos") or {}
+        for nid, node in nodes.items():
+            if node.get("type") != "video":
+                continue
+            node["own_video"] = True
+            for c in lang_chain(lang):
+                v = clips.get(f"{nid}|{ethnicity}|{c}")
+                if v and v.get("status") == "ready":
+                    node["video_url"], node["captions_url"] = v["url"], v.get("captions")
+                    break
     photos = persona.get("photo", {})
     videos = persona.get("video", {})
     video = pick(videos, lang, "")
@@ -581,6 +595,7 @@ class SimInputs(BaseModel):
     pros_cons: bool = True
     follow_up_tracks: bool = True
     summary: bool = True
+    video_slides: str = "tracks"   # "tracks" (intro + every track) | "intro" | "none"
     featured: Featured = Featured()
     characters: list[Character] = []
     language: str = "en"
@@ -662,7 +677,8 @@ def sim_detail(sim: dict) -> dict:
             "problems": sim.get("problems", []), "translation_notes": sim.get("translation_notes", {}),
             "ada": simgen.ada_check(sim.get("scenario", {}), tts_enabled("en")),
             "default_look": sim.get("default_look", ""), "accent": sim.get("accent", ""),
-            "pending_langs": sim.get("pending_langs") or []}
+            "pending_langs": sim.get("pending_langs") or [],
+            "media": media_summary(sim) if not sim.get("builtin") else None}
 
 
 def _gen_error(e: Exception):
@@ -677,7 +693,8 @@ def admin_whoami(request: Request, x_admin_token: str | None = Header(default=No
     sims.run_expiry(base_url(request))
     return {"role": "reviewer" if is_reviewer(x_admin_token) else "builder",
             "reviewer_email": sims.REVIEWER_EMAIL, "generator_ready": simgen.generator_ready(),
-            "images_ready": sims.images_ready(), "email_ready": sims.email_ready(),
+            "images_ready": media_gen.images_ready(), "email_ready": sims.email_ready(),
+            "heygen_ready": media_gen.heygen_ready(), "blob_ready": media_gen.blob_ready(),
             "storage": store.backend_name(), "persistent": store.is_persistent(),
             "review_days": sims.REVIEW_DAYS,
             "personas": [{"id": k, "label": SCENARIO["en"]["ui"]["ethnicity_labels"].get(k, k),
@@ -920,18 +937,144 @@ def admin_remove_language(sim_id: str, code: str):
 def admin_generate_image(sim_id: str, node_id: str):
     """Create the illustration for one slide from its image prompt (OpenAI image API)."""
     sim = editable_sim(sim_id)
-    if not sims.images_ready():
-        raise HTTPException(503, detail="Set OPENAI_API_KEY to create images.")
+    require_storage()
+    if not media_gen.images_ready():
+        raise HTTPException(503, detail="Set OPENAI_API_KEY in Vercel to create images.")
     node = sim["scenario"]["en"]["nodes"].get(node_id)
     if not node or not node.get("image_prompt"):
         raise HTTPException(400, detail="That slide has no image prompt.")
     try:
-        b64 = sims.generate_image(node["image_prompt"])
+        url = media_gen.make_image(node["image_prompt"], sim_id, node_id)
     except Exception as e:
         raise HTTPException(502, detail=str(e))
-    sim.setdefault("images", {})[node_id] = sims.save_image(sim_id, node_id, b64)
+    sim = editable_sim(sim_id)  # re-read: other images may have finished meanwhile
+    sim.setdefault("images", {})[node_id] = url
     sims.save(sim)
     return sim_detail(sim)
+
+
+# ---- Videos for AI-built sims (HeyGen -> Vercel Blob) -------------------------------
+
+def video_script(sim: dict, node_id: str, persona: str, lang: str) -> str:
+    node = sim["scenario"].get(lang, {}).get("nodes", {}).get(node_id) or {}
+    return swap_name(node.get("script", ""), persona_name(persona, lang))
+
+
+def media_summary(sim: dict) -> dict:
+    """Video status per language x look, plus image counts, for the admin."""
+    en = sim["scenario"]["en"]["nodes"]
+    vnodes = [k for k, n in en.items() if n.get("type") == "video"]
+    clips = sim.get("videos") or {}
+    langs = sorted(sim_langs(sim["scenario"]))
+    grid: dict = {}
+    for lang in langs:
+        for pid in PERSONAS:
+            cell = {"ready": 0, "rendering": 0, "failed": 0, "stale": 0, "total": len(vnodes), "errors": []}
+            for nid in vnodes:
+                v = clips.get(f"{nid}|{pid}|{lang}")
+                if not v:
+                    continue
+                if v["status"] == "ready" and v.get("script_hash") != media_gen.script_hash(video_script(sim, nid, pid, lang)):
+                    cell["stale"] += 1
+                elif v["status"] in cell:
+                    cell[v["status"]] += 1
+                if v.get("status") == "failed" and v.get("error"):
+                    cell["errors"].append(f"{nid}: {v['error']}")
+            grid.setdefault(lang, {})[pid] = cell
+    words = sum(len((n.get("script") or "").split()) for k, n in en.items() if k in vnodes)
+    img_nodes = [k for k, n in en.items() if n.get("image_prompt")]
+    return {
+        "video_nodes": vnodes, "grid": grid,
+        "seconds_per_set": round(words / 2.5),  # ~150 spoken words a minute
+        "suggested": {lang: (next((pid for pid, p in PERSONAS.items()
+                                   if lang in p.get("suggested_for_langs", []) or lang.split("-")[0] in p.get("suggested_for_langs", [])), None)
+                             or sim.get("default_look") or "caucasian") for lang in langs},
+        "images": {"total": len(img_nodes), "done": sum(1 for k in img_nodes if k in (sim.get("images") or {})),
+                   "missing": [k for k in img_nodes if k not in (sim.get("images") or {})]},
+        "heygen_ready": media_gen.heygen_ready(), "blob_ready": media_gen.blob_ready(),
+        "images_ready": media_gen.images_ready(),
+        "looks": [{"id": k, "label": SCENARIO["en"]["ui"]["ethnicity_labels"].get(k, k)} for k in PERSONAS],
+    }
+
+
+class VideoRequest(BaseModel):
+    persona: str
+    lang: str
+    force: bool = False
+
+
+@app.get("/api/admin/sims/{sim_id}/media", dependencies=[Depends(require_admin)])
+def admin_sim_media(sim_id: str):
+    return media_summary(editable_sim(sim_id))
+
+
+@app.post("/api/admin/sims/{sim_id}/videos", dependencies=[Depends(require_admin)])
+def admin_start_videos(sim_id: str, body: VideoRequest, request: Request):
+    """Start HeyGen renders for every video slide in one language with one look."""
+    require_storage()
+    if not media_gen.heygen_ready():
+        raise HTTPException(503, detail="Set HEYGEN_API_KEY in Vercel to make videos.")
+    if not media_gen.blob_ready():
+        raise HTTPException(503, detail="Add Vercel Blob storage (Storage tab -> Blob -> connect) to keep the videos.")
+    sim = editable_sim(sim_id)
+    if body.persona not in PERSONAS or body.lang not in sim["scenario"]:
+        raise HTTPException(400, detail="Unknown look or language for this sim.")
+    vnodes = [k for k, n in sim["scenario"]["en"]["nodes"].items() if n.get("type") == "video"]
+    if not vnodes:
+        raise HTTPException(400, detail="This sim has no video slides.")
+    started, errors = 0, []
+    hg = media_gen.HeyGen()
+    for nid in vnodes:
+        key = f"{nid}|{body.persona}|{body.lang}"
+        script = video_script(sim, nid, body.persona, body.lang)
+        cur = (sim.get("videos") or {}).get(key)
+        fresh = cur and cur.get("script_hash") == media_gen.script_hash(script)
+        if cur and fresh and cur["status"] in ("ready", "rendering") and not body.force:
+            continue
+        if not script.strip():
+            errors.append(f"{nid}: no script")
+            continue
+        try:
+            entry = media_gen.start_video(script=script, persona_id=body.persona, persona=PERSONAS[body.persona],
+                                          lang=body.lang, title=f"{sim['title']} {nid} {body.persona} {body.lang}",
+                                          base_url=base_url(request), hg=hg)
+            started += 1
+        except Exception as e:
+            entry = {"status": "failed", "error": str(e)[:300]}
+            errors.append(f"{nid}: {e}")
+        sim = editable_sim(sim_id)
+        sim.setdefault("videos", {})[key] = entry
+        sims.save(sim)
+        if errors and "credit" in str(errors[-1]).lower():
+            break  # out of HeyGen API credit: don't keep trying
+    return {**media_summary(editable_sim(sim_id)), "started": started, "errors": errors}
+
+
+def refresh_videos(sim: dict, limit: int = 6) -> int:
+    """Finish up to `limit` renders that HeyGen has completed. Returns how many are still rendering."""
+    pending = [k for k, v in (sim.get("videos") or {}).items() if v.get("status") == "rendering"]
+    hg = media_gen.HeyGen() if pending else None
+    for key in pending[:limit]:
+        nid, pid, lang = key.split("|")
+        try:
+            entry = media_gen.finish_video(sim["videos"][key], script=video_script(sim, nid, pid, lang),
+                                           path_prefix=f"sims/{sim['id']}/videos/{nid}-{pid}-{lang}", hg=hg)
+        except Exception as e:
+            entry = {**sim["videos"][key], "last_error": str(e)[:200]}
+        latest = sims.get(sim["id"]) or sim
+        latest.setdefault("videos", {})[key] = entry
+        sims.save(latest)
+        sim = latest
+    return sum(1 for v in (sim.get("videos") or {}).values() if v.get("status") == "rendering")
+
+
+@app.post("/api/admin/sims/{sim_id}/videos/refresh", dependencies=[Depends(require_admin)])
+def admin_refresh_videos(sim_id: str):
+    sim = editable_sim(sim_id)
+    if not media_gen.heygen_ready():
+        return media_summary(sim)
+    left = refresh_videos(sim)
+    return {**media_summary(editable_sim(sim_id)), "rendering": left}
 
 
 @app.get("/api/sims/{sim_id}/images/{node_id}")
@@ -974,7 +1117,15 @@ def cron_sims(request: Request, authorization: str | None = Header(default=None)
         raise HTTPException(401, detail="Unauthorized")
     if not secret and ON_VERCEL:
         raise HTTPException(403, detail="Set CRON_SECRET.")
-    return sims.run_expiry(base_url(request))
+    result = sims.run_expiry(base_url(request))
+    if media_gen.heygen_ready() and media_gen.blob_ready():
+        for s in sims.all_generated():
+            if any(v.get("status") == "rendering" for v in (s.get("videos") or {}).values()):
+                try:
+                    refresh_videos(s, limit=10)
+                except Exception as e:  # keep the cron going
+                    print(f"video refresh failed for {s['id']}: {e}", file=sys.stderr)
+    return result
 
 
 if DIST_DIR.exists():

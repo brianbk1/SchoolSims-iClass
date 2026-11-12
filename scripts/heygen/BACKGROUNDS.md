@@ -1,6 +1,6 @@
 # Background images for the localized videos
 
-One image per version, saved as `scripts/heygen/backgrounds/<code>.jpg` (e.g. `es-AR.jpg`).
+One image per version, saved as `public/backgrounds/<code>.jpg` (e.g. `es-AR.jpg`).
 Make them with any image tool (ChatGPT, Midjourney, Firefly) or use stock photos. Paste the shared style line plus the version's description.
 
 **Shared style (add to every prompt):** photorealistic interior photo, 16:9, 1920×1080, eye level, no people, no readable text or logos, slightly soft focus as if behind a person on a video call, professional and understated.

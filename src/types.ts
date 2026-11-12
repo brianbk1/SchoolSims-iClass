@@ -50,6 +50,11 @@ export interface VideoNode extends BaseNode {
   quote: string;
   watch_listen_title: string;
   watch_listen_body: string;
+  // AI-built sims: each video slide has its own clip per look + language
+  own_video?: boolean;
+  script?: string;
+  video_url?: string;
+  captions_url?: string;
 }
 
 export interface DecisionNode extends BaseNode {
