@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { SimData, Lang, Ethnicity, ModalType, SimNode, AudioMap, ContextNode, TextImageNode, OutcomeNode, DecisionNode } from './types';
+import type { SimData, Lang, Ethnicity, ModalType, SimNode, AudioMap, TextImageNode, DecisionNode, PathStep, Choice } from './types';
+import { remainingSlides, narrationTexts, adminToken } from './simPath';
+import ExtendSimPanel from './components/ExtendSimPanel';
 import Header from './components/Header';
 import LeftRail from './components/LeftRail';
 import Footer from './components/Footer';
@@ -14,10 +16,13 @@ import LoadingState from './components/LoadingState';
 import ErrorState from './components/ErrorState';
 import ModalBackdrop from './components/ModalBackdrop';
 
+// The built-in sim keeps its hand-tuned progress; other sims use the path length.
 const PROGRESS: Record<string, number> = {
   setup: 0, context: 16, text_image: 33, video: 50,
   decision: 67, outcome_a: 83, outcome_b: 83, summary: 100,
 };
+
+const initialSim = () => new URLSearchParams(window.location.search).get('sim') || 'default';
 
 const RTL_LANGS = new Set(['ar', 'he', 'ur', 'fa']);
 
@@ -41,6 +46,23 @@ export default function App() {
   const [audioMap, setAudioMap] = useState<AudioMap>({});
   const [timerSecs, setTimerSecs] = useState(0);
   const [captionsOn, setCaptionsOn] = useState(true);
+  const [simId, setSimId] = useState<string>(initialSim);
+  // decision id -> choice the learner made (for pros/cons, scores and the summary recap)
+  const [picks, setPicks] = useState<Record<string, Choice>>({});
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Admins (signed in on /admin in this browser, or running locally) get "Extend Sim".
+  useEffect(() => {
+    fetch('/api/admin/whoami', { headers: { 'X-Admin-Token': adminToken() } })
+      .then(r => setIsAdmin(r.ok)).catch(() => setIsAdmin(false));
+  }, []);
+
+  // Keep ?sim= in the address bar so a sim can be linked directly.
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (simId === 'default') url.searchParams.delete('sim'); else url.searchParams.set('sim', simId);
+    window.history.replaceState(null, '', url.toString());
+  }, [simId]);
 
   // Timer
   useEffect(() => {
@@ -53,28 +75,18 @@ export default function App() {
     setLoading(true);
     setError(null);
     try {
-      const r = await fetch(`/api/simulation?lang=${lang}&ethnicity=${ethnicity}`);
+      const r = await fetch(`/api/simulation?lang=${lang}&ethnicity=${ethnicity}&sim=${encodeURIComponent(simId)}`,
+        { headers: { 'X-Admin-Token': adminToken() } });
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const data: SimData = await r.json();
 
-      // Build per-slide narration texts and preload ElevenLabs audio
-      const n = data.nodes;
-      const ctx  = n['context']    as ContextNode   | undefined;
-      const ti   = n['text_image'] as TextImageNode  | undefined;
-      const outA = n['outcome_a']  as OutcomeNode    | undefined;
-      const dec  = n['decision']   as DecisionNode   | undefined;
-
-      const texts: Record<string, string> = {
-        context:    [ctx?.body, ctx?.learning_objective_body].filter(Boolean).join(' '),
-        text_image: ti?.body ?? '',
-        decision:   dec ? [dec.prompt, ...dec.choices.map(c => `Option ${c.id}: ${c.label}`)].join('. ') : '',
-        outcome_a:  outA?.body ?? '',
-      };
+      // Narration for every slide (the server builds the actual text), then preload audio.
+      const texts = narrationTexts(data);
 
       const ttsR = await fetch('/api/tts/preload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ texts, lang }),
+        body: JSON.stringify({ texts, lang, sim: simId }),
       });
       if (ttsR.ok) {
         const map: AudioMap = await ttsR.json();
@@ -87,13 +99,14 @@ export default function App() {
       setCurrentNodeId(data.start_node_id);
       setHistoryStack([]);
       setChosenId(null);
+      setPicks({});
       setTimerSecs(0);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Unknown error');
     } finally {
       setLoading(false);
     }
-  }, [lang, ethnicity]);
+  }, [lang, ethnicity, simId]);
 
   const goNext = useCallback(() => {
     if (!simData) return;
@@ -119,23 +132,41 @@ export default function App() {
   }, [historyStack]);
 
   const chooseOption = useCallback((targetNodeId: string, choiceId: string) => {
+    const node = simData?.nodes[currentNodeId];
+    const choice = node?.type === 'decision' ? node.choices.find(c => c.id === choiceId) : undefined;
+    if (choice) setPicks(p => ({ ...p, [currentNodeId]: choice }));
     setHistoryStack(h => [...h, currentNodeId]);
     setChosenId(choiceId);
     setCurrentNodeId(targetNodeId);
-  }, [currentNodeId]);
+  }, [currentNodeId, simData]);
 
   const restart = useCallback(() => {
     setCurrentNodeId('setup');
     setSimData(null);
     setChosenId(null);
+    setPicks({});
     setHistoryStack([]);
     setTimerSecs(0);
   }, []);
 
   const isSetup = currentNodeId === 'setup';
-  const progress = PROGRESS[currentNodeId] ?? 0;
   const ui = simData?.ui;
   const currentNode: SimNode | null = simData?.nodes[currentNodeId] ?? null;
+  const builtin = (simData?.sim ?? simId) === 'default';
+  const progress = isSetup ? 0
+    : builtin ? (PROGRESS[currentNodeId] ?? 0)
+    : simData ? Math.round(100 * historyStack.length / Math.max(1, historyStack.length + remainingSlides(simData.nodes, currentNodeId) - 1))
+    : 0;
+
+  // Decisions made on the way to this slide, in order (history ids that are decisions).
+  const path: PathStep[] = simData
+    ? historyStack.filter(id => simData.nodes[id]?.type === 'decision' && picks[id]).map(id => {
+        const d = simData.nodes[id] as DecisionNode;
+        return { decisionId: id, badge: d.step_badge, prompt: d.prompt, choice: picks[id] };
+      })
+    : [];
+  const lastPick = path.length ? path[path.length - 1].choice : null;
+  const featured = simData ? (Object.values(simData.nodes).find(n => n.type === 'text_image') as TextImageNode | undefined) : undefined;
 
   // keyboard A/B on decision node
   useEffect(() => {
@@ -196,14 +227,16 @@ export default function App() {
               ethnicity={ethnicity}
               onLangChange={setLang}
               onEthnicityChange={setEthnicity}
+              simId={simId}
+              onSimChange={setSimId}
               onStart={startSimulation}
             />
           )}
           {!loading && !error && !isSetup && currentNode?.type === 'context' && (
-            <ContextSlide key={currentNodeId} node={currentNode} audioUrl={audioMap['context'] ?? null} speechEnabled={speechEnabled} />
+            <ContextSlide key={currentNodeId} node={currentNode} audioUrl={audioMap[currentNodeId] ?? null} speechEnabled={speechEnabled} />
           )}
           {!loading && !error && !isSetup && currentNode?.type === 'text_image' && simData && (
-            <TextImageSlide key={currentNodeId} node={currentNode} photoUrl={simData.media.photo} photoAlt={currentNode.character_alt} audioUrl={audioMap['text_image'] ?? null} speechEnabled={speechEnabled} />
+            <TextImageSlide key={currentNodeId} node={currentNode} photoUrl={simData.media.photo} photoAlt={currentNode.character_alt} audioUrl={audioMap[currentNodeId] ?? null} speechEnabled={speechEnabled} />
           )}
           {!loading && !error && !isSetup && currentNode?.type === 'video' && simData && (
             <VideoSlide
@@ -213,7 +246,7 @@ export default function App() {
               captionsUrl={simData.media.captions ?? `/assets/captions_${lang.split('-')[0]}.vtt`}
               captionsOn={captionsOn}
               onToggleCaptions={() => setCaptionsOn(c => !c)}
-              audioUrl={audioMap['video'] ?? null}
+              audioUrl={audioMap[currentNodeId] ?? null}
               speechEnabled={speechEnabled}
               speakerName={simData.media.character_name ?? ''}
               captionsOnLabel={ui?.captions_on ?? 'CC On'}
@@ -223,24 +256,27 @@ export default function App() {
             />
           )}
           {!loading && !error && !isSetup && currentNode?.type === 'decision' && (
-            <DecisionSlide key={currentNodeId} node={currentNode} chosenId={chosenId} onChoose={chooseOption} audioUrl={audioMap['decision'] ?? null} speechEnabled={speechEnabled} />
+            <DecisionSlide key={currentNodeId} node={currentNode} chosenId={picks[currentNodeId]?.id ?? null} onChoose={chooseOption} audioUrl={audioMap[currentNodeId] ?? null} speechEnabled={speechEnabled} />
           )}
           {!loading && !error && !isSetup && currentNode?.type === 'outcome' && (
-            <OutcomeSlide key={currentNodeId} node={currentNode} audioUrl={audioMap[currentNodeId] ?? null} speechEnabled={speechEnabled} />
+            <OutcomeSlide key={currentNodeId} node={currentNode} audioUrl={audioMap[currentNodeId] ?? null} speechEnabled={speechEnabled}
+              choice={lastPick} optionLabel={ui?.option_label ?? 'Option'} />
           )}
           {!loading && !error && !isSetup && currentNode?.type === 'summary' && simData && (
             <SummarySlide
               key={currentNodeId}
               node={currentNode}
-              chosenNode={chosenId ? (simData.nodes[chosenId === 'A' ? 'outcome_a' : 'outcome_b'] as import('./types').OutcomeNode) : null}
+              chosenNode={builtin && chosenId ? (simData.nodes[chosenId === 'A' ? 'outcome_a' : 'outcome_b'] as import('./types').OutcomeNode) : null}
+              path={builtin ? [] : path}
               optionLabel={ui?.option_label ?? 'Option'}
               restartLabel={ui?.restart_btn ?? 'Restart Simulation'}
               onRestart={restart}
-              audioUrl={audioMap['summary'] ?? null}
+              audioUrl={audioMap[currentNodeId] ?? null}
+              simId={simData.sim ?? simId}
               speechEnabled={speechEnabled}
               lang={lang}
               ethnicity={ethnicity}
-              chosenId={chosenId}
+              chosenId={path.map(p => p.choice.id).join('') || chosenId}
               reviewTitle={ui?.review_title ?? 'Rate This Simulation'}
               reviewRatingLabel={ui?.review_rating_label ?? 'How would you rate this simulation?'}
               reviewExperienceLabel={ui?.review_experience_label ?? 'How was your experience?'}
@@ -260,6 +296,14 @@ export default function App() {
         </main>
       </div>
 
+      {isAdmin && !isSetup && simData && (
+        <button id="extend-sim-btn" className="extend-fab" onClick={() => setModal('extend')}
+          title="Add AI-written decision points to this sim (admins only)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Extend Sim
+        </button>
+      )}
+
       <Footer
         showBack={showBack}
         showNext={showNext}
@@ -269,6 +313,7 @@ export default function App() {
         onNext={goNext}
         currentNodeId={currentNodeId}
         totalNodes={simData ? Object.keys(simData.nodes).length : 0}
+        progress={progress}
         restartLabel={ui?.restart_btn ?? 'Restart Simulation'}
         onRestart={restart}
       />
@@ -311,10 +356,10 @@ export default function App() {
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p id="cast-name" style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-1)', margin: '0 0 4px', letterSpacing: '-0.3px' }}>
-                    {simData ? (simData.nodes['text_image'] as import('./types').TextImageNode)?.character_name : 'Jordan Chen'}
+                    {featured?.character_name ?? simData?.media.character_name ?? ''}
                   </p>
                   <p id="cast-role" style={{ fontSize: 13, color: 'var(--purple)', fontWeight: 600, margin: '0 0 16px' }}>
-                    {simData ? (simData.nodes['text_image'] as import('./types').TextImageNode)?.character_title : 'VP of Digital Learning'}
+                    {featured?.character_title ?? ''}
                   </p>
                   <div className="callout">
                     <p style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.6, margin: 0 }}>{ui?.cast_panel_body ?? ''}</p>
@@ -322,6 +367,9 @@ export default function App() {
                 </div>
               </div>
             </div>
+          )}
+          {modal === 'extend' && simData && (
+            <ExtendSimPanel simId={simData.sim ?? simId} simTitle={ui?.sim_title ?? ''} onClose={() => setModal(null)} />
           )}
           {modal === 'help' && ui && (
             <div id="modal-help" className="modal-panel modal-enter" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '100%', maxWidth: 420, padding: 28, zIndex: 50 }}>

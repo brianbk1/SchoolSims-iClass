@@ -38,3 +38,6 @@ backend/reviews.json
 # HeyGen upload ids (scripts/make_videos.py)
 scripts/heygen/.upload-cache.json
 scripts/heygen/.framed/
+
+# Runtime store for AI-built sims (backend/store.py, local only)
+backend/data/

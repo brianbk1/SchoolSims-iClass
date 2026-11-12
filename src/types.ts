@@ -12,6 +12,10 @@ export interface Choice {
   id: string;
   label: string;
   target_node_id: string;
+  // AI-built sims: what the option is good/bad at, and how it scores
+  pros?: string[];
+  cons?: string[];
+  impacts?: Impact[];
 }
 
 export interface BaseNode {
@@ -24,8 +28,10 @@ export interface ContextNode extends BaseNode {
   type: 'context';
   title: string;
   body: string;
-  learning_objective_label: string;
-  learning_objective_body: string;
+  learning_objective_label?: string;
+  learning_objective_body?: string;
+  image_url?: string;
+  image_alt?: string;
 }
 
 export interface TextImageNode extends BaseNode {
@@ -60,6 +66,8 @@ export interface OutcomeNode extends BaseNode {
   title: string;
   body: string;
   impacts: Impact[];
+  image_url?: string;
+  image_alt?: string;
 }
 
 export interface SummaryNode extends BaseNode {
@@ -68,6 +76,9 @@ export interface SummaryNode extends BaseNode {
   title: string;
   reflection_prompt_label: string;
   question: string;
+  body?: string;
+  takeaways_label?: string;
+  takeaways?: string[];
 }
 
 export type SimNode = ContextNode | TextImageNode | VideoNode | DecisionNode | OutcomeNode | SummaryNode;
@@ -138,6 +149,7 @@ export interface Media {
 }
 
 export interface SimData {
+  sim?: string;
   start_node_id: string;
   nodes: Record<string, SimNode>;
   ui: UIStrings;
@@ -150,4 +162,12 @@ export type AudioMap = Record<string, string>; // node_id → /tts/xxx.mp3
 export type Lang = string;
 export type Ethnicity = 'african' | 'caucasian' | 'east_asian' | 'latin' | 'south_asian';
 
-export type ModalType = 'brief' | 'cast' | 'help' | null;
+export type ModalType = 'brief' | 'cast' | 'help' | 'extend' | null;
+
+// One decision the learner made, for the summary recap.
+export interface PathStep {
+  decisionId: string;
+  badge: string;
+  prompt: string;
+  choice: Choice;
+}

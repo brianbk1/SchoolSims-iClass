@@ -8,7 +8,7 @@
     "api/index.py": {
       "includeFiles": "backend/**",
       "excludeFiles": "{public/**,assets/**,docs/**,node_modules/**,dist/**}",
-      "maxDuration": 30
+      "maxDuration": 300
     }
   },
   "rewrites": [
@@ -19,6 +19,12 @@
     {
       "source": "/api/(.*)",
       "destination": "/api/index"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/sims",
+      "schedule": "17 13 * * *"
     }
   ]
 }

@@ -174,6 +174,36 @@ Setup: put `ANTHROPIC_API_KEY=...` in `.env.local` at the repo root (optional: `
 
 Use `--list-voices Spanish` to browse voices and set `voice_id` in clips.json to force one. Existing clips are skipped unless `--force`.
 
+## Sim Builder: create sims with AI, extend them, review before publishing
+
+Open `/admin` → **Sim Builder** → **Create Sim from AI**.
+
+1. **Describe the sim**: title, audience, tone, scenario background, number of decision points, options per decision, *total* tracks (spread across the decisions; options share a track when there are fewer tracks than options), slides per track, pros/cons, follow-up slides, summary, featured character (role, optional fixed name, default look), other characters, language and accent.
+2. **Generate Sim Shell**: Claude writes the content (`backend/simgen.py`); the code assigns ids and wires every option → track → next decision, so the branching is always valid (checked again by `check_graph`). Non-English sims are written in English first (the fallback) and the chosen language is drafted straight away.
+3. **Preview and edit**: branch map, every slide's text (click to edit), problems the model left, the AI's notes for the reviewer, the ADA check (narration text on every slide, alt text on every image), languages (add more any time before publishing), and optional images.
+4. **Submit for review**: the sim goes to `ed@schoolsims.com` (`SIM_REVIEWER_EMAIL`). The reviewer approves and publishes it, or sends it back with a note. Pending sims get a reminder 5 days before they **expire after 30 days**.
+5. **Published** sims appear in the player's Simulation picker (and at `/?sim=<id>`).
+
+**Extend Sim**: admins see an *Extend Sim* button while playing any sim (and in the builder). It appends AI-written decision points before the summary and creates a new draft that goes through the same review; when it's published it replaces the original.
+
+**Report**: sims created in a date range (name, context summary, creator, created date, status, languages), with CSV download.
+
+| Setting | What it does |
+|---|---|
+| `ANTHROPIC_API_KEY` | Required to generate, extend and translate sims |
+| `ADMIN_TOKEN` | Builders (client admins, SchoolSims staff) |
+| `REVIEWER_TOKEN` | Only this token can approve/send back/unpublish. If unset, any admin can |
+| `SIM_REVIEWER_EMAIL` | Who reviews (default `ed@schoolsims.com`) |
+| `RESEND_API_KEY` + `SIM_MAIL_FROM` | Send the review emails. Without them, notifications are kept in **Notifications** only |
+| `KV_REST_API_URL` / `KV_REST_API_TOKEN` | Upstash Redis (Vercel → Storage). **Needed on Vercel**, otherwise sims are lost when the server restarts. Locally they're in `backend/data/` |
+| `CRON_SECRET` | Protects the daily `/api/cron/sims` job (reminders + expiry), scheduled in `vercel.json` |
+| `OPENAI_API_KEY` (optional) | Creates slide illustrations from the image prompts (`OPENAI_IMAGE_MODEL`, default `gpt-image-1`) |
+
+Generation takes 1–3 minutes, so `vercel.json` gives the API function up to 300 s.
+Phase 1 is text and images; character portraits already change with the learner's language and look. Videos can be added later with the HeyGen pipeline.
+
+Test without spending API credit: `cd backend && python ../tests/test_simgen.py` (uses a fake model).
+
 ## Deploying to Vercel
 
 Import the repo in Vercel (framework: Vite). `vercel.json` builds the frontend and runs the FastAPI backend from `api/index.py` as a serverless function. Optional: set `ELEVEN_LABS_API_KEY` in the project's environment variables for narration. On Vercel, submitted reviews are written to the function logs (search for `REVIEW`), and scenario editing via the API is disabled.

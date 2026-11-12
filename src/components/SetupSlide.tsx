@@ -33,7 +33,11 @@ interface Props {
   onLangChange: (l: Lang) => void;
   onEthnicityChange: (e: Ethnicity) => void;
   onStart: () => void;
+  simId: string;
+  onSimChange: (id: string) => void;
 }
+
+interface SimItem { id: string; title: string; summary: string; languages: string[] }
 
 function CustomSelect<T extends string>({ value, options, onChange, id }: { value: T; options: { value: T; label: string }[]; onChange: (v: T) => void; id: string }) {
   const [open, setOpen] = useState(false);
@@ -96,14 +100,29 @@ function CustomSelect<T extends string>({ value, options, onChange, id }: { valu
   );
 }
 
-export default function SetupSlide({ lang, ethnicity, onLangChange, onEthnicityChange, onStart }: Props) {
+export default function SetupSlide({ lang, ethnicity, onLangChange, onEthnicityChange, onStart, simId, onSimChange }: Props) {
   const [options, setOptions] = useState<OptionsData | null>(null);
+  const [library, setLibrary] = useState<SimItem[]>([]);
+
+  // Sims a learner can pick (built-in + published AI-built sims).
+  useEffect(() => {
+    fetch(`/api/sims?lang=${lang}`).then(r => r.json()).then((list: SimItem[]) => {
+      setLibrary(list);
+      // A sim linked with ?sim= that isn't published shows only to admins (preview).
+    }).catch(() => {});
+  }, [lang]);
 
   useEffect(() => {
-    fetch(`/api/options?lang=${lang}`)
-      .then(r => r.json())
+    const token = (() => { try { return localStorage.getItem('iclass_admin_token') ?? ''; } catch { return ''; } })();
+    fetch(`/api/options?lang=${lang}&sim=${encodeURIComponent(simId)}`, { headers: { 'X-Admin-Token': token } })
+      .then(r => {
+        if (!r.ok) { onSimChange('default'); throw new Error('sim not available'); }
+        return r.json();
+      })
       .then((data: OptionsData) => {
         setOptions(data);
+        // The sim may not have the current language: switch to English (always present).
+        if (!data.languages.some(l => l.value === lang)) { onLangChange('en'); return; }
         const available = data.ethnicities
           .filter(e => data.available_combos.some(([eth, lng]) => eth === e.value && lng === lang))
           .map(e => e.value);
@@ -117,7 +136,7 @@ export default function SetupSlide({ lang, ethnicity, onLangChange, onEthnicityC
         }
       })
       .catch(() => {});
-  }, [lang]);
+  }, [lang, simId]);
 
   const u = options?.setup_ui;
 
@@ -148,6 +167,21 @@ export default function SetupSlide({ lang, ethnicity, onLangChange, onEthnicityC
         <p id="before-you-begin-title" style={{ fontSize: 12, fontWeight: 700, color: 'var(--purple)', letterSpacing: '0.06em', textTransform: 'uppercase', margin: '0 0 6px' }}>{u.before_you_begin_title}</p>
         <p id="before-you-begin-body" style={{ color: 'var(--text-2)', fontSize: 14, lineHeight: 1.6, margin: 0 }}>{u.before_you_begin_body}</p>
       </div>
+
+      {library.length > 1 && (
+        <div style={{ marginBottom: 24 }}>
+          <label id="setup-sim-label" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--text-3)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 8 }}>Simulation</label>
+          <CustomSelect<string>
+            id="sim-select"
+            value={simId}
+            options={[
+              ...library.map(s => ({ value: s.id, label: s.title })),
+              ...(library.some(s => s.id === simId) ? [] : [{ value: simId, label: `${u.sim_title} (preview)` }]),
+            ]}
+            onChange={onSimChange}
+          />
+        </div>
+      )}
 
       <div className="slide-grid-halves" style={{ gap: 24, marginBottom: 36 }}>
         <div>

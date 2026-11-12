@@ -327,15 +327,6 @@ export default function AdminApp() {
 }
 
 function Shell({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg, #f4f2fa)' }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 28px', borderBottom: '1px solid var(--border)', background: 'var(--surface)' }}>
-        <img src="/logo.png" alt="" style={{ height: 26 }} onError={e => (e.currentTarget.style.display = 'none')} />
-        <span style={{ fontWeight: 700, fontSize: 17 }}>iClass</span>
-        <span style={{ color: 'var(--text-3)' }}>| Locale studio</span>
-        <a href="/" style={{ marginLeft: 'auto', fontSize: 13, color: 'var(--purple)' }}>Open the simulation ↗</a>
-      </header>
-      <main style={{ padding: 24, maxWidth: 1500, margin: '0 auto' }}>{children}</main>
-    </div>
-  );
+  // The page header and tabs live in AdminRoot.
+  return <>{children}</>;
 }

@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import type { SummaryNode, OutcomeNode } from '../types';
+import type { SummaryNode, OutcomeNode, PathStep } from '../types';
 import { useSpeech } from '../hooks/useSpeech';
 
 interface Props {
   node: SummaryNode;
   chosenNode: OutcomeNode | null;
+  path?: PathStep[];
+  simId?: string;
   optionLabel: string;
   restartLabel: string;
   onRestart: () => void;
@@ -26,7 +28,7 @@ interface Props {
 type Fit = '' | 'yes' | 'partly' | 'no';
 
 export default function SummarySlide({
-  node, chosenNode, optionLabel,
+  node, chosenNode, optionLabel, path = [], simId = 'default',
   audioUrl, speechEnabled,
   lang, ethnicity, chosenId,
   reviewTitle, reviewRatingLabel, reviewExperienceLabel,
@@ -58,6 +60,7 @@ export default function SummarySlide({
           improvements,
           lang,
           ethnicity,
+          sim: simId,
           chosen_option: chosenId ?? '',
           regional_fit: fit,
           regional_fit_details: fit === 'yes' ? '' : fitDetails,
@@ -105,6 +108,40 @@ export default function SummarySlide({
       <div className="sum-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 32 }}>
         {/* Left column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          {node.body && (
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '24px 28px' }}>
+              <p style={{ fontSize: 15, color: 'var(--text-2)', margin: 0, lineHeight: 1.7 }}>{node.body}</p>
+              {node.takeaways && node.takeaways.length > 0 && (
+                <>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--purple)', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '16px 0 6px' }}>{node.takeaways_label}</p>
+                  <ul style={{ margin: 0, paddingInlineStart: 20, color: 'var(--text-2)', fontSize: 14, lineHeight: 1.6 }}>
+                    {node.takeaways.map((t, i) => <li key={i}>{t}</li>)}
+                  </ul>
+                </>
+              )}
+            </div>
+          )}
+
+          {path.length > 0 && (
+            <div id="sum-path" style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 24px' }}>
+              {path.map(step => (
+                <div key={step.decisionId} className="path-step">
+                  <span className="step-badge" style={{ marginBottom: 6, display: 'inline-block' }}>{step.badge}</span>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-1)', margin: '0 0 6px' }}>{optionLabel} {step.choice.id}: {step.choice.label}</p>
+                  {step.choice.impacts && step.choice.impacts.length > 0 && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                      {step.choice.impacts.map(i => (
+                        <span key={i.key} className={`impact-chip impact-${i.direction}`} title={i.body}>
+                          {i.direction === 'up' ? '▲' : i.direction === 'down' ? '▼' : '●'} {i.label}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
           {chosenNode && (
             <div id="sum-recap" style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '24px 28px' }}>
               <span className="step-badge" style={{ marginBottom: 12, display: 'inline-block' }}>{optionLabel} {chosenNode.you_chose.slice(-1)}</span>

@@ -4,3 +4,4 @@
 backend/tts_cache/
 backend/reviews.json
 /scripts/
+backend/data/

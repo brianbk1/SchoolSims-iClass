@@ -9,12 +9,16 @@ interface FooterProps {
   totalNodes: number;
   restartLabel?: string;
   onRestart?: () => void;
+  progress?: number;
 }
 
 const NODE_ORDER = ['context', 'text_image', 'video', 'decision', 'outcome_a', 'outcome_b', 'summary'];
 const DOT_NODES  = ['context', 'text_image', 'video', 'decision', 'summary'];
 
-export default function Footer({ showBack, showNext, backLabel, nextLabel, onBack, onNext, currentNodeId, restartLabel, onRestart }: FooterProps) {
+export default function Footer({ showBack, showNext, backLabel, nextLabel, onBack, onNext, currentNodeId, restartLabel, onRestart, progress = 0 }: FooterProps) {
+  // Other sims have their own slide ids: place the dots by progress instead.
+  const byProgress = !NODE_ORDER.includes(currentNodeId) && currentNodeId !== 'setup';
+  const progressDot = Math.min(DOT_NODES.length - 1, Math.round(progress / 100 * (DOT_NODES.length - 1)));
   return (
     <footer className="footer-bar" style={{ height: 64, padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
       <div className="footer-side" style={{ width: 120 }}>
@@ -30,8 +34,9 @@ export default function Footer({ showBack, showNext, backLabel, nextLabel, onBac
         {DOT_NODES.map((id, i) => {
           const idx = NODE_ORDER.indexOf(currentNodeId);
           const dotIdx = NODE_ORDER.indexOf(id);
-          const active = id === currentNodeId || (currentNodeId === 'outcome_a' && id === 'summary') || (currentNodeId === 'outcome_b' && id === 'summary');
-          const past = dotIdx < idx;
+          const active = byProgress ? i === progressDot
+            : id === currentNodeId || (currentNodeId === 'outcome_a' && id === 'summary') || (currentNodeId === 'outcome_b' && id === 'summary');
+          const past = byProgress ? i < progressDot : dotIdx < idx;
           return (
             <div
               key={i}
