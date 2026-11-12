@@ -607,6 +607,17 @@ class TranslateRequest(BaseModel):
     notes: str = ""
 
 
+def require_storage():
+    """On Vercel each request can land on a different server with its own temporary
+    disk, so a sim saved there is gone on the next request. Don't spend API credit
+    generating until real storage (Upstash Redis) is connected."""
+    if not store.is_persistent():
+        raise HTTPException(503, detail=(
+            "Connect storage first: in Vercel open this project's Storage tab, add Upstash "
+            "Redis and connect it to the project, then redeploy. Without it, new sims "
+            "disappear straight after they are created."))
+
+
 def base_url(request: Request) -> str:
     return os.getenv("APP_URL") or str(request.base_url).rstrip("/")
 
@@ -664,6 +675,7 @@ def admin_list_sims(request: Request):
 
 @app.post("/api/admin/sims", dependencies=[Depends(require_admin)])
 def admin_create_sim(body: SimInputs):
+    require_storage()
     if not simgen.generator_ready():
         raise HTTPException(503, detail="Set ANTHROPIC_API_KEY to generate sims.")
     inp = body.model_dump()
@@ -792,6 +804,7 @@ def admin_unpublish_sim(sim_id: str):
 def admin_extend_sim(sim_id: str, body: ExtendInputs):
     """Extend Sim: append AI-written decision points to an existing sim. The result is a
     new draft (the original keeps playing until the extension is reviewed and published)."""
+    require_storage()
     if not simgen.generator_ready():
         raise HTTPException(503, detail="Set ANTHROPIC_API_KEY to extend sims.")
     base = builtin_record() if sim_id == sims.BUILTIN_ID else editable_sim(sim_id)
@@ -821,6 +834,7 @@ def admin_extend_sim(sim_id: str, body: ExtendInputs):
 
 @app.post("/api/admin/sims/{sim_id}/languages", dependencies=[Depends(require_admin)])
 def admin_translate_sim(sim_id: str, body: TranslateRequest):
+    require_storage()
     sim = editable_sim(sim_id)
     if sim["status"] == "published":
         raise HTTPException(409, detail="Unpublish the sim (or extend it) to add languages; it then goes back through review.")
