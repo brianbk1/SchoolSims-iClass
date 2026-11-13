@@ -217,7 +217,21 @@ def voices(hg: HeyGen) -> list[dict]:
     return _voices_cache[1]
 
 
-def pick_voice(all_voices: list[dict], lang: str, gender: str) -> tuple[dict | None, str]:
+# Who a look portrays. Sets the portrait (age, clothing) and nudges the voice choice.
+ROLES = {
+    "leader": ("school leader in their 40s, business-casual clothing", ""),
+    "teacher": ("teacher in their 30s, smart-casual clothing", ""),
+    "staff": ("school staff member in their 30s or 40s, smart-casual clothing", ""),
+    "parent": ("parent in their late 30s, everyday casual clothing", ""),
+    "student_elem": ("elementary school student about 9 years old, casual school clothes", "child"),
+    "student_middle": ("middle school student about 12 years old, casual school clothes", "child"),
+    "student_high": ("high school student about 16 years old, casual school clothes", "teen"),
+    "student_college": ("college student about 20 years old, casual clothes", "young"),
+}
+YOUNG_WORDS = {"child": ("child", "kid", "boy", "girl", "young", "teen"), "teen": ("teen", "young", "youth"), "young": ("young",)}
+
+
+def pick_voice(all_voices: list[dict], lang: str, gender: str, role: str = "") -> tuple[dict | None, str]:
     """Right language, then gender, then regional accent; multilingual voices as a last resort."""
     spec = VOICE_SPECS.get(lang) or VOICE_SPECS.get(lang.split("-")[0]) or ([lang], [])
     langs, accents = [l.lower() for l in spec[0]], spec[1]
@@ -233,6 +247,9 @@ def pick_voice(all_voices: list[dict], lang: str, gender: str) -> tuple[dict | N
     def score(v):
         s = 10 if gender and str(v.get("gender", "")).lower() == gender.lower() else 0
         s += sum(5 for a in accents if a.lower() in text(v))
+        young = ROLES.get(role, ("", ""))[1]
+        if young:
+            s += 8 if any(w in text(v) for w in YOUNG_WORDS[young]) else 0
         return s - (3 if "multilingual" in str(v.get("language", "")).lower() else 0)
 
     return max(cands, key=score), note
@@ -255,7 +272,7 @@ def start_video(*, script: str, persona_id: str, persona: dict, lang: str, title
                 hg: HeyGen | None = None) -> dict:
     """Start one HeyGen render. Returns the job entry stored on the sim."""
     hg = hg or HeyGen()
-    voice, note = pick_voice(voices(hg), lang, persona.get("gender", ""))
+    voice, note = pick_voice(voices(hg), lang, persona.get("gender", ""), persona.get("role", ""))
     if not voice:
         raise RuntimeError(note)
     photo_path = (persona.get("photo") or {}).get("default", f"/assets/{persona_id}.png")
@@ -417,10 +434,11 @@ def make_image(prompt: str, sim_id: str, node_id: str) -> str:
 
 
 PORTRAIT_STYLE = ("Photorealistic head-and-shoulders portrait for an educational video, looking at the camera, "
-                  "friendly and professional, soft even light, plain light-grey studio background, centred, "
-                  "no text, no logos. ")
+                  "friendly expression, soft even light, plain light-grey studio background, centred, "
+                  "no text, no logos, not a real or famous person. ")
 
 
-def make_portrait(prompt: str) -> bytes:
+def make_portrait(prompt: str, role: str = "") -> bytes:
     """A character portrait (image bytes) from a description."""
-    return openai_image(PORTRAIT_STYLE + prompt, "1024x1536")
+    who = f"The person is a {ROLES[role][0]}. " if role in ROLES else ""
+    return openai_image(PORTRAIT_STYLE + who + prompt, "1024x1536")

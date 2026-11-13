@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { api, LangPicker, type LangOpt } from './SimBuilder';
 
 interface Look {
-  id: string; label: string; custom: boolean; gender: string; langs: string[];
+  id: string; label: string; custom: boolean; gender: string; role?: string; langs: string[];
   names: Record<string, string>; labels: Record<string, string>; photo: string; videos: string[];
 }
 
@@ -29,14 +29,24 @@ function shrink(file: File, maxH = 1400): Promise<string> {
   });
 }
 
-const chatgptPrompt = (region: string, gender: string, desc = '') =>
-  `Photorealistic head-and-shoulders portrait of a ${gender || 'female'} school leader from ${region || 'the region'}${desc ? ` (${desc})` : ' in their 40s'}, ` +
-  'looking at the camera with a warm, professional expression, business-casual clothing, soft even light, ' +
+export const ROLES: Record<string, [string, string]> = {
+  leader: ['School leader', 'school leader in their 40s, business-casual clothing'],
+  teacher: ['Teacher', 'teacher in their 30s, smart-casual clothing'],
+  staff: ['School staff', 'school staff member in their 30s or 40s, smart-casual clothing'],
+  parent: ['Parent', 'parent in their late 30s, everyday casual clothing'],
+  student_elem: ['Student (elementary)', 'elementary school student about 9 years old, casual school clothes'],
+  student_middle: ['Student (middle school)', 'middle school student about 12 years old, casual school clothes'],
+  student_high: ['Student (high school)', 'high school student about 16 years old, casual school clothes'],
+  student_college: ['Student (college)', 'college student about 20 years old, casual clothes'],
+};
+const chatgptPrompt = (region: string, gender: string, desc = '', role = 'leader') =>
+  `Photorealistic head-and-shoulders portrait of a ${gender || 'female'} ${(ROLES[role] ?? ROLES.leader)[1]}, from ${region || 'the region'}${desc ? ` (${desc})` : ''}, ` +
+  'looking at the camera with a warm, friendly expression, soft even light, ' +
   'plain light-grey studio background, centred, portrait orientation (2:3), no text, no logos. Not a real or famous person.';
 
 interface Suggestion { label: string; gender: string; langs: string[]; names: Record<string, string>; portrait: string; why: string; added?: boolean; error?: string; updating?: boolean }
 
-const EMPTY = { label: '', gender: 'female', langs: [] as string[], names: {} as Record<string, string>, photo: '', generate_prompt: '' };
+const EMPTY = { label: '', gender: 'female', role: 'leader', langs: [] as string[], names: {} as Record<string, string>, photo: '', generate_prompt: '' };
 
 export default function LooksAdmin({ languages }: { languages: LangOpt[] }) {
   const [looks, setLooks] = useState<Look[]>([]);
@@ -90,7 +100,7 @@ export default function LooksAdmin({ languages }: { languages: LangOpt[] }) {
 
   const useInForm = (sg: Suggestion) => {
     setEditing(null);
-    setForm({ label: sg.label, gender: sg.gender, langs: sg.langs, names: sg.names, photo: '', generate_prompt: ready.images_ready ? sg.portrait : '' });
+    setForm({ label: sg.label, gender: sg.gender, role: 'leader', langs: sg.langs, names: sg.names, photo: '', generate_prompt: ready.images_ready ? sg.portrait : '' });
     setMsg({ tone: 'ok', text: ready.images_ready ? 'Filled in below. Check it, then Add look.' : 'Filled in below. Make the portrait in ChatGPT with the prompt shown, upload it, then Add look.' });
     setPortraitHint(sg.portrait);
   };
@@ -128,7 +138,7 @@ export default function LooksAdmin({ languages }: { languages: LangOpt[] }) {
 
   const edit = (l: Look) => {
     setEditing(l.id);
-    setForm({ label: l.label, gender: l.gender || 'female', langs: l.langs, names: l.names, photo: '', generate_prompt: '' });
+    setForm({ label: l.label, gender: l.gender || 'female', role: l.role || 'leader', langs: l.langs, names: l.names, photo: '', generate_prompt: '' });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -204,6 +214,10 @@ export default function LooksAdmin({ languages }: { languages: LangOpt[] }) {
             <select id="lk-gender" style={inp} value={form.gender} onChange={e => set({ gender: e.target.value })}>
               <option value="female">Female</option><option value="male">Male</option>
             </select></div>
+          <div><label style={lbl} htmlFor="lk-role">Who they are</label>
+            <select id="lk-role" style={inp} value={form.role} onChange={e => set({ role: e.target.value })}>
+              {Object.entries(ROLES).map(([k, [label]]) => <option key={k} value={k}>{label}</option>)}
+            </select></div>
         </div>
 
         <div style={{ marginTop: 14 }}>
@@ -245,15 +259,15 @@ export default function LooksAdmin({ languages }: { languages: LangOpt[] }) {
               To make one in ChatGPT, use this prompt:
             </p>
             <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-              <code style={{ fontSize: 12, background: '#f8fafc', border: '1px solid var(--border)', borderRadius: 8, padding: 8, flex: 1, whiteSpace: 'normal' }}>{chatgptPrompt(form.label, form.gender, portraitHint)}</code>
-              <button style={{ ...ghost, padding: '4px 10px', fontSize: 12 }} onClick={() => navigator.clipboard?.writeText(chatgptPrompt(form.label, form.gender, portraitHint))}>Copy</button>
+              <code style={{ fontSize: 12, background: '#f8fafc', border: '1px solid var(--border)', borderRadius: 8, padding: 8, flex: 1, whiteSpace: 'normal' }}>{chatgptPrompt(form.label, form.gender, portraitHint, form.role)}</code>
+              <button style={{ ...ghost, padding: '4px 10px', fontSize: 12 }} onClick={() => navigator.clipboard?.writeText(chatgptPrompt(form.label, form.gender, portraitHint, form.role))}>Copy</button>
             </div>
             {ready.images_ready && (
               <div style={{ marginTop: 10 }}>
                 <label style={{ ...lbl, fontWeight: 600 }}>…or describe the person and generate the portrait here</label>
                 <textarea style={{ ...inp, minHeight: 50 }} value={form.generate_prompt}
                   onChange={e => set({ generate_prompt: e.target.value, photo: '' })}
-                  placeholder={`A ${form.gender} school principal in their 40s from ${form.label || 'the region'}, warm expression`} />
+                  placeholder={`A ${form.gender} ${(ROLES[form.role] ?? ROLES.leader)[0].toLowerCase()} from ${form.label || 'the region'}, warm expression`} />
               </div>
             )}
           </div>
@@ -276,7 +290,7 @@ export default function LooksAdmin({ languages }: { languages: LangOpt[] }) {
               <div style={{ padding: 12 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <b style={{ fontSize: 14 }}>{l.label}</b>
-                  <span style={{ fontSize: 11, color: 'var(--text-3)' }}>{l.custom ? 'Added' : 'Built-in'} · {l.gender}</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-3)' }}>{l.custom ? 'Added' : 'Built-in'} · {l.gender}{l.role && l.role !== 'leader' ? ` · ${(ROLES[l.role] ?? [l.role])[0]}` : ''}</span>
                 </div>
                 <p dir="auto" style={{ fontSize: 13, color: 'var(--text-2)', margin: '4px 0' }}>{l.names.default ?? Object.values(l.names)[0]}</p>
                 <p style={{ fontSize: 12, color: 'var(--text-3)', margin: 0 }}>Suggested for: {l.langs.join(', ') || '—'}</p>

@@ -22,6 +22,15 @@ ON_VERCEL = bool(os.getenv("VERCEL"))
 app = FastAPI(title="SchoolSims Player")
 
 
+@app.exception_handler(Exception)
+async def _unexpected(request, exc):
+    """Unexpected errors come back with a readable reason instead of a bare 500."""
+    from fastapi.responses import JSONResponse
+    import traceback
+    traceback.print_exc()
+    return JSONResponse(status_code=500, content={"detail": f"Server error: {type(exc).__name__}: {str(exc)[:300]}"})
+
+
 @app.middleware("http")
 async def _load_looks(request, call_next):
     if request.url.path.startswith("/api/"):
@@ -1259,6 +1268,7 @@ class LookBody(BaseModel):
     labels: dict[str, str] = {}
     photo: str = ""            # data URL (uploaded) - optional when editing
     generate_prompt: str = ""  # or: describe the person and let the image model draw them
+    role: str = "leader"       # leader, teacher, staff, parent, student_elem/middle/high/college
 
 
 class NamesBody(BaseModel):
@@ -1269,6 +1279,7 @@ class NamesBody(BaseModel):
 
 def look_view(pid: str, p: dict) -> dict:
     return {"id": pid, "label": look_label(pid), "custom": bool(p.get("custom")), "gender": p.get("gender", ""),
+            "role": p.get("role", "leader"),
             "langs": p.get("suggested_for_langs", []), "names": p.get("name", {}), "labels": p.get("labels", {}),
             "photo": (p.get("photo") or {}).get("default", ""), "videos": sorted((p.get("video") or {}).keys())}
 
@@ -1355,15 +1366,21 @@ def _photo_from_body(pid: str, body: LookBody) -> str | None:
         data = _b64.b64decode(m.group(2))
         if len(data) > 4_000_000:
             raise HTTPException(400, detail="Photo is too large (max 4 MB).")
-        return save_look_photo(pid, data, m.group(1))
+        try:
+            return save_look_photo(pid, data, m.group(1))
+        except Exception as e:
+            raise HTTPException(502, detail=f"Couldn't save the photo: {str(e)[:250]}")
     if body.generate_prompt.strip():
         if not media_gen.images_ready():
             raise HTTPException(503, detail="Set OPENAI_API_KEY to generate portraits, or upload a photo.")
         try:
-            data = media_gen.make_portrait(body.generate_prompt.strip())
+            data = media_gen.make_portrait(body.generate_prompt.strip(), body.role)
         except Exception as e:
             raise HTTPException(502, detail=str(e)[:300])
-        return save_look_photo(pid, data, "image/jpeg")
+        try:
+            return save_look_photo(pid, data, "image/jpeg")
+        except Exception as e:
+            raise HTTPException(502, detail=f"The portrait was made but couldn't be saved: {str(e)[:250]}")
     return None
 
 
@@ -1384,7 +1401,8 @@ def admin_add_look(body: LookBody):
     if not names.get("default"):
         names["default"] = next(iter(names.values()), body.label.strip())
     look = {"custom": True, "label": body.label.strip(), "labels": {k: v for k, v in body.labels.items() if v.strip()},
-            "gender": body.gender, "suggested_for_langs": body.langs, "name": names,
+            "gender": body.gender, "role": body.role if body.role in media_gen.ROLES else "leader",
+            "suggested_for_langs": body.langs, "name": names,
             "photo": {"default": photo}, "video": {}, "captions": {}, "created_at": sims.iso(sims.now())}
     store.hset(LOOKS_HASH, pid, look)
     refresh_personas(force=True)
@@ -1401,6 +1419,7 @@ def admin_edit_look(pid: str, body: LookBody):
         look["photo"] = {"default": photo}  # new path, so HeyGen gets the new photo
     names = {k: v.strip() for k, v in body.names.items() if v.strip()}
     look.update(label=body.label.strip() or look["label"], gender=body.gender, suggested_for_langs=body.langs,
+                role=body.role if body.role in media_gen.ROLES else look.get("role", "leader"),
                 labels={k: v for k, v in body.labels.items() if v.strip()},
                 name=names or look.get("name", {}))
     store.hset(LOOKS_HASH, pid, look)
