@@ -197,6 +197,8 @@ export default function App() {
         ethnicity={isSetup ? null : (simData?.ui.ethnicity_labels?.[ethnicity] ?? ethnicity)}
         speechEnabled={speechEnabled}
         onToggleSpeech={() => { setSpeechEnabled(s => !s); window.speechSynthesis.cancel(); }}
+        onRestart={isSetup ? undefined : restart}
+        restartLabel={ui?.restart_btn ?? 'Restart Simulation'}
       />
 
       <div className="app-body" style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>

@@ -874,8 +874,9 @@ def translate(scenario: dict, code: str, language_name: str, setting: str, notes
         raise ValueError("Language code must look like 'ne', 'es' or 'es-MX'.")
     en = scenario["en"]
     # Image prompts stay in English (they go to the image model); names are swapped per language.
+    # Empty fields (e.g. an outcome's you_chose, filled in by the player) have nothing to translate.
     en_flat = {p: t for p, t in localize.flatten(en).items()
-               if not p.endswith((".image_prompt", ".image_url", ".character_name"))}
+               if t.strip() and not p.endswith((".image_prompt", ".image_url", ".character_name"))}
     if app_ui:
         wanted = {p: t for p, t in en_flat.items()
                   if p.startswith("nodes.") or p.split(".")[1] in STORY_UI}

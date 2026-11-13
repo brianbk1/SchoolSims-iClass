@@ -9,6 +9,8 @@ interface HeaderProps {
   ethnicity: string | null;
   speechEnabled: boolean;
   onToggleSpeech: () => void;
+  onRestart?: () => void;
+  restartLabel?: string;
 }
 
 function fmt(s: number) {
@@ -17,7 +19,7 @@ function fmt(s: number) {
   return `${m}:${sec}`;
 }
 
-export default function Header({ simTitle, progress, slideLabel, timerSecs, lang, ethnicity, speechEnabled, onToggleSpeech }: HeaderProps) {
+export default function Header({ simTitle, progress, slideLabel, timerSecs, lang, ethnicity, speechEnabled, onToggleSpeech, onRestart, restartLabel = 'Restart' }: HeaderProps) {
   return (
     <header className="header-bar" style={{ height: 56, padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, zIndex: 20 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
@@ -47,6 +49,13 @@ export default function Header({ simTitle, progress, slideLabel, timerSecs, lang
         {lang && <span id="badge-lang" className="step-badge" style={{ color: 'var(--text-2)', background: 'var(--surface2)', borderColor: 'var(--border2)' }}>{lang}</span>}
         {ethnicity && <span id="badge-eth" className="step-badge">{ethnicity}</span>}
         <SpeechToggle enabled={speechEnabled} onToggle={onToggleSpeech} />
+        {onRestart && (
+          <button id="hdr-restart" onClick={() => { if (confirm(`${restartLabel}?`)) onRestart(); }} title={restartLabel} aria-label={restartLabel}
+            style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, padding: '5px 10px', fontSize: 12, fontWeight: 600, color: 'var(--text-2)', cursor: 'pointer' }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-5"/></svg>
+            <span className="hdr-restart-text">{restartLabel}</span>
+          </button>
+        )}
         <div className="hdr-timer" style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, padding: '5px 10px' }}>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           <span id="timer" className="tabular" style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-2)', fontFamily: "'DM Mono', monospace" }}>{fmt(timerSecs)}</span>

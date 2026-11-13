@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel
 from typing import Any
-import json, copy, os, sys, tempfile
+import json, copy, os, re, sys, tempfile
 from dotenv import load_dotenv
 from tts import get_audio, tts_enabled
 import localize
@@ -668,7 +668,24 @@ def editable_sim(sim_id: str) -> dict:
     sim = sims.get(sim_id)
     if not sim:
         raise HTTPException(404, detail="Sim not found.")
+    if prune_empty_skips(sim):
+        sims.save(sim)
     return sim
+
+
+def prune_empty_skips(sim: dict) -> bool:
+    """Older translations flagged empty English fields (an outcome's you_chose, which the
+    player fills in) as 'Model skipped'. Those aren't problems: drop them."""
+    en_flat = localize.flatten(sim.get("scenario", {}).get("en", {}))
+    keep = []
+    for p in sim.get("problems", []):
+        m = re.match(r"(?:\[[^\]]+\] )?Model skipped: (\S+)$", p)
+        if m and not en_flat.get(m.group(1), "x").strip():
+            continue
+        keep.append(p)
+    changed = len(keep) != len(sim.get("problems", []))
+    sim["problems"] = keep
+    return changed
 
 
 def sim_detail(sim: dict) -> dict:
@@ -792,9 +809,14 @@ def admin_delete_sim(sim_id: str):
 
 @app.post("/api/admin/sims/{sim_id}/problems/clear", dependencies=[Depends(require_admin)])
 def admin_clear_problem(sim_id: str, body: dict):
-    """Mark a model note as handled (e.g. a count mismatch the builder accepts)."""
+    """Mark model notes as handled: one ("problem"), all of one language ("lang"), or all ("all")."""
     sim = editable_sim(sim_id)
-    sim["problems"] = [p for p in sim.get("problems", []) if p != body.get("problem")]
+    if body.get("all"):
+        sim["problems"] = []
+    elif body.get("lang"):
+        sim["problems"] = [p for p in sim.get("problems", []) if not p.startswith(f"[{body['lang']}]")]
+    else:
+        sim["problems"] = [p for p in sim.get("problems", []) if p != body.get("problem")]
     sims.save(sim)
     return sim_detail(sim)
 
