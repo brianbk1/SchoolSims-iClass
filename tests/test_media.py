@@ -179,6 +179,10 @@ assert ["middle_east_female", "ar"] not in c.get("/api/options?lang=ar").json()[
 calls["generate"].clear()
 r = c.post(f"/api/admin/sims/{s3['id']}/videos", json={"persona": "middle_east_female", "lang": "ar"}).json()
 assert r["errors"] == [] or all("Arabic" in e for e in r["errors"]), r["errors"]
+# a look with only a default name uses it in every language
+c.put("/api/admin/looks/middle_east_female", json={"label": "Middle East", "gender": "female", "langs": ["ar"], "names": {"default": "Layla Haddad"}})
+main.refresh_personas(force=True)
+assert main.persona_name("middle_east_female", "en") == "Layla Haddad"
 # edit + delete
 c.put("/api/admin/looks/middle_east_female", json={"label": "Middle East (Levant)", "gender": "female", "langs": ["ar-JO"], "names": names})
 assert c.get("/api/admin/looks").json()["looks"][0]["label"] == "Middle East (Levant)"

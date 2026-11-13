@@ -16,9 +16,10 @@ interface Props {
   videoErrorLabel: string;
   retryLabel: string;
   photoUrl?: string;
+  adminNote?: string;
 }
 
-export default function VideoSlide({ node, videoUrl, captionsUrl, captionsOn, onToggleCaptions, audioUrl, speechEnabled, speakerName, captionsOnLabel, captionsOffLabel, videoErrorLabel, retryLabel, photoUrl }: Props) {
+export default function VideoSlide({ node, videoUrl, captionsUrl, captionsOn, onToggleCaptions, audioUrl, speechEnabled, speakerName, captionsOnLabel, captionsOffLabel, videoErrorLabel, retryLabel, photoUrl, adminNote }: Props) {
   useSpeech(audioUrl, speechEnabled);
   const [vidErr, setVidErr] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
@@ -33,8 +34,12 @@ export default function VideoSlide({ node, videoUrl, captionsUrl, captionsOn, on
           {!videoUrl ? (
             // No clip for this look + language yet: show the character and what they say.
             <div className="video-fallback">
-              {photoUrl && <img src={photoUrl} alt={speakerName} />}
-              {node.script && <p dir="auto">“{node.script}”</p>}
+              {photoUrl && <img className="vf-blur" src={photoUrl} alt="" aria-hidden="true" />}
+              {photoUrl && <img className="vf-photo" src={photoUrl} alt={speakerName} />}
+              <div className="vf-text">
+                {node.script && <p dir="auto">“{node.script}”</p>}
+                {adminNote && <span className="vf-admin">{adminNote}</span>}
+              </div>
             </div>
           ) : !vidErr ? (
             <video

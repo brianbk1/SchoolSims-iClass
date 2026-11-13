@@ -121,7 +121,9 @@ def suggested_persona(lang: str) -> str | None:
 
 
 def persona_name(pid: str, lang: str) -> str:
-    return pick(PERSONAS[pid].get("name", {}), lang, PLACEHOLDER_NAME)
+    names = PERSONAS.get(pid, {}).get("name", {})
+    # Added looks keep a 'default' name for languages without their own.
+    return pick(names, lang, "") or names.get("default") or PLACEHOLDER_NAME
 
 
 def swap_name(value: Any, name: str) -> Any:
