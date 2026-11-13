@@ -32,7 +32,7 @@ interface Cell { ready: number; rendering: number; failed: number; stale: number
 interface Media {
   video_nodes: string[]; grid: Record<string, Record<string, Cell>>; seconds_per_set: number;
   suggested: Record<string, string>; images: { total: number; done: number; missing: string[] };
-  heygen_ready: boolean; blob_ready: boolean; images_ready: boolean; looks: { id: string; label: string }[];
+  heygen_ready: boolean; blob_ready: boolean; images_ready: boolean; looks: { id: string; label: string }[]; blob_vars_seen?: string[];
 }
 export interface LangOpt { code: string; label: string; native: string; place: string }
 interface ReportRow { id: string; title: string; context_summary: string; created_by: string; created_at: string; status: Status; languages: string[]; decisions: number; source: string }
@@ -859,7 +859,8 @@ function MediaPanel({ sim, onUpdate, setError, setNotice }: {
           {(!media.heygen_ready || !media.blob_ready) && (
             <div style={banner('warn')}>
               To make videos here, add in Vercel: {!media.heygen_ready && <><code>HEYGEN_API_KEY</code> (Settings → Environment Variables) </>}
-              {!media.blob_ready && <>Blob storage (Storage → Create → Blob → connect to this project) </>}then redeploy.
+              {!media.blob_ready && <>Blob storage (Storage → Create → Blob → connect to this project, tick Production) </>}then redeploy.
+              {!media.blob_ready && <> This deployment sees {media.blob_vars_seen?.length ? <>these Blob settings: <code>{media.blob_vars_seen.join(', ')}</code> (none is a read-write token)</> : 'no Blob settings yet, so the store isn\'t connected to this project or it hasn\'t been redeployed since'}.</>}
               Until then, video slides show the character's portrait with what they say.
             </div>
           )}

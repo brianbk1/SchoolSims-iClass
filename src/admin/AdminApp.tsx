@@ -154,7 +154,7 @@ export default function AdminApp() {
   return (
     <Shell>
       {locales && !locales.writable && (
-        <div style={banner('warn')}>This is the hosted site, so drafts can't be saved here. Run the app in your own copy or a Codespace to generate and approve locales, then commit <code>backend/scenario.json</code> and redeploy.</div>
+        <div style={banner('warn')}>Connect storage (Upstash Redis in Vercel → Storage) to draft and approve languages on the hosted site.</div>
       )}
       {locales && !locales.generator_ready && (
         <div style={banner('warn')}>To generate drafts, set <code>ANTHROPIC_API_KEY</code> (in a <code>.env.local</code> file at the repo root, or as an environment variable) and restart the server.</div>
@@ -317,7 +317,7 @@ export default function AdminApp() {
               <li>Pick a language and describe the place. For an existing language, click <b>Re-localize</b>.</li>
               <li>Claude drafts it in about a minute, with an English back-translation of every line.</li>
               <li>Review side by side, ideally with a native speaker, and edit anything.</li>
-              <li><b>Approve & publish</b> adds it to <code>scenario.json</code>. Commit and redeploy to put it on the hosted site.</li>
+              <li><b>Approve & publish</b> makes it live: on the hosted site it is saved in storage; locally it is added to <code>scenario.json</code> (commit it to keep it in the code).</li>
             </ol>
           </div>
         )}
