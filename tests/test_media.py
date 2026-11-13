@@ -184,4 +184,15 @@ c.put("/api/admin/looks/middle_east_female", json={"label": "Middle East (Levant
 assert c.get("/api/admin/looks").json()["looks"][0]["label"] == "Middle East (Levant)"
 assert c.delete("/api/admin/looks/latin").status_code == 404
 assert c.delete("/api/admin/looks/middle_east_female").json()["ok"]
+# --- AI-suggested looks --------------------------------------------------------------
+seen = {}
+def looks_fake(p, tool=None):
+    seen["prompt"] = p
+    return {"looks": json.dumps([{"label": "Israel", "gender": "female", "langs": ["he"],
+                                  "names": [{"lang": "he", "name": "נועה כהן"}, {"lang": "default", "name": "Noa Cohen"}],
+                                  "portrait": "A woman in her 40s with dark curly hair", "why": "Hebrew has no fitting look"}])}
+simgen.call_claude = looks_fake
+sug = c.post("/api/admin/looks/suggest").json()["looks"]
+assert sug[0]["label"] == "Israel" and sug[0]["names"]["he"] == "נועה כהן" and sug[0]["gender"] == "female", sug
+assert "he: עברית" in seen["prompt"] and "Europe, male" in seen["prompt"], seen["prompt"][:400]
 print("all media tests passed")

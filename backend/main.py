@@ -1248,6 +1248,22 @@ def admin_list_looks():
             "images_ready": media_gen.images_ready(), "blob_ready": media_gen.blob_ready()}
 
 
+@app.post("/api/admin/looks/suggest", dependencies=[Depends(require_admin)])
+def admin_suggest_looks():
+    """AI proposes looks for languages that have no fitting character yet."""
+    if not simgen.generator_ready():
+        raise HTTPException(503, detail="Set ANTHROPIC_API_KEY.")
+    refresh_personas(force=True)
+    existing = [{"label": look_label(k), "gender": p.get("gender", ""), "langs": p.get("suggested_for_langs", [])}
+                for k, p in PERSONAS.items()]
+    langs = [{"code": c, "label": language_label(c, "en"), "native": language_label(c, c), "place": locale_place(c)}
+             for c in sorted(valid_langs())]
+    try:
+        return {"looks": simgen.suggest_looks(existing, langs)}
+    except Exception as e:
+        raise HTTPException(502, detail=str(e)[:300])
+
+
 @app.post("/api/admin/looks/suggest-names", dependencies=[Depends(require_admin)])
 def admin_suggest_names(body: NamesBody):
     if not simgen.generator_ready():
