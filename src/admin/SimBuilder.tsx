@@ -892,6 +892,7 @@ function MediaPanel({ sim, onUpdate, setError, setNotice }: {
                         {c.rendering > 0 && <span> · {c.rendering} rendering…</span>}
                         {c.stale > 0 && <span style={{ color: '#92400e' }}> · {c.stale} out of date (script edited)</span>}
                         {c.failed > 0 && <span style={{ color: '#b91c1c' }} title={c.errors.join('\n')}> · {c.failed} failed</span>}
+                        {c.failed > 0 && c.errors.length > 0 && <div style={{ color: '#b91c1c', fontSize: 12, marginTop: 2 }}>{[...new Set(c.errors)].slice(0, 2).join(' · ')}</div>}
                       </> : '—'}
                       {others.length > 0 && <div style={{ color: 'var(--text-3)', fontSize: 12 }}>Also: {others.join(', ')}</div>}
                     </td>
