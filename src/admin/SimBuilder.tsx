@@ -860,9 +860,7 @@ function MediaPanel({ sim, onUpdate, setError, setNotice }: {
             <div style={banner('warn')}>
               To make videos here, add in Vercel: {!media.heygen_ready && <><code>HEYGEN_API_KEY</code> (Settings → Environment Variables) </>}
               {!media.blob_ready && <>Blob storage (Storage → Create → Blob → connect to this project, tick Production) </>}then redeploy.
-              {!media.blob_ready && (media.blob_vars_seen?.includes('BLOB_STORE_ID')
-                ? <> The Blob store is connected, but without a read-write token (Vercel's newer default). In Vercel → Storage → your Blob store → Projects, edit the i-class connection and turn on <b>Add a read-write token env var</b> (or reconnect with it ticked), make sure the store is <b>Public</b>, then redeploy.</>
-                : <> This deployment sees {media.blob_vars_seen?.length ? <>these Blob settings: <code>{media.blob_vars_seen.join(', ')}</code> (none is a read-write token)</> : 'no Blob settings yet, so the store isn\'t connected to this project or it hasn\'t been redeployed since'}.</>)}
+              {!media.blob_ready && <> This deployment sees {media.blob_vars_seen?.length ? <>these Blob settings: <code>{media.blob_vars_seen.join(', ')}</code></> : 'no Blob settings yet, so the store isn\'t connected to this project or it hasn\'t been redeployed since'}.</>}
               Until then, video slides show the character's portrait with what they say.
             </div>
           )}

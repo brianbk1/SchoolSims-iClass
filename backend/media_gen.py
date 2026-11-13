@@ -62,8 +62,43 @@ def blob_token() -> str:
     return ""
 
 
+# Newer Vercel Blob connections use OIDC: no read-write token, just BLOB_STORE_ID plus a
+# short-lived token Vercel sends with each request (x-vercel-oidc-token header) or sets
+# as VERCEL_OIDC_TOKEN. The middleware in main.py hands the latest header value here.
+_oidc_token = ""
+
+
+def set_oidc_token(token: str | None) -> None:
+    global _oidc_token
+    if token:
+        _oidc_token = token.strip()
+
+
+def blob_store_id() -> str:
+    sid = os.getenv("BLOB_STORE_ID", "").strip()
+    if not sid:
+        for k, v in sorted(os.environ.items()):
+            if k.endswith("_STORE_ID") and v.strip().startswith("store_") and "BLOB" in k:
+                sid = v.strip()
+                break
+    return sid[len("store_"):] if sid.startswith("store_") else sid
+
+
+def blob_auth() -> dict[str, str]:
+    """Headers that authorize a Blob upload: read-write token, else OIDC + store id."""
+    tok = blob_token()
+    if tok:
+        return {"authorization": f"Bearer {tok}"}
+    oidc = _oidc_token or os.getenv("VERCEL_OIDC_TOKEN", "").strip()
+    sid = blob_store_id()
+    if oidc and sid:
+        return {"authorization": f"Bearer {oidc}", "x-vercel-blob-store-id": sid}
+    return {}
+
+
 def blob_ready() -> bool:
-    return bool(blob_token())
+    # On Vercel the OIDC token arrives with requests, so a connected store id is enough.
+    return bool(blob_token() or (blob_store_id() and (os.getenv("VERCEL") or _oidc_token or os.getenv("VERCEL_OIDC_TOKEN"))))
 
 
 def blob_vars_seen() -> list[str]:
@@ -309,8 +344,12 @@ def vtt(lines: list[str], duration: float) -> str:
 
 def blob_put(pathname: str, data: bytes, content_type: str) -> str:
     """Upload to Vercel Blob (public) and return its URL."""
+    auth = blob_auth()
+    if not auth:
+        raise RuntimeError("Blob storage isn't connected (no read-write token or OIDC token + store id).")
     r = httpx.put(f"{BLOB}/{pathname}", content=data, timeout=120, headers={
-        "authorization": f"Bearer {blob_token()}",
+        **auth,
+        "x-vercel-blob-access": "public",
         "x-api-version": "7",
         "x-content-type": content_type,
         "x-add-random-suffix": "1",
@@ -318,7 +357,8 @@ def blob_put(pathname: str, data: bytes, content_type: str) -> str:
         "x-cache-control-max-age": "31536000",
     })
     if r.status_code >= 400:
-        raise RuntimeError(f"Blob upload {r.status_code}: {r.text[:200]}")
+        hint = " (the Blob store may be private: create a Public Blob store and connect it to this project)" if "private" in r.text.lower() else ""
+        raise RuntimeError(f"Blob upload {r.status_code}: {r.text[:200]}{hint}")
     return r.json()["url"]
 
 
