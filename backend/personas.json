@@ -43,7 +43,8 @@
       "captions": {
         "af": "/assets/captions_african_af.vtt",
         "sw-TZ": "/assets/captions_african_sw-TZ.vtt"
-      }
+      },
+      "skin_tone": "dark"
     },
     "caucasian": {
       "gender": "male",
@@ -95,7 +96,8 @@
         "pt-PT": "/assets/captions_caucasian_pt-PT.vtt",
         "eu": "/assets/captions_caucasian_eu.vtt",
         "he": "/assets/captions_caucasian_he.vtt"
-      }
+      },
+      "skin_tone": "light"
     },
     "east_asian": {
       "gender": "male",
@@ -128,7 +130,8 @@
       },
       "captions": {
         "zh-HK": "/assets/captions_east_asian_zh-HK.vtt"
-      }
+      },
+      "skin_tone": "medium-light"
     },
     "latin": {
       "gender": "male",
@@ -165,7 +168,8 @@
         "es-AR": "/assets/captions_latin_es-AR.vtt",
         "es-MX": "/assets/captions_latin_es-MX.vtt",
         "es-CL": "/assets/captions_latin_es-CL.vtt"
-      }
+      },
+      "skin_tone": "medium"
     },
     "south_asian": {
       "gender": "male",
@@ -195,7 +199,8 @@
         "ne": "/assets/south_asian_ne.mp4",
         "sw": "/assets/south_asian_sw.mp4",
         "ur": "/assets/south_asian_ur.mp4"
-      }
+      },
+      "skin_tone": "medium-dark"
     }
   }
 }

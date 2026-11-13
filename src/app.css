@@ -574,3 +574,15 @@ body.admin-page { height: auto; min-height: 100vh; overflow: auto; }
   background: #0f172a; border: 2px solid rgba(255,255,255,0.85); border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.35); z-index: 2; }
 .video-wrap .sign-pip.sign-solo { bottom: 10px; }
 @media (max-width: 720px) { .video-wrap .sign-pip { width: 40%; bottom: 48px; } }
+
+/* Setup screen: gender and skin-tone filters for the featured character */
+.setup-filter-label { display: block; font-size: 11px; font-weight: 700; color: var(--text-3); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; }
+.seg { display: inline-flex; border: 1px solid var(--border2); border-radius: 10px; overflow: hidden; background: var(--surface2); }
+.seg-btn { font: inherit; font-size: 14px; padding: 9px 16px; border: 0; background: transparent; color: var(--text-2); cursor: pointer; }
+.seg .seg-btn + .seg-btn { border-inline-start: 1px solid var(--border2); }
+.seg-btn.on { background: var(--purple); color: #fff; }
+.seg-btn.tone-any { border: 1px solid var(--border2); border-radius: 10px; background: var(--surface2); }
+.seg-btn.tone-any.on { background: var(--purple); border-color: var(--purple); color: #fff; }
+.tone-swatch { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--border2); cursor: pointer; padding: 0; }
+.tone-swatch.on { box-shadow: 0 0 0 3px var(--purple); }
+.seg-btn:focus-visible, .tone-swatch:focus-visible { outline: 2px solid var(--purple); outline-offset: 2px; }
