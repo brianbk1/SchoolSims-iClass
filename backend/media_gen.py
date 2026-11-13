@@ -66,6 +66,14 @@ def images_ready() -> bool:
 def site_file(path: str, base_url: str) -> bytes:
     """A file under public/ (e.g. '/assets/latin.png'). Read from disk when it's there
     (local / Codespace); on Vercel the function doesn't include public/, so fetch it."""
+    if path.startswith(("http://", "https://")):  # e.g. a look's photo in Blob
+        r = httpx.get(path, timeout=60, follow_redirects=True)
+        r.raise_for_status()
+        return r.content
+    if path.startswith("/api/"):  # served by this app (photo kept in the runtime store)
+        r = httpx.get(f"{base_url.rstrip('/')}{path}", timeout=60, follow_redirects=True)
+        r.raise_for_status()
+        return r.content
     local = REPO / "public" / path.lstrip("/")
     if local.exists():
         return local.read_bytes()
@@ -212,7 +220,8 @@ def start_video(*, script: str, persona_id: str, persona: dict, lang: str, title
         payload["remove_background"] = True
     else:
         payload["image"] = {"type": "asset_id", "asset_id": cached_asset(
-            hg, f"photo:{photo_path}", lambda: (Path(photo_path).name, site_file(photo_path, base_url), "image/png"))}
+            hg, f"photo:{photo_path}", lambda: ("portrait" + Path(photo_path.split("?")[0]).suffix, site_file(photo_path, base_url),
+                                                "image/png" if photo_path.split("?")[0].endswith(".png") else "image/jpeg"))}
     payload["type"] = "image"
     job = hg.generate(payload)
     return {"status": "rendering", "job_id": job, "voice": voice.get("name") or voice.get("voice_id"),
@@ -321,3 +330,22 @@ def make_image(prompt: str, sim_id: str, node_id: str) -> str:
         return blob_put(f"sims/{sim_id}/images/{node_id}.jpg", base64.b64decode(b64), "image/jpeg")
     import sims  # fall back to the runtime store
     return sims.save_image(sim_id, node_id, b64)
+
+
+PORTRAIT_STYLE = ("Photorealistic head-and-shoulders portrait for an educational video, looking at the camera, "
+                  "friendly and professional, soft even light, plain light-grey studio background, centred, "
+                  "no text, no logos. ")
+
+
+def make_portrait(prompt: str) -> bytes:
+    """A character portrait (JPEG bytes) from a description."""
+    r = httpx.post(
+        "https://api.openai.com/v1/images/generations", timeout=180,
+        headers={"Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}"},
+        json={"model": os.getenv("OPENAI_IMAGE_MODEL", "gpt-image-1"), "prompt": PORTRAIT_STYLE + prompt,
+              "size": "1024x1536", "quality": os.getenv("OPENAI_IMAGE_QUALITY", "medium"),
+              "output_format": "jpeg", "output_compression": 85, "n": 1},
+    )
+    if r.status_code >= 400:
+        raise RuntimeError(f"Image API {r.status_code}: {r.text[:200]}")
+    return base64.b64decode(r.json()["data"][0]["b64_json"])

@@ -21,6 +21,13 @@ ON_VERCEL = bool(os.getenv("VERCEL"))
 
 app = FastAPI(title="SchoolSims Player")
 
+
+@app.middleware("http")
+async def _load_looks(request, call_next):
+    if request.url.path.startswith("/api/"):
+        refresh_personas()
+    return await call_next(request)
+
 with open(BASE_DIR / "scenario.json") as f:
     SCENARIO: dict = json.load(f)
 
@@ -33,9 +40,44 @@ def valid_langs() -> set[str]:
 
 # Characters (look, names per language, photo, videos) live in personas.json.
 with open(BASE_DIR / "personas.json") as f:
-    PERSONAS: dict = json.load(f)["personas"]
+    BUILTIN_PERSONAS: dict = json.load(f)["personas"]
 
+# Looks added in the admin (Character looks) are kept in the runtime store and merged
+# in front of the built-in ones (so a new look for a language is suggested first).
+LOOKS_HASH = "looks"
+PERSONAS: dict = dict(BUILTIN_PERSONAS)
 VALID_ETHNICITIES = set(PERSONAS)
+_looks_loaded_at = 0.0
+
+
+def refresh_personas(force: bool = False) -> None:
+    global _looks_loaded_at
+    import time as _t
+    if not force and _t.time() - _looks_loaded_at < 30:
+        return
+    try:
+        custom = store.hget_all(LOOKS_HASH)
+    except Exception as e:  # storage hiccup: keep what we have
+        print(f"looks: {e}", file=sys.stderr)
+        return
+    merged = {k: v for k, v in custom.items() if isinstance(v, dict)}
+    merged.update(BUILTIN_PERSONAS)
+    PERSONAS.clear()
+    PERSONAS.update(merged)
+    VALID_ETHNICITIES.clear()
+    VALID_ETHNICITIES.update(PERSONAS)
+    _looks_loaded_at = _t.time()
+
+
+def look_label(pid: str, ui: dict | None = None) -> str:
+    """Label of a look in a language: the sim's own labels for built-in looks,
+    the admin-given label (per language if set) for added ones."""
+    p = PERSONAS.get(pid, {})
+    if p.get("custom"):
+        labels = p.get("labels") or {}
+        lang = (ui or {}).get("speech_locale", "")
+        return labels.get(lang) or labels.get(lang.split("-")[0]) or p.get("label", pid)
+    return (ui or SCENARIO["en"]["ui"]).get("ethnicity_labels", {}).get(pid, pid)
 # The scenario text is written with this placeholder name; it is swapped for the
 # chosen character's name (in the chosen language) everywhere it appears.
 PLACEHOLDER_NAME = "Jordan Chen"
@@ -171,7 +213,8 @@ def get_options(lang: str = Query("en"), sim: str = Query(sims.BUILTIN_ID),
     langs = visible_langs(rec, x_admin_token)
     display_lang = lang if lang in langs else "en"
     ui = sc[display_lang]["ui"]
-    needs_video = has_video_slides(sc)
+    # Only the built-in sim needs a ready-made clip per look; AI-built sims make clips per slide.
+    needs_video = bool(rec.get("builtin")) and has_video_slides(sc)
 
     def label(code: str) -> str:
         return (ui.get("language_labels", {}).get(code) or sc[code]["ui"].get("language_labels", {}).get(code)
@@ -189,8 +232,8 @@ def get_options(lang: str = Query("en"), sim: str = Query(sims.BUILTIN_ID),
         "sim": rec["id"],
         "languages": [{"value": code, "label": label(code)} for code in sorted(langs)],
         "ethnicities": [
-            {"value": code, "label": ui.get("ethnicity_labels", {}).get(code, code)}
-            for code in sorted(VALID_ETHNICITIES)
+            {"value": code, "label": look_label(code, ui)}
+            for code in sorted(VALID_ETHNICITIES, key=lambda c: (bool(PERSONAS[c].get("custom")), c))
         ],
         "available_combos": sorted([pid, code] for pid in PERSONAS for code in langs if combo_ok(pid, code, needs_video)),
         "suggested": {code: suggested(code) for code in sorted(langs)},
@@ -253,7 +296,9 @@ def get_simulation(
         "sim": rec["id"],
         "start_node_id": sc["start_node_id"],
         "nodes": nodes,
-        "ui": swap_name(sc[lang]["ui"], name),
+        "ui": {**swap_name(sc[lang]["ui"], name),
+               "ethnicity_labels": {**sc[lang]["ui"].get("ethnicity_labels", {}),
+                                    **{pid: look_label(pid, sc[lang]["ui"]) for pid, p in PERSONAS.items() if p.get("custom")}}},
         "media": {
             "photo": pick(photos, lang) or photos.get("default", ""),
             "video_template": video,
@@ -714,7 +759,7 @@ def admin_whoami(request: Request, x_admin_token: str | None = Header(default=No
             "heygen_ready": media_gen.heygen_ready(), "blob_ready": media_gen.blob_ready(),
             "storage": store.backend_name(), "persistent": store.is_persistent(),
             "review_days": sims.REVIEW_DAYS,
-            "personas": [{"id": k, "label": SCENARIO["en"]["ui"]["ethnicity_labels"].get(k, k),
+            "personas": [{"id": k, "label": look_label(k),
                           "photo": v.get("photo", {}).get("default", "")} for k, v in PERSONAS.items()],
             "app_languages": sorted(c for c in valid_langs()),
             "language_options": [
@@ -1015,7 +1060,7 @@ def media_summary(sim: dict) -> dict:
                    "missing": [k for k in img_nodes if k not in (sim.get("images") or {})]},
         "heygen_ready": media_gen.heygen_ready(), "blob_ready": media_gen.blob_ready(),
         "images_ready": media_gen.images_ready(),
-        "looks": [{"id": k, "label": SCENARIO["en"]["ui"]["ethnicity_labels"].get(k, k)} for k in PERSONAS],
+        "looks": [{"id": k, "label": look_label(k), "gender": p.get("gender", "")} for k, p in PERSONAS.items()],
     }
 
 
@@ -1148,6 +1193,140 @@ def cron_sims(request: Request, authorization: str | None = Header(default=None)
                 except Exception as e:  # keep the cron going
                     print(f"video refresh failed for {s['id']}: {e}", file=sys.stderr)
     return result
+
+
+# ---------------------------------------------------------------------------
+# Admin: character looks (add regions/genders beyond the built-in five)
+# ---------------------------------------------------------------------------
+
+class LookBody(BaseModel):
+    label: str
+    gender: str = "female"
+    langs: list[str] = []
+    names: dict[str, str] = {}
+    labels: dict[str, str] = {}
+    photo: str = ""            # data URL (uploaded) - optional when editing
+    generate_prompt: str = ""  # or: describe the person and let the image model draw them
+
+
+class NamesBody(BaseModel):
+    label: str
+    gender: str = ""
+    langs: list[str] = []
+
+
+def look_view(pid: str, p: dict) -> dict:
+    return {"id": pid, "label": look_label(pid), "custom": bool(p.get("custom")), "gender": p.get("gender", ""),
+            "langs": p.get("suggested_for_langs", []), "names": p.get("name", {}), "labels": p.get("labels", {}),
+            "photo": (p.get("photo") or {}).get("default", ""), "videos": sorted((p.get("video") or {}).keys())}
+
+
+def save_look_photo(pid: str, data: bytes, mime: str) -> str:
+    ext = "png" if "png" in mime else "jpg"
+    if media_gen.blob_ready():
+        return media_gen.blob_put(f"looks/{pid}.{ext}", data, mime)
+    import base64 as _b64
+    store.hset("look_photos", pid, {"mime": mime, "b64": _b64.b64encode(data).decode()})
+    import secrets as _s
+    return f"/api/looks/{pid}/photo?v={_s.token_hex(3)}"
+
+
+@app.get("/api/looks/{pid}/photo")
+def look_photo(pid: str):
+    import base64 as _b64
+    item = store.hget("look_photos", pid)
+    if not item:
+        raise HTTPException(404, detail="No photo.")
+    return Response(content=_b64.b64decode(item["b64"]), media_type=item.get("mime", "image/jpeg"),
+                    headers={"Cache-Control": "public, max-age=31536000, immutable"})
+
+
+@app.get("/api/admin/looks", dependencies=[Depends(require_admin)])
+def admin_list_looks():
+    refresh_personas(force=True)
+    return {"looks": [look_view(k, v) for k, v in PERSONAS.items()],
+            "images_ready": media_gen.images_ready(), "blob_ready": media_gen.blob_ready()}
+
+
+@app.post("/api/admin/looks/suggest-names", dependencies=[Depends(require_admin)])
+def admin_suggest_names(body: NamesBody):
+    if not simgen.generator_ready():
+        raise HTTPException(503, detail="Set ANTHROPIC_API_KEY.")
+    try:
+        return {"names": simgen.suggest_names(body.label, body.gender, body.langs or ["en"])}
+    except Exception as e:
+        raise HTTPException(502, detail=str(e)[:300])
+
+
+def _photo_from_body(pid: str, body: LookBody) -> str | None:
+    import base64 as _b64
+    if body.photo:
+        m = re.match(r"data:(image/[a-z+]+);base64,(.+)$", body.photo, re.S)
+        if not m:
+            raise HTTPException(400, detail="Photo must be an image.")
+        data = _b64.b64decode(m.group(2))
+        if len(data) > 4_000_000:
+            raise HTTPException(400, detail="Photo is too large (max 4 MB).")
+        return save_look_photo(pid, data, m.group(1))
+    if body.generate_prompt.strip():
+        if not media_gen.images_ready():
+            raise HTTPException(503, detail="Set OPENAI_API_KEY to generate portraits, or upload a photo.")
+        try:
+            data = media_gen.make_portrait(body.generate_prompt.strip())
+        except Exception as e:
+            raise HTTPException(502, detail=str(e)[:300])
+        return save_look_photo(pid, data, "image/jpeg")
+    return None
+
+
+@app.post("/api/admin/looks", dependencies=[Depends(require_admin)])
+def admin_add_look(body: LookBody):
+    require_storage()
+    if not body.label.strip():
+        raise HTTPException(400, detail="Give the look a name (e.g. Middle East).")
+    base = re.sub(r"[^a-z0-9]+", "_", f"{body.label}_{body.gender}".lower()).strip("_")[:40] or "look"
+    pid, n = base, 1
+    while pid in PERSONAS:
+        n += 1
+        pid = f"{base}_{n}"
+    photo = _photo_from_body(pid, body)
+    if not photo:
+        raise HTTPException(400, detail="Upload a photo or describe the person to generate one.")
+    names = {k: v.strip() for k, v in body.names.items() if v.strip()}
+    if not names.get("default"):
+        names["default"] = next(iter(names.values()), body.label.strip())
+    look = {"custom": True, "label": body.label.strip(), "labels": {k: v for k, v in body.labels.items() if v.strip()},
+            "gender": body.gender, "suggested_for_langs": body.langs, "name": names,
+            "photo": {"default": photo}, "video": {}, "captions": {}, "created_at": sims.iso(sims.now())}
+    store.hset(LOOKS_HASH, pid, look)
+    refresh_personas(force=True)
+    return look_view(pid, look)
+
+
+@app.put("/api/admin/looks/{pid}", dependencies=[Depends(require_admin)])
+def admin_edit_look(pid: str, body: LookBody):
+    look = store.hget(LOOKS_HASH, pid)
+    if not look:
+        raise HTTPException(404, detail="Only added looks can be edited.")
+    photo = _photo_from_body(pid, body)
+    if photo:
+        look["photo"] = {"default": photo}  # new path, so HeyGen gets the new photo
+    names = {k: v.strip() for k, v in body.names.items() if v.strip()}
+    look.update(label=body.label.strip() or look["label"], gender=body.gender, suggested_for_langs=body.langs,
+                labels={k: v for k, v in body.labels.items() if v.strip()},
+                name=names or look.get("name", {}))
+    store.hset(LOOKS_HASH, pid, look)
+    refresh_personas(force=True)
+    return look_view(pid, look)
+
+
+@app.delete("/api/admin/looks/{pid}", dependencies=[Depends(require_admin)])
+def admin_delete_look(pid: str):
+    if not store.hget(LOOKS_HASH, pid):
+        raise HTTPException(404, detail="Only added looks can be removed.")
+    store.hdel(LOOKS_HASH, pid)
+    refresh_personas(force=True)
+    return {"ok": True}
 
 
 if DIST_DIR.exists():

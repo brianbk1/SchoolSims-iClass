@@ -1,20 +1,23 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AdminApp from './AdminApp';
-import SimBuilder from './SimBuilder';
+import SimBuilder, { api, type LangOpt } from './SimBuilder';
+import LooksAdmin from './LooksAdmin';
 
 const TOKEN_KEY = 'iclass_admin_token';
 const readToken = () => { try { return localStorage.getItem(TOKEN_KEY) ?? ''; } catch { return ''; } };
 
-type Tab = 'builder' | 'languages';
+type Tab = 'builder' | 'looks' | 'languages';
 
 export default function AdminRoot() {
-  const [tab, setTab] = useState<Tab>(() => (window.location.hash.includes('languages') ? 'languages' : 'builder'));
+  const [tab, setTab] = useState<Tab>(() => (window.location.hash.includes('languages') ? 'languages' : window.location.hash.includes('looks') ? 'looks' : 'builder'));
+  const [langs, setLangs] = useState<LangOpt[]>([]);
+  useEffect(() => { api<{ language_options: LangOpt[] }>('/api/admin/whoami').then(w => setLangs(w.language_options ?? [])).catch(() => {}); }, []);
   const [tokenMsg, setTokenMsg] = useState<string | null>(null);
   const [tokenInput, setTokenInput] = useState(readToken());
   const [key, setKey] = useState(0);
 
   const tabBtn = (t: Tab, text: string) => (
-    <button onClick={() => { setTab(t); window.location.hash = t === 'languages' ? 'languages' : ''; }}
+    <button onClick={() => { setTab(t); window.location.hash = t === 'builder' ? '' : t; }}
       className={`adm-tab${tab === t ? ' on' : ''}`}>{text}</button>
   );
 
@@ -23,6 +26,7 @@ export default function AdminRoot() {
       <header className="adm-header">
         <span style={{ fontWeight: 800, fontSize: 17, color: '#fff' }}>SchoolSims</span>
         {tabBtn('builder', 'Sim Builder')}
+        {tabBtn('looks', 'Character looks')}
         {tabBtn('languages', 'Languages (built-in sim)')}
         <span className="adm-beta">Beta</span>
         <a href="/" style={{ marginInlineStart: 'auto', fontSize: 13, color: '#c7d2fe' }}>Open the player ↗</a>
@@ -41,6 +45,8 @@ export default function AdminRoot() {
           </div>
         ) : tab === 'builder' ? (
           <SimBuilder key={key} onNeedToken={m => setTokenMsg(m)} />
+        ) : tab === 'looks' ? (
+          <LooksAdmin key={key} languages={langs} />
         ) : (
           <>
             <p style={{ fontSize: 13, color: 'var(--text-3)', margin: '0 0 14px' }}>
