@@ -37,7 +37,9 @@ interface Props {
   onSimChange: (id: string) => void;
 }
 
-interface SimItem { id: string; title: string; summary: string; languages: string[] }
+interface SimItem { id: string; title: string; summary: string; languages: string[]; status?: string }
+
+const STATUS_NOTE: Record<string, string> = { draft: ' (draft, admins only)', pending_review: ' (waiting for review, admins only)' };
 
 function CustomSelect<T extends string>({ value, options, onChange, id }: { value: T; options: { value: T; label: string }[]; onChange: (v: T) => void; id: string }) {
   const [open, setOpen] = useState(false);
@@ -106,7 +108,8 @@ export default function SetupSlide({ lang, ethnicity, onLangChange, onEthnicityC
 
   // Sims a learner can pick (built-in + published AI-built sims).
   useEffect(() => {
-    fetch(`/api/sims?lang=${lang}`).then(r => r.json()).then((list: SimItem[]) => {
+    const token = (() => { try { return localStorage.getItem('iclass_admin_token') ?? ''; } catch { return ''; } })();
+    fetch(`/api/sims?lang=${lang}`, { headers: { 'X-Admin-Token': token } }).then(r => r.json()).then((list: SimItem[]) => {
       setLibrary(list);
       // A sim linked with ?sim= that isn't published shows only to admins (preview).
     }).catch(() => {});
@@ -175,7 +178,7 @@ export default function SetupSlide({ lang, ethnicity, onLangChange, onEthnicityC
             id="sim-select"
             value={simId}
             options={[
-              ...library.map(s => ({ value: s.id, label: s.title })),
+              ...library.map(s => ({ value: s.id, label: s.title + (STATUS_NOTE[s.status ?? ''] ?? '') })),
               ...(library.some(s => s.id === simId) ? [] : [{ value: simId, label: `${u.sim_title} (preview)` }]),
             ]}
             onChange={onSimChange}

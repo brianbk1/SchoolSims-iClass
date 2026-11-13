@@ -194,6 +194,14 @@ assert d["problems"] == ["[es] other", "count off"]
 d = c.post(f"/api/admin/sims/{draft_id}/problems/clear", json={"all": True}, headers=H).json()
 assert d["problems"] == []
 
+# --- the sim picker: learners see published sims; admins also see drafts / pending ------
+c.post("/api/admin/sims", json={**form, "language": "en", "title": "Draft for picker"}, headers=H)
+learner_ids = [x["id"] for x in c.get("/api/sims").json()]
+admin_list = c.get("/api/sims", headers=H).json()
+assert all(sims.get(i) is None or sims.get(i)["status"] == "published" for i in learner_ids if i != "default")
+assert len(admin_list) > len(learner_ids) and {x["status"] for x in admin_list} >= {"published", "draft"}
+assert [x["status"] for x in admin_list[1:]] == sorted([x["status"] for x in admin_list[1:]], key=["published", "pending_review", "draft"].index)
+
 # --- graph checker catches bad wiring ---------------------------------------------------------
 bad = {"a": {"type": "decision", "choices": [{"id": "A", "target_node_id": "x"}, {"id": "B", "target_node_id": "a"}]}}
 assert simgen.check_graph(bad, "a")

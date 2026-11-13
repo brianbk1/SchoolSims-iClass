@@ -191,17 +191,22 @@ def combo_ok(pid: str, lang: str, needs_video: bool) -> bool:
 
 
 @app.get("/api/sims")
-def list_published_sims(lang: str = Query("en")):
-    """Sims a learner can pick, titled in the requested language when available."""
+def list_published_sims(lang: str = Query("en"), x_admin_token: str | None = Header(default=None)):
+    """Sims a learner can pick, titled in the requested language when available.
+    Admins also get drafts and sims waiting for review (marked with their status) to preview."""
+    admin = is_admin_token(x_admin_token)
+    show = ("published",) + (("pending_review", "draft") if admin else ())
+    order = {"published": 0, "pending_review": 1, "draft": 2}
     out = []
-    for rec in [builtin_record()] + sorted(
-            (s for s in sims.all_generated() if s.get("status") == "published"),
-            key=lambda s: s.get("reviewed_at", ""), reverse=True):
+    newest = sorted((s for s in sims.all_generated() if s.get("status") in show),
+                    key=lambda s: s.get("reviewed_at") or s.get("created_at", ""), reverse=True)
+    for rec in [builtin_record()] + sorted(newest, key=lambda s: order[s["status"]]):
         sc = rec["scenario"]
-        langs = visible_langs(rec)
+        langs = visible_langs(rec, x_admin_token)
         block = sc.get(pick({c: c for c in langs}, lang) or "en", sc["en"])
         out.append({"id": rec["id"], "title": block["ui"].get("sim_title", rec["title"]),
-                    "summary": block["ui"].get("brief_scenario_body", ""), "languages": sorted(langs)})
+                    "summary": block["ui"].get("brief_scenario_body", ""), "languages": sorted(langs),
+                    "status": rec.get("status", "published")})
     return out
 
 
