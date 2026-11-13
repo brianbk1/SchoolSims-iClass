@@ -116,6 +116,9 @@ async function translateMany(id: string, codes: string[], onProgress: (done: num
 export function LangPicker({ options, chosen, setChosen, exclude = [] }: { options: LangOpt[]; chosen: string[]; setChosen: (c: string[]) => void; exclude?: string[] }) {
   const list = options.filter(o => o.code !== 'en' && !exclude.includes(o.code));
   const all = list.length > 0 && list.every(o => chosen.includes(o.code));
+  if (list.length === 0) {
+    return <p style={{ fontSize: 13, color: '#166534', margin: 0 }}>✓ Already in every available language.</p>;
+  }
   return (
     <div>
       <label className="sb-check" style={{ fontWeight: 600, marginBottom: 6 }}>
@@ -696,6 +699,7 @@ function SimView({ id, who, onChanged, onOpen, onDeleted, setError, setNotice }:
         {canAddLangs && (
           <div style={{ marginTop: 14, borderTop: '1px solid var(--border)', paddingTop: 12 }}>
             <LangPicker options={who.language_options} chosen={addLangs} setChosen={setAddLangs} exclude={sim.languages} />
+            {who.language_options.some(o => o.code !== 'en' && !sim.languages.includes(o.code)) && (
             <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginTop: 10, flexWrap: 'wrap' }}>
               <button style={navy} disabled={!!busy || addLangs.length === 0}
                 onClick={() => run('tr', async () => {
@@ -709,6 +713,7 @@ function SimView({ id, who, onChanged, onOpen, onDeleted, setError, setNotice }:
               </button>
               <span style={{ fontSize: 12, color: 'var(--text-3)' }}>Each language takes about a minute; three run at a time.</span>
             </div>
+            )}
           </div>
         )}
       </div>
