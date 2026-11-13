@@ -236,28 +236,6 @@ def report(start: str = "", end: str = "") -> list[dict]:
 IMAGE_HASH = "sim_images"
 
 
-def images_ready() -> bool:
-    return bool(os.getenv("OPENAI_API_KEY"))
-
-
-IMAGE_STYLE = ("Photorealistic, natural light, softly composed editorial photo of a school or office setting. "
-               "No text, no signage, no logos, no recognizable real people. ")
-
-
-def generate_image(prompt: str) -> str:
-    """Returns base64 JPEG."""
-    r = httpx.post(
-        "https://api.openai.com/v1/images/generations", timeout=120,
-        headers={"Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}"},
-        json={"model": os.getenv("OPENAI_IMAGE_MODEL", "gpt-image-1"), "prompt": IMAGE_STYLE + prompt,
-              "size": "1536x1024", "quality": os.getenv("OPENAI_IMAGE_QUALITY", "low"),
-              "output_format": "jpeg", "output_compression": 70, "n": 1},
-    )
-    if r.status_code >= 400:
-        raise RuntimeError(f"Image API {r.status_code}: {r.text[:200]}")
-    return r.json()["data"][0]["b64_json"]
-
-
 def save_image(sim_id: str, node_id: str, b64: str) -> str:
     store.hset(IMAGE_HASH, f"{sim_id}/{node_id}", b64)
     return f"/api/sims/{sim_id}/images/{node_id}?v={secrets.token_hex(3)}"
