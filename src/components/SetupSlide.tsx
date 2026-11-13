@@ -55,26 +55,39 @@ function CustomSelect<T extends string>({ value, options, onChange, id }: { valu
       const inMenu = menuRef.current?.contains(e.target as Node);
       if (!inTrigger && !inMenu) setOpen(false);
     };
+    // The menu is fixed to the window: keep it next to the box when the page scrolls or resizes.
     document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    window.addEventListener('resize', place);
+    document.addEventListener('scroll', place, true);
+    return () => {
+      document.removeEventListener('mousedown', handler);
+      window.removeEventListener('resize', place);
+      document.removeEventListener('scroll', place, true);
+    };
   }, [open]);
 
+  const place = () => {
+    if (!triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom - 12;
+    const spaceAbove = rect.top - 12;
+    const wanted = Math.min(260, options.length * 44);
+    // Open where there is more room, and never taller than that room.
+    const openUp = spaceBelow < wanted && spaceAbove > spaceBelow;
+    setMenuStyle({
+      position: 'fixed',
+      ...(openUp
+        ? { top: 'auto', bottom: window.innerHeight - rect.top + 6 }
+        : { top: rect.bottom + 6, bottom: 'auto' }),
+      maxHeight: Math.max(120, Math.min(260, openUp ? spaceAbove : spaceBelow)),
+      left: rect.left,
+      width: rect.width,
+      zIndex: 9999,
+    });
+  };
+
   const handleOpen = () => {
-    if (triggerRef.current) {
-      const rect = triggerRef.current.getBoundingClientRect();
-      const spaceBelow = window.innerHeight - rect.bottom;
-      const approxMenuH = Math.min(220, options.length * 44);
-      const openUp = spaceBelow < approxMenuH + 10;
-      setMenuStyle({
-        position: 'fixed',
-        ...(openUp
-          ? { bottom: window.innerHeight - rect.top + 6 }
-          : { top: rect.bottom + 6 }),
-        left: rect.left,
-        width: rect.width,
-        zIndex: 9999,
-      });
-    }
+    place();
     setOpen(o => !o);
   };
 
