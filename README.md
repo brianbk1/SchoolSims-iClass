@@ -197,7 +197,7 @@ Open `/admin` → **Sim Builder** → **Create Sim from AI**.
 | `RESEND_API_KEY` + `SIM_MAIL_FROM` | Send the review emails. Without them, notifications are kept in **Notifications** only |
 | `KV_REST_API_URL` / `KV_REST_API_TOKEN` | Upstash Redis (Vercel → Storage). **Needed on Vercel**, otherwise sims are lost when the server restarts. Locally they're in `backend/data/` |
 | `CRON_SECRET` | Protects the daily `/api/cron/sims` job (reminders + expiry), scheduled in `vercel.json` |
-| `OPENAI_API_KEY` | Creates the scene images from each slide's image prompt (`OPENAI_IMAGE_MODEL`, default `gpt-image-1`) |
+| `OPENAI_API_KEY` | Creates the scene images from each slide's image prompt (`OPENAI_IMAGE_MODEL`, default `gpt-image-2`, falling back to older names) |
 | `HEYGEN_API_KEY` | Character videos: the intro and every track get a clip of the character speaking, per language and look |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob (Storage → Create → Blob → connect). Keeps the videos, captions and images (HeyGen's links expire) |
 

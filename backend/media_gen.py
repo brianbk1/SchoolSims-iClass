@@ -314,22 +314,50 @@ IMAGE_STYLE = ("Photorealistic, natural light, softly composed editorial photo o
                "No text, no signage, no logos, no recognizable real people. ")
 
 
+def _image_models() -> list[str]:
+    """OpenAI renames image models; try the configured one, then current and older names."""
+    first = os.getenv("OPENAI_IMAGE_MODEL", "").strip()
+    return list(dict.fromkeys([m for m in (first, "gpt-image-2", "gpt-image-1.5", "gpt-image-1") if m]))
+
+
+def openai_image(prompt: str, size: str, quality: str = "") -> bytes:
+    """Generate one image and return its bytes. Falls back to the next model name when
+    one doesn't exist, and to the bare minimum of parameters if one is rejected."""
+    quality = quality or os.getenv("OPENAI_IMAGE_QUALITY", "medium")
+    last = ""
+    for model in _image_models():
+        for body in ({"model": model, "prompt": prompt, "size": size, "quality": quality,
+                      "output_format": "jpeg", "output_compression": 85, "n": 1},
+                     {"model": model, "prompt": prompt, "size": size}):
+            r = httpx.post("https://api.openai.com/v1/images/generations", timeout=240,
+                           headers={"Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}"}, json=body)
+            if r.status_code < 400:
+                item = r.json()["data"][0]
+                if item.get("b64_json"):
+                    return base64.b64decode(item["b64_json"])
+                img = httpx.get(item["url"], timeout=120, follow_redirects=True)
+                img.raise_for_status()
+                return img.content
+            last = f"Image API {r.status_code}: {r.text[:300]}"
+            try:
+                err = r.json().get("error", {})
+            except ValueError:
+                err = {}
+            if err.get("param") == "model" or "does not exist" in str(err.get("message", "")):
+                break  # try the next model name
+            if r.status_code == 400 and len(body) > 3:
+                continue  # retry with only model/prompt/size
+            raise RuntimeError(last)  # auth, verification, billing...: stop here
+    raise RuntimeError(last or "No image model available.")
+
+
 def make_image(prompt: str, sim_id: str, node_id: str) -> str:
-    """Create one illustration and return a URL for it."""
-    r = httpx.post(
-        "https://api.openai.com/v1/images/generations", timeout=180,
-        headers={"Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}"},
-        json={"model": os.getenv("OPENAI_IMAGE_MODEL", "gpt-image-1"), "prompt": IMAGE_STYLE + prompt,
-              "size": "1536x1024", "quality": os.getenv("OPENAI_IMAGE_QUALITY", "medium"),
-              "output_format": "jpeg", "output_compression": 80, "n": 1},
-    )
-    if r.status_code >= 400:
-        raise RuntimeError(f"Image API {r.status_code}: {r.text[:200]}")
-    b64 = r.json()["data"][0]["b64_json"]
+    """Create one scene illustration and return a URL for it."""
+    data = openai_image(IMAGE_STYLE + prompt, "1536x1024")
     if blob_ready():
-        return blob_put(f"sims/{sim_id}/images/{node_id}.jpg", base64.b64decode(b64), "image/jpeg")
+        return blob_put(f"sims/{sim_id}/images/{node_id}.jpg", data, "image/jpeg")
     import sims  # fall back to the runtime store
-    return sims.save_image(sim_id, node_id, b64)
+    return sims.save_image(sim_id, node_id, base64.b64encode(data).decode())
 
 
 PORTRAIT_STYLE = ("Photorealistic head-and-shoulders portrait for an educational video, looking at the camera, "
@@ -338,14 +366,5 @@ PORTRAIT_STYLE = ("Photorealistic head-and-shoulders portrait for an educational
 
 
 def make_portrait(prompt: str) -> bytes:
-    """A character portrait (JPEG bytes) from a description."""
-    r = httpx.post(
-        "https://api.openai.com/v1/images/generations", timeout=180,
-        headers={"Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}"},
-        json={"model": os.getenv("OPENAI_IMAGE_MODEL", "gpt-image-1"), "prompt": PORTRAIT_STYLE + prompt,
-              "size": "1024x1536", "quality": os.getenv("OPENAI_IMAGE_QUALITY", "medium"),
-              "output_format": "jpeg", "output_compression": 85, "n": 1},
-    )
-    if r.status_code >= 400:
-        raise RuntimeError(f"Image API {r.status_code}: {r.text[:200]}")
-    return base64.b64decode(r.json()["data"][0]["b64_json"])
+    """A character portrait (image bytes) from a description."""
+    return openai_image(PORTRAIT_STYLE + prompt, "1024x1536")
