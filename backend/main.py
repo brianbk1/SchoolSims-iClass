@@ -25,6 +25,7 @@ app = FastAPI(title="SchoolSims Player")
 @app.middleware("http")
 async def _load_looks(request, call_next):
     if request.url.path.startswith("/api/"):
+        media_gen.set_oidc_token(request.headers.get("x-vercel-oidc-token"))
         refresh_personas()
         refresh_builtin_locales()
     return await call_next(request)
