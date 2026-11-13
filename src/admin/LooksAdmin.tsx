@@ -34,7 +34,7 @@ const chatgptPrompt = (region: string, gender: string, desc = '') =>
   'looking at the camera with a warm, professional expression, business-casual clothing, soft even light, ' +
   'plain light-grey studio background, centred, portrait orientation (2:3), no text, no logos. Not a real or famous person.';
 
-interface Suggestion { label: string; gender: string; langs: string[]; names: Record<string, string>; portrait: string; why: string; added?: boolean; error?: string }
+interface Suggestion { label: string; gender: string; langs: string[]; names: Record<string, string>; portrait: string; why: string; added?: boolean; error?: string; updating?: boolean }
 
 const EMPTY = { label: '', gender: 'female', langs: [] as string[], names: {} as Record<string, string>, photo: '', generate_prompt: '' };
 
@@ -73,6 +73,19 @@ export default function LooksAdmin({ languages }: { languages: LangOpt[] }) {
       await addSuggestion(i);
     }
     setBusy(''); await load();
+  };
+
+  // Switch a suggestion's gender: AI rewrites its names and portrait description to match.
+  const changeGender = async (i: number, gender: string) => {
+    const sg = suggestions[i];
+    if (sg.gender === gender) return;
+    setSuggestions(list => list.map((x, j) => j === i ? { ...x, gender, updating: true, error: '' } : x));
+    try {
+      const r = await api<Suggestion>('/api/admin/looks/adapt', { method: 'POST', body: JSON.stringify({ ...sg, gender }) });
+      setSuggestions(list => list.map((x, j) => j === i ? { ...x, ...r, why: `Switched to ${gender}. ${sg.why}`, updating: false } : x));
+    } catch (e: any) {
+      setSuggestions(list => list.map((x, j) => j === i ? { ...x, gender: sg.gender, updating: false, error: e.message } : x));
+    }
   };
 
   const useInForm = (sg: Suggestion) => {
@@ -143,18 +156,27 @@ export default function LooksAdmin({ languages }: { languages: LangOpt[] }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12, marginTop: 14 }}>
             {suggestions.map((sg, i) => (
               <div key={i} style={{ border: `1px solid ${sg.added ? '#bbf7d0' : 'var(--border)'}`, background: sg.added ? '#f0fdf4' : 'var(--surface)', borderRadius: 12, padding: 14 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <b>{sg.label}</b><span style={{ fontSize: 12, color: 'var(--text-3)' }}>{sg.gender} · {sg.langs.join(', ')}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+                  <b>{sg.label}</b>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-3)' }}>
+                    <select value={sg.gender} disabled={sg.added || sg.updating} aria-label={`Gender for ${sg.label}`}
+                      onChange={e => changeGender(i, e.target.value)}
+                      style={{ ...inp, width: 'auto', padding: '3px 6px', fontSize: 12 }}>
+                      <option value="female">Female</option><option value="male">Male</option>
+                    </select>
+                    {sg.langs.join(', ')}
+                  </span>
                 </div>
+                {sg.updating && <p style={{ fontSize: 12, color: '#3730a3', margin: '4px 0' }}>Updating names and description…</p>}
                 <p style={{ fontSize: 12, color: '#8b1e3f', margin: '4px 0' }}>{sg.why}</p>
                 <p dir="auto" style={{ fontSize: 13, margin: '4px 0' }}>{Object.entries(sg.names).map(([l, n]) => `${n} (${l})`).join(' · ')}</p>
-                <textarea style={{ ...inp, fontSize: 12, minHeight: 54, padding: 6 }} value={sg.portrait} aria-label={`Portrait description for ${sg.label}`}
+                <textarea rows={5} disabled={sg.updating} style={{ ...inp, fontSize: 12, padding: 6, resize: 'vertical' }} value={sg.portrait} aria-label={`Portrait description for ${sg.label}`}
                   onChange={e => setSuggestions(list => list.map((x, j) => j === i ? { ...x, portrait: e.target.value } : x))} />
                 {sg.error && <p style={{ fontSize: 12, color: '#b91c1c', margin: '4px 0' }}>{sg.error}</p>}
                 <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
                   {sg.added ? <span style={{ fontSize: 13, color: '#166534', fontWeight: 600 }}>✓ Added</span> : (
                     <>
-                      {ready.images_ready && <button style={{ ...navy, padding: '6px 12px', fontSize: 13 }} disabled={!!busy}
+                      {ready.images_ready && <button style={{ ...navy, padding: '6px 12px', fontSize: 13 }} disabled={!!busy || sg.updating}
                         onClick={async () => { setBusy(`one ${i}`); await addSuggestion(i); setBusy(''); await load(); }}>
                         {busy === `one ${i}` ? 'Generating…' : 'Add'}</button>}
                       <button style={{ ...ghost, padding: '6px 12px' }} onClick={() => useInForm(sg)}>Edit in form</button>

@@ -994,7 +994,10 @@ def suggest_looks(existing: list[dict], languages: list[dict], count: int = 6,
         "then the missing gender for a region. Don't repeat an existing label+gender. Names: realistic and "
         "common in the region, written in each language's script.",
     ])
-    out = _unjson((call or call_claude)(prompt, LOOKS_TOOL))
+    return suggest_looks_from(_unjson((call or call_claude)(prompt, LOOKS_TOOL)))[:count]
+
+
+def suggest_looks_from(out: Any) -> list[dict]:
     looks = []
     for item in _list(out.get("looks") if isinstance(out, dict) else out):
         if not isinstance(item, dict) or not str(item.get("label", "")).strip():
@@ -1008,4 +1011,25 @@ def suggest_looks(existing: list[dict], languages: list[dict], count: int = 6,
                       "langs": [str(x) for x in _list(item.get("langs"))],
                       "names": names, "portrait": str(item.get("portrait", "")).strip(),
                       "why": str(item.get("why", "")).strip()})
-    return looks[:count]
+    return looks
+
+
+def adapt_look(look: dict, gender: str, call: Callable[..., dict] | None = None) -> dict:
+    """Rewrite a suggested look for another gender: new names (same region and languages,
+    same scripts) and the portrait description updated to match."""
+    langs = list(dict.fromkeys(["default", *look.get("langs", [])]))
+    prompt = "\n".join([
+        f"Region: {look.get('label', '')}. Languages: {', '.join(look.get('langs', []))}.",
+        f"Current portrait description: {look.get('portrait', '')}",
+        f"Current names: {json.dumps(look.get('names', {}), ensure_ascii=False)}",
+        f"Rewrite this look as a {gender} person from the same region: give realistic, common {gender} names for "
+        f"each of these keys ({', '.join(langs)}), written in each language's script, and update the portrait "
+        "description to describe a " + gender + " person, keeping the age, role, tone and setting. Respectful, "
+        "no stereotypes. Return exactly one look.",
+    ])
+    out = suggest_looks_from(_unjson((call or call_claude)(prompt, LOOKS_TOOL)))
+    if not out:
+        raise RuntimeError("The model returned no look.")
+    new = out[0]
+    return {**look, "gender": gender, "names": new["names"] or look.get("names", {}),
+            "portrait": new["portrait"] or look.get("portrait", "")}
