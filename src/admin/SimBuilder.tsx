@@ -613,7 +613,23 @@ function SimView({ id, who, onChanged, onOpen, onDeleted, setError, setNotice }:
         <div style={card}>
           {problems.length > 0 && (
             <>
-              <p style={{ ...lbl, color: '#991b1b' }}>Open problems ({problems.length})</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 6 }}>
+                <p style={{ ...lbl, color: '#991b1b', margin: 0 }}>Open problems ({problems.length})</p>
+                {editable && (
+                  <>
+                    <button style={{ ...ghost, padding: '3px 10px', fontSize: 12 }} disabled={!!busy}
+                      onClick={() => { if (confirm(`Accept all ${problems.length} problems as they are?`)) run('clear', () => post('/problems/clear', { all: true }), 'All problems accepted.'); }}>
+                      Accept all
+                    </button>
+                    {Array.from(new Set(problems.map(p => p.match(/^\[([^\]]+)\]/)?.[1]).filter(Boolean))).map(l => (
+                      <button key={l} style={{ ...ghost, padding: '3px 10px', fontSize: 12 }} disabled={!!busy}
+                        onClick={() => run('clear', () => post('/problems/clear', { lang: l }))}>
+                        Accept all {l}
+                      </button>
+                    ))}
+                  </>
+                )}
+              </div>
               <ul className="sb-list">
                 {problems.map(p => (
                   <li key={p}>{p}

@@ -181,6 +181,19 @@ assert r.json()["pending_langs"] == []
 assert "ne" in [l["value"] for l in c.get(f"/api/options?sim={pub}&lang=en").json()["languages"]]
 assert any("New language to review" in o["subject"] for o in sims.outbox())
 
+# --- empty English fields aren't translated or flagged; accept all ---------------------
+d = c.get(f"/api/admin/sims/{draft_id}", headers=H).json()
+assert not any("you_chose" in p for p in d["problems"]), [p for p in d["problems"] if "you_chose" in p][:3]
+s = sims.get(draft_id)
+s["problems"] = ["[af] Model skipped: nodes.d2t1s1.you_chose", "[af] something real", "[es] other", "count off"]
+sims.save(s)
+d = c.get(f"/api/admin/sims/{draft_id}", headers=H).json()
+assert d["problems"] == ["[af] something real", "[es] other", "count off"], d["problems"]
+d = c.post(f"/api/admin/sims/{draft_id}/problems/clear", json={"lang": "af"}, headers=H).json()
+assert d["problems"] == ["[es] other", "count off"]
+d = c.post(f"/api/admin/sims/{draft_id}/problems/clear", json={"all": True}, headers=H).json()
+assert d["problems"] == []
+
 # --- graph checker catches bad wiring ---------------------------------------------------------
 bad = {"a": {"type": "decision", "choices": [{"id": "A", "target_node_id": "x"}, {"id": "B", "target_node_id": "a"}]}}
 assert simgen.check_graph(bad, "a")
