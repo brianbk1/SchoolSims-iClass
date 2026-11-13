@@ -1,3 +1,4 @@
+import { SKIN_TONES, filterWords } from '../characterFilters';
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import type { Lang, Ethnicity } from '../types';
@@ -5,6 +6,8 @@ import type { Lang, Ethnicity } from '../types';
 interface OptionItem {
   value: string;
   label: string;
+  gender?: string;
+  skin_tone?: string;
 }
 
 interface SetupUI {
@@ -118,6 +121,8 @@ function CustomSelect<T extends string>({ value, options, onChange, id }: { valu
 export default function SetupSlide({ lang, ethnicity, onLangChange, onEthnicityChange, onStart, simId, onSimChange }: Props) {
   const [options, setOptions] = useState<OptionsData | null>(null);
   const [library, setLibrary] = useState<SimItem[]>([]);
+  const [genderF, setGenderF] = useState('');
+  const [toneF, setToneF] = useState('');
 
   // Sims a learner can pick (built-in + published AI-built sims).
   useEffect(() => {
@@ -156,12 +161,29 @@ export default function SetupSlide({ lang, ethnicity, onLangChange, onEthnicityC
 
   const u = options?.setup_ui;
 
-  // Filter ethnicities to only those with available video for current language
-  const availableEthnicities = options
+  // Looks with a video for the current language, then narrowed by the gender / skin-tone filters.
+  const forLang = options
     ? options.ethnicities.filter(e =>
         options.available_combos.some(([eth, lng]) => eth === e.value && lng === lang)
       )
     : [];
+  const genders = [...new Set(forLang.map(e => e.gender).filter(Boolean))] as string[];
+  const byGender = genderF ? forLang.filter(e => e.gender === genderF) : forLang;
+  const tones = SKIN_TONES.filter(t => byGender.some(e => e.skin_tone === t.id));
+  const availableEthnicities = toneF ? byGender.filter(e => e.skin_tone === toneF) : byGender;
+  const w = filterWords(lang);
+
+  // Keep the filters valid and the chosen look inside them.
+  useEffect(() => {
+    if (!options) return;
+    if (genderF && !genders.includes(genderF)) { setGenderF(''); return; }
+    if (toneF && !tones.some(t => t.id === toneF)) { setToneF(''); return; }
+    const ids = availableEthnicities.map(e => e.value);
+    if (ids.length && !ids.includes(ethnicity)) {
+      const sug = options.suggested?.[lang];
+      onEthnicityChange((sug && ids.includes(sug) ? sug : ids[0]) as Ethnicity);
+    }
+  }, [genderF, toneF, options, lang]);
 
   if (!u) {
     return (
@@ -222,6 +244,40 @@ export default function SetupSlide({ lang, ethnicity, onLangChange, onEthnicityC
           )}
         </div>
       </div>
+
+      {(genders.length > 1 || tones.length > 1) && (
+        <div className="slide-grid-halves" style={{ gap: 24, marginTop: -16, marginBottom: 36 }}>
+          <div>
+            {genders.length > 1 && <>
+              <span id="setup-gender-label" className="setup-filter-label">{w.gender}</span>
+              <div role="radiogroup" aria-labelledby="setup-gender-label" className="seg">
+                {['', ...genders].map(g => (
+                  <button key={g || 'any'} role="radio" aria-checked={genderF === g} className={`seg-btn${genderF === g ? ' on' : ''}`}
+                    onClick={() => setGenderF(g)}>
+                    {g === '' ? w.any : g === 'female' ? w.female : g === 'male' ? w.male : g}
+                  </button>
+                ))}
+              </div>
+            </>}
+          </div>
+          <div>
+            {tones.length > 1 && <>
+              <span id="setup-tone-label" className="setup-filter-label">{w.skin}</span>
+              <div role="radiogroup" aria-labelledby="setup-tone-label" style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+                <button role="radio" aria-checked={toneF === ''} className={`seg-btn tone-any${toneF === '' ? ' on' : ''}`} onClick={() => setToneF('')}>{w.any}</button>
+                {tones.map(t => {
+                  const name = w.tones[SKIN_TONES.findIndex(x => x.id === t.id)];
+                  return (
+                    <button key={t.id} role="radio" aria-checked={toneF === t.id} aria-label={name} title={name}
+                      className={`tone-swatch${toneF === t.id ? ' on' : ''}`} style={{ background: t.color }}
+                      onClick={() => setToneF(t.id)} />
+                  );
+                })}
+              </div>
+            </>}
+          </div>
+        </div>
+      )}
 
       <div style={{ textAlign: 'center' }}>
         <button id="setup-start-btn" onClick={onStart} className="btn-primary" style={{ fontSize: 16, padding: '14px 44px' }}>

@@ -250,7 +250,8 @@ def get_options(lang: str = Query("en"), sim: str = Query(sims.BUILTIN_ID),
         "sim": rec["id"],
         "languages": [{"value": code, "label": label(code)} for code in sorted(langs)],
         "ethnicities": [
-            {"value": code, "label": look_label(code, ui)}
+            {"value": code, "label": look_label(code, ui), "gender": PERSONAS[code].get("gender", ""),
+             "skin_tone": PERSONAS[code].get("skin_tone", "")}
             for code in sorted(VALID_ETHNICITIES, key=lambda c: (bool(PERSONAS[c].get("custom")), c))
         ],
         "available_combos": sorted([pid, code] for pid in PERSONAS for code in langs if combo_ok(pid, code, needs_video)),
@@ -1260,6 +1261,9 @@ def cron_sims(request: Request, authorization: str | None = Header(default=None)
 # Admin: character looks (add regions/genders beyond the built-in five)
 # ---------------------------------------------------------------------------
 
+SKIN_TONES = ("light", "medium-light", "medium", "medium-dark", "dark")
+
+
 class LookBody(BaseModel):
     label: str
     gender: str = "female"
@@ -1269,6 +1273,7 @@ class LookBody(BaseModel):
     photo: str = ""            # data URL (uploaded) - optional when editing
     generate_prompt: str = ""  # or: describe the person and let the image model draw them
     role: str = "leader"       # leader, teacher, staff, parent, student_elem/middle/high/college
+    skin_tone: str = ""        # light, medium-light, medium, medium-dark, dark ("" = not set)
 
 
 class NamesBody(BaseModel):
@@ -1279,7 +1284,7 @@ class NamesBody(BaseModel):
 
 def look_view(pid: str, p: dict) -> dict:
     return {"id": pid, "label": look_label(pid), "custom": bool(p.get("custom")), "gender": p.get("gender", ""),
-            "role": p.get("role", "leader"),
+            "role": p.get("role", "leader"), "skin_tone": p.get("skin_tone", ""),
             "langs": p.get("suggested_for_langs", []), "names": p.get("name", {}), "labels": p.get("labels", {}),
             "photo": (p.get("photo") or {}).get("default", ""), "videos": sorted((p.get("video") or {}).keys())}
 
@@ -1402,6 +1407,7 @@ def admin_add_look(body: LookBody):
         names["default"] = next(iter(names.values()), body.label.strip())
     look = {"custom": True, "label": body.label.strip(), "labels": {k: v for k, v in body.labels.items() if v.strip()},
             "gender": body.gender, "role": body.role if body.role in media_gen.ROLES else "leader",
+            "skin_tone": body.skin_tone if body.skin_tone in SKIN_TONES else "",
             "suggested_for_langs": body.langs, "name": names,
             "photo": {"default": photo}, "video": {}, "captions": {}, "created_at": sims.iso(sims.now())}
     store.hset(LOOKS_HASH, pid, look)
@@ -1420,6 +1426,7 @@ def admin_edit_look(pid: str, body: LookBody):
     names = {k: v.strip() for k, v in body.names.items() if v.strip()}
     look.update(label=body.label.strip() or look["label"], gender=body.gender, suggested_for_langs=body.langs,
                 role=body.role if body.role in media_gen.ROLES else look.get("role", "leader"),
+                skin_tone=body.skin_tone if body.skin_tone in SKIN_TONES else "",
                 labels={k: v for k, v in body.labels.items() if v.strip()},
                 name=names or look.get("name", {}))
     store.hset(LOOKS_HASH, pid, look)

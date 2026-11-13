@@ -1,8 +1,9 @@
+import { SKIN_TONES } from '../characterFilters';
 import { useCallback, useEffect, useState } from 'react';
 import { api, LangPicker, type LangOpt } from './SimBuilder';
 
 interface Look {
-  id: string; label: string; custom: boolean; gender: string; role?: string; langs: string[];
+  id: string; label: string; custom: boolean; gender: string; role?: string; skin_tone?: string; langs: string[];
   names: Record<string, string>; labels: Record<string, string>; photo: string; videos: string[];
 }
 
@@ -46,7 +47,7 @@ const chatgptPrompt = (region: string, gender: string, desc = '', role = 'leader
 
 interface Suggestion { label: string; gender: string; langs: string[]; names: Record<string, string>; portrait: string; why: string; added?: boolean; error?: string; updating?: boolean }
 
-const EMPTY = { label: '', gender: 'female', role: 'leader', langs: [] as string[], names: {} as Record<string, string>, photo: '', generate_prompt: '' };
+const EMPTY = { label: '', gender: 'female', role: 'leader', skin_tone: '', langs: [] as string[], names: {} as Record<string, string>, photo: '', generate_prompt: '' };
 
 export default function LooksAdmin({ languages }: { languages: LangOpt[] }) {
   const [looks, setLooks] = useState<Look[]>([]);
@@ -100,7 +101,7 @@ export default function LooksAdmin({ languages }: { languages: LangOpt[] }) {
 
   const useInForm = (sg: Suggestion) => {
     setEditing(null);
-    setForm({ label: sg.label, gender: sg.gender, role: 'leader', langs: sg.langs, names: sg.names, photo: '', generate_prompt: ready.images_ready ? sg.portrait : '' });
+    setForm({ label: sg.label, gender: sg.gender, role: 'leader', skin_tone: '', langs: sg.langs, names: sg.names, photo: '', generate_prompt: ready.images_ready ? sg.portrait : '' });
     setMsg({ tone: 'ok', text: ready.images_ready ? 'Filled in below. Check it, then Add look.' : 'Filled in below. Make the portrait in ChatGPT with the prompt shown, upload it, then Add look.' });
     setPortraitHint(sg.portrait);
   };
@@ -138,7 +139,7 @@ export default function LooksAdmin({ languages }: { languages: LangOpt[] }) {
 
   const edit = (l: Look) => {
     setEditing(l.id);
-    setForm({ label: l.label, gender: l.gender || 'female', role: l.role || 'leader', langs: l.langs, names: l.names, photo: '', generate_prompt: '' });
+    setForm({ label: l.label, gender: l.gender || 'female', role: l.role || 'leader', skin_tone: l.skin_tone || '', langs: l.langs, names: l.names, photo: '', generate_prompt: '' });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -218,6 +219,17 @@ export default function LooksAdmin({ languages }: { languages: LangOpt[] }) {
             <select id="lk-role" style={inp} value={form.role} onChange={e => set({ role: e.target.value })}>
               {Object.entries(ROLES).map(([k, [label]]) => <option key={k} value={k}>{label}</option>)}
             </select></div>
+          <div><label style={lbl} id="lk-tone">Skin tone (learners can filter by it)</label>
+            <div role="radiogroup" aria-labelledby="lk-tone" style={{ display: 'flex', gap: 8, alignItems: 'center', paddingTop: 4 }}>
+              <button type="button" role="radio" aria-checked={!form.skin_tone} onClick={() => set({ skin_tone: '' })}
+                style={{ ...ghost, padding: '5px 10px', fontSize: 12, background: !form.skin_tone ? '#ede9fe' : '#fff' }}>Not set</button>
+              {SKIN_TONES.map(t => (
+                <button key={t.id} type="button" role="radio" aria-checked={form.skin_tone === t.id} aria-label={t.id} title={t.id}
+                  onClick={() => set({ skin_tone: t.id })}
+                  style={{ width: 28, height: 28, borderRadius: '50%', background: t.color, border: '2px solid #fff', cursor: 'pointer', padding: 0,
+                    boxShadow: form.skin_tone === t.id ? '0 0 0 3px var(--purple)' : '0 0 0 1px var(--border2)' }} />
+              ))}
+            </div></div>
         </div>
 
         <div style={{ marginTop: 14 }}>
@@ -290,7 +302,7 @@ export default function LooksAdmin({ languages }: { languages: LangOpt[] }) {
               <div style={{ padding: 12 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <b style={{ fontSize: 14 }}>{l.label}</b>
-                  <span style={{ fontSize: 11, color: 'var(--text-3)' }}>{l.custom ? 'Added' : 'Built-in'} · {l.gender}{l.role && l.role !== 'leader' ? ` · ${(ROLES[l.role] ?? [l.role])[0]}` : ''}</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-3)' }}>{l.skin_tone && <span title={l.skin_tone} style={{ display: 'inline-block', width: 9, height: 9, borderRadius: '50%', marginInlineEnd: 4, background: SKIN_TONES.find(t => t.id === l.skin_tone)?.color }} />}{l.custom ? 'Added' : 'Built-in'} · {l.gender}{l.role && l.role !== 'leader' ? ` · ${(ROLES[l.role] ?? [l.role])[0]}` : ''}</span>
                 </div>
                 <p dir="auto" style={{ fontSize: 13, color: 'var(--text-2)', margin: '4px 0' }}>{l.names.default ?? Object.values(l.names)[0]}</p>
                 <p style={{ fontSize: 12, color: 'var(--text-3)', margin: 0 }}>Suggested for: {l.langs.join(', ') || '—'}</p>
