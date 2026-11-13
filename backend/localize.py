@@ -269,29 +269,53 @@ def _draft_path(code: str) -> Path:
     return DRAFTS_DIR / f"{code}.json"
 
 
+# On a hosted site (Vercel) the disk is read-only, so drafts live in the runtime
+# store (Upstash Redis) instead of backend/drafts/.
+def _hosted() -> bool:
+    return bool(os.getenv("VERCEL"))
+
+
+DRAFTS_HASH = "locale_drafts"
+
+
+def _summary(d: dict) -> dict:
+    return ({k: d.get(k) for k in ("code", "language_name", "setting", "status", "created_at", "is_new_language")}
+            | {"problems": len(d.get("problems", []))})
+
+
 def list_drafts() -> list[dict]:
+    if _hosted():
+        import store
+        return [_summary(d) for _, d in sorted(store.hget_all(DRAFTS_HASH).items())]
     if not DRAFTS_DIR.exists():
         return []
-    out = []
-    for f in sorted(DRAFTS_DIR.glob("*.json")):
-        d = json.loads(f.read_text())
-        out.append({k: d.get(k) for k in ("code", "language_name", "setting", "status", "created_at", "is_new_language")}
-                   | {"problems": len(d.get("problems", []))})
-    return out
+    return [_summary(json.loads(f.read_text())) for f in sorted(DRAFTS_DIR.glob("*.json"))]
 
 
 def load_draft(code: str) -> dict | None:
-    p = _draft_path(code)
+    p = _draft_path(code)  # validates the code
+    if _hosted():
+        import store
+        return store.hget(DRAFTS_HASH, code)
     return json.loads(p.read_text()) if p.exists() else None
 
 
 def save_draft(draft: dict) -> None:
+    _draft_path(draft["code"])
+    if _hosted():
+        import store
+        store.hset(DRAFTS_HASH, draft["code"], draft)
+        return
     DRAFTS_DIR.mkdir(exist_ok=True)
     _draft_path(draft["code"]).write_text(json.dumps(draft, indent=2, ensure_ascii=False) + "\n")
 
 
 def delete_draft(code: str) -> None:
     p = _draft_path(code)
+    if _hosted():
+        import store
+        store.hdel(DRAFTS_HASH, code)
+        return
     if p.exists():
         p.unlink()
 

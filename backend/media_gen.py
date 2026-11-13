@@ -51,8 +51,24 @@ def heygen_ready() -> bool:
     return bool(os.getenv("HEYGEN_API_KEY"))
 
 
+def blob_token() -> str:
+    """Vercel Blob read-write token. Vercel names it BLOB_READ_WRITE_TOKEN unless a custom
+    prefix was chosen when connecting the store (e.g. MEDIA_READ_WRITE_TOKEN): accept any."""
+    if os.getenv("BLOB_READ_WRITE_TOKEN"):
+        return os.environ["BLOB_READ_WRITE_TOKEN"]
+    for k, v in sorted(os.environ.items()):
+        if k.endswith("READ_WRITE_TOKEN") and v.startswith("vercel_blob_rw_"):
+            return v
+    return ""
+
+
 def blob_ready() -> bool:
-    return bool(os.getenv("BLOB_READ_WRITE_TOKEN"))
+    return bool(blob_token())
+
+
+def blob_vars_seen() -> list[str]:
+    """Names (never values) of settings that look like Blob storage, for messages."""
+    return sorted(k for k in os.environ if "BLOB" in k or k.endswith("READ_WRITE_TOKEN"))
 
 
 def images_ready() -> bool:
@@ -294,7 +310,7 @@ def vtt(lines: list[str], duration: float) -> str:
 def blob_put(pathname: str, data: bytes, content_type: str) -> str:
     """Upload to Vercel Blob (public) and return its URL."""
     r = httpx.put(f"{BLOB}/{pathname}", content=data, timeout=120, headers={
-        "authorization": f"Bearer {os.environ['BLOB_READ_WRITE_TOKEN']}",
+        "authorization": f"Bearer {blob_token()}",
         "x-api-version": "7",
         "x-content-type": content_type,
         "x-add-random-suffix": "1",

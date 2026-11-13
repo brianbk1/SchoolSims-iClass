@@ -26,6 +26,7 @@ app = FastAPI(title="SchoolSims Player")
 async def _load_looks(request, call_next):
     if request.url.path.startswith("/api/"):
         refresh_personas()
+        refresh_builtin_locales()
     return await call_next(request)
 
 with open(BASE_DIR / "scenario.json") as f:
@@ -386,7 +387,6 @@ def save_scenario(lang: str, body: ScenarioUpdate):
         raise HTTPException(400, detail=f"lang must be one of {sorted(valid_langs())}")
     if body.start_node_id not in body.nodes:
         raise HTTPException(400, detail="start_node_id not found in nodes")
-    global SCENARIO
     updated = copy.deepcopy(SCENARIO)
     updated[lang]["nodes"] = body.nodes
     updated[lang]["ui"] = body.ui
@@ -399,7 +399,8 @@ def save_scenario(lang: str, body: ScenarioUpdate):
             503,
             detail="Scenario editing isn't available on the hosted site. Edit backend/scenario.json and redeploy.",
         )
-    SCENARIO = updated
+    SCENARIO.clear()
+    SCENARIO.update(updated)
     return {"ok": True}
 
 
@@ -432,7 +433,13 @@ def submit_review(body: ReviewPayload):
     entry["timestamp"] = datetime.datetime.utcnow().isoformat()
     # Always log the review so it shows up in Vercel's function logs.
     print("REVIEW " + json.dumps(entry, ensure_ascii=False), flush=True)
-    # On Vercel the disk is temporary, so the file copy is not permanent there.
+    if ON_VERCEL:
+        # The disk is temporary there: keep feedback in the runtime store.
+        try:
+            store.lpush("reviews", entry)
+        except Exception as e:
+            print(f"review store failed: {e}", file=sys.stderr)
+        return {"ok": True}
     path = reviews_file()
     existing = []
     if path.exists():
@@ -469,15 +476,48 @@ def require_reviewer(x_admin_token: str | None = Header(default=None)):
 
 
 def authoring_writable() -> bool:
-    return not ON_VERCEL and os.access(BASE_DIR, os.W_OK)
+    """Locally: the repo's files. Hosted: the runtime store (needs Upstash Redis)."""
+    if ON_VERCEL:
+        return store.is_persistent()
+    return os.access(BASE_DIR, os.W_OK)
 
 
-def write_scenario(updated: dict) -> None:
-    global SCENARIO
+# Languages approved for the built-in sim on the hosted site are kept in the runtime
+# store and laid over scenario.json (which is read-only there).
+BUILTIN_LOCALES_HASH = "builtin_locales"
+_builtin_loaded_at = 0.0
+
+
+def refresh_builtin_locales(force: bool = False) -> None:
+    global _builtin_loaded_at
+    import time as _t
+    if not ON_VERCEL or (not force and _t.time() - _builtin_loaded_at < 30):
+        return
+    try:
+        saved = store.hget_all(BUILTIN_LOCALES_HASH)
+    except Exception as e:
+        print(f"builtin locales: {e}", file=sys.stderr)
+        return
+    for code, item in saved.items():
+        if isinstance(item, dict) and "block" in item:
+            SCENARIO[code] = item["block"]
+            SCENARIO.setdefault("_locale_meta", {})[code] = item.get("meta", {})
+    _builtin_loaded_at = _t.time()
+
+
+def write_scenario(updated: dict, code: str | None = None) -> None:
+    if ON_VERCEL:
+        if code is None:
+            raise HTTPException(503, detail="Editing scenario.json isn't available on the hosted site.")
+        store.hset(BUILTIN_LOCALES_HASH, code, {"block": updated[code], "meta": updated["_locale_meta"].get(code, {})})
+        SCENARIO[code] = updated[code]
+        SCENARIO.setdefault("_locale_meta", {})[code] = updated["_locale_meta"].get(code, {})
+        return
     with open(BASE_DIR / "scenario.json", "w") as f:
         json.dump(updated, f, indent=2, ensure_ascii=False)
         f.write("\n")
-    SCENARIO = updated
+    SCENARIO.clear()
+    SCENARIO.update(updated)
 
 
 class DraftRequest(BaseModel):
@@ -510,8 +550,11 @@ def admin_locales():
 def admin_feedback():
     """Learners' answers to "did the character and setting feel accurate for your region?",
     grouped by language, with the comments for 'partly' / 'no'."""
-    path = reviews_file()
-    reviews = json.loads(path.read_text()) if path.exists() else []
+    if ON_VERCEL:
+        reviews = store.lrange("reviews", 5000) if store.is_persistent() else []
+    else:
+        path = reviews_file()
+        reviews = json.loads(path.read_text()) if path.exists() else []
     out: dict[str, dict] = {}
     for r in reviews:
         fit = r.get("regional_fit") or ""
@@ -528,13 +571,13 @@ def admin_feedback():
             })
     for d in out.values():
         d["comments"].sort(key=lambda c: c["timestamp"], reverse=True)
-    return {"by_lang": out, "persistent": not ON_VERCEL}
+    return {"by_lang": out, "persistent": (not ON_VERCEL) or store.is_persistent()}
 
 
 @app.post("/api/admin/drafts", dependencies=[Depends(require_admin)])
 def admin_create_draft(body: DraftRequest):
     if not authoring_writable():
-        raise HTTPException(503, detail="Drafting works in your local copy or a Codespace, not on the hosted site.")
+        raise HTTPException(503, detail="Connect storage (Upstash Redis) to draft languages on the hosted site.")
     if not localize.generator_ready():
         raise HTTPException(503, detail="Set ANTHROPIC_API_KEY to generate drafts.")
     if not body.setting.strip():
@@ -578,7 +621,7 @@ def admin_get_draft(code: str):
 def admin_edit_draft(code: str, body: DraftEdits):
     _draft_or_404(code)
     if not authoring_writable():
-        raise HTTPException(503, detail="Editing drafts works in your local copy or a Codespace.")
+        raise HTTPException(503, detail="Connect storage (Upstash Redis) to edit drafts on the hosted site.")
     localize.update_draft(SCENARIO, code, body.edits)
     return admin_get_draft(code)
 
@@ -587,7 +630,7 @@ def admin_edit_draft(code: str, body: DraftEdits):
 def admin_approve_draft(code: str):
     d = _draft_or_404(code)
     if not authoring_writable():
-        raise HTTPException(503, detail="Approving works in your local copy or a Codespace; then commit and redeploy.")
+        raise HTTPException(503, detail="Connect storage (Upstash Redis) to approve languages on the hosted site.")
     problems = localize.validate(SCENARIO, code, d["block"]) + [f"Model skipped: {p}" for p in d.get("skipped", [])]
     if problems:
         raise HTTPException(400, detail="Fix these first: " + "; ".join(problems[:5]))
@@ -599,7 +642,7 @@ def admin_approve_draft(code: str):
         "approved_at": datetime_now(),
         "source": f"generated by {d.get('model', 'AI')}, reviewed in admin",
     }
-    write_scenario(updated)
+    write_scenario(updated, code)
     localize.delete_draft(code)
     return {"ok": True, "code": code}
 
@@ -608,7 +651,7 @@ def admin_approve_draft(code: str):
 def admin_discard_draft(code: str):
     _draft_or_404(code)
     if not authoring_writable():
-        raise HTTPException(503, detail="Not available on the hosted site.")
+        raise HTTPException(503, detail="Connect storage (Upstash Redis) on the hosted site.")
     localize.delete_draft(code)
     return {"ok": True}
 
@@ -1066,6 +1109,7 @@ def media_summary(sim: dict) -> dict:
         "images": {"total": len(img_nodes), "done": sum(1 for k in img_nodes if k in (sim.get("images") or {})),
                    "missing": [k for k in img_nodes if k not in (sim.get("images") or {})]},
         "heygen_ready": media_gen.heygen_ready(), "blob_ready": media_gen.blob_ready(),
+        "blob_vars_seen": media_gen.blob_vars_seen(),
         "images_ready": media_gen.images_ready(),
         "looks": [{"id": k, "label": look_label(k), "gender": p.get("gender", "")} for k, p in PERSONAS.items()],
     }
