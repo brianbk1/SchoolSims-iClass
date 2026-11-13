@@ -46,6 +46,9 @@ export default function App() {
   const [audioMap, setAudioMap] = useState<AudioMap>({});
   const [timerSecs, setTimerSecs] = useState(0);
   const [captionsOn, setCaptionsOn] = useState(true);
+  // Sign-language videos for this sim: node id -> sign language code -> URL.
+  const [signVideos, setSignVideos] = useState<Record<string, Record<string, string>>>({});
+  const [signOn, setSignOn] = useState(() => { try { return localStorage.getItem('iclass_sign') === '1'; } catch { return false; } });
   const [simId, setSimId] = useState<string>(initialSim);
   // decision id -> choice the learner made (for pros/cons, scores and the summary recap)
   const [picks, setPicks] = useState<Record<string, Choice>>({});
@@ -56,6 +59,13 @@ export default function App() {
     fetch('/api/admin/whoami', { headers: { 'X-Admin-Token': adminToken() } })
       .then(r => setIsAdmin(r.ok)).catch(() => setIsAdmin(false));
   }, []);
+
+  useEffect(() => {
+    setSignVideos({});
+    fetch(`/api/sign-videos?sim=${encodeURIComponent(simId)}`, { headers: { 'X-Admin-Token': adminToken() } })
+      .then(r => (r.ok ? r.json() : { videos: {} })).then(d => setSignVideos(d.videos ?? {})).catch(() => {});
+  }, [simId]);
+  const toggleSign = () => setSignOn(on => { try { localStorage.setItem('iclass_sign', on ? '0' : '1'); } catch { /* ignore */ } return !on; });
 
   // Keep ?sim= in the address bar so a sim can be linked directly.
   useEffect(() => {
@@ -253,6 +263,9 @@ export default function App() {
                 : undefined}
               captionsOn={captionsOn}
               onToggleCaptions={() => setCaptionsOn(c => !c)}
+              sign={pickSign(signVideos[currentNodeId], lang)}
+              signOn={signOn}
+              onToggleSign={toggleSign}
               audioUrl={audioMap[currentNodeId] ?? null}
               speechEnabled={speechEnabled}
               speakerName={simData.media.character_name ?? ''}
@@ -398,4 +411,13 @@ export default function App() {
       )}
     </div>
   );
+}
+
+// Which sign language goes with the spoken language; falls back to whatever exists (ASL first).
+const SIGN_FOR: Record<string, string> = { 'en-GB': 'bsl', 'en-AU': 'auslan', 'es-MX': 'lsm', 'es-ES': 'lse', 'es-AR': 'lsa', fr: 'lsf', he: 'isl', en: 'asl', 'en-US': 'asl' };
+function pickSign(videos: Record<string, string> | undefined, lang: string): { code: string; url: string } | undefined {
+  if (!videos) return undefined;
+  const want = SIGN_FOR[lang] ?? SIGN_FOR[lang.split('-')[0]];
+  const code = (want && videos[want]) ? want : (videos.asl ? 'asl' : Object.keys(videos)[0]);
+  return code ? { code, url: videos[code] } : undefined;
 }
