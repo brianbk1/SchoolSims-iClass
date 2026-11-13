@@ -195,4 +195,14 @@ simgen.call_claude = looks_fake
 sug = c.post("/api/admin/looks/suggest").json()["looks"]
 assert sug[0]["label"] == "Israel" and sug[0]["names"]["he"] == "נועה כהן" and sug[0]["gender"] == "female", sug
 assert "he: עברית" in seen["prompt"] and "Europe, male" in seen["prompt"], seen["prompt"][:400]
+# --- switching a suggestion's gender rewrites names + description --------------------
+def adapt_fake(p, tool=None):
+    assert "female person" in p and "Johan" in p
+    return {"looks": [{"label": "Southern Africa", "gender": "female", "langs": ["af"],
+                       "names": [{"lang": "af", "name": "Anika van der Merwe"}, {"lang": "default", "name": "Anika van der Merwe"}],
+                       "portrait": "White South African woman in her late 40s", "why": ""}]}
+simgen.call_claude = adapt_fake
+r = c.post("/api/admin/looks/adapt", json={"label": "Southern Africa", "gender": "female", "langs": ["af"],
+                                         "names": {"af": "Johan van der Merwe"}, "portrait": "man", "why": "gap"}).json()
+assert r["gender"] == "female" and r["names"]["af"] == "Anika van der Merwe" and "woman" in r["portrait"] and r["why"] == "gap", r
 print("all media tests passed")

@@ -1269,6 +1269,26 @@ def admin_suggest_looks():
         raise HTTPException(502, detail=str(e)[:300])
 
 
+class AdaptLook(BaseModel):
+    label: str
+    gender: str
+    langs: list[str] = []
+    names: dict[str, str] = {}
+    portrait: str = ""
+    why: str = ""
+
+
+@app.post("/api/admin/looks/adapt", dependencies=[Depends(require_admin)])
+def admin_adapt_look(body: AdaptLook):
+    """A suggested look switched to another gender: new names and portrait description."""
+    if body.gender not in ("female", "male"):
+        raise HTTPException(400, detail="Gender must be female or male.")
+    try:
+        return simgen.adapt_look(body.model_dump(), body.gender)
+    except Exception as e:
+        raise HTTPException(502, detail=str(e)[:300])
+
+
 @app.post("/api/admin/looks/suggest-names", dependencies=[Depends(require_admin)])
 def admin_suggest_names(body: NamesBody):
     if not simgen.generator_ready():
