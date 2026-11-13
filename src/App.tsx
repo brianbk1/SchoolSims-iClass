@@ -248,6 +248,9 @@ export default function App() {
               videoUrl={currentNode.own_video ? (currentNode.video_url ?? '') : simData.media.video_template.replace('{lang}', lang)}
               captionsUrl={currentNode.own_video ? (currentNode.captions_url ?? '') : (simData.media.captions ?? `/assets/captions_${lang.split('-')[0]}.vtt`)}
               photoUrl={simData.media.photo}
+              adminNote={isAdmin && currentNode.own_video && !currentNode.video_url
+                ? `Admins only: no video yet for this look in ${lang}. Make it in Sim Builder → Images and character videos.`
+                : undefined}
               captionsOn={captionsOn}
               onToggleCaptions={() => setCaptionsOn(c => !c)}
               audioUrl={audioMap[currentNodeId] ?? null}
