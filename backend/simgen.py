@@ -934,3 +934,27 @@ def translate(scenario: dict, code: str, language_name: str, setting: str, notes
             problems.append(f"{p} lost the character name placeholder.")
     return {"block": block, "back_translation": back, "problems": problems,
             "review_notes": [str(n) for n in result.get("review_notes", [])] if isinstance(result, dict) else []}
+
+
+NAMES_TOOL = {
+    "name": "submit_names",
+    "description": "Submit a character name for each language.",
+    "input_schema": {"type": "object", "required": ["names"], "properties": {
+        "names": {"type": "array", "items": {"type": "object", "required": ["lang", "name"], "properties": {
+            "lang": {"type": "string"}, "name": {"type": "string"}}}}}},
+}
+
+
+def suggest_names(region: str, gender: str, langs: list[str], call: Callable[..., dict] | None = None) -> dict:
+    """A realistic full name per language for a character from `region` (one person,
+    written the way that language's speakers would write it)."""
+    prompt = (f"A {gender or 'adult'} school professional from {region}. Give ONE realistic full name for this "
+              f"person, common in that region, as it would be written for speakers of each of these languages "
+              f"(native script where the language uses one; keep the same person across languages unless the "
+              f"region's naming differs by language): {', '.join(langs)}. Also include 'default' (Latin script).")
+    out = _unjson((call or call_claude)(prompt, NAMES_TOOL))
+    names = {}
+    for item in _list(out.get("names") if isinstance(out, dict) else out):
+        if isinstance(item, dict) and item.get("lang") and str(item.get("name", "")).strip():
+            names[str(item["lang"])] = str(item["name"]).strip()
+    return names

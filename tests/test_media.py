@@ -152,4 +152,36 @@ assert media_gen.background_for("sw-TZ") == "/backgrounds/sw-TZ.jpg"
 s2 = c.post("/api/admin/sims", json={"title": "B", "context": "x", "decisions": 1, "options_per_decision": 2,
                                      "total_tracks": 1, "slides_per_track": 1, "video_slides": "none"}).json()
 assert s2["media"]["video_nodes"] == []
+# --- Character looks -------------------------------------------------------------------
+import base64 as b64  # noqa: E402
+png = (ROOT / "public/assets/latin.png").read_bytes()
+simgen.call_claude = lambda p, tool=None: {"names": [{"lang": "ar", "name": "ليلى حداد"}, {"lang": "default", "name": "Layla Haddad"}]} \
+    if (tool or {}).get("name") == "submit_names" else fake_sim(p, tool)
+names = c.post("/api/admin/looks/suggest-names", json={"label": "Middle East", "gender": "female", "langs": ["ar"]}).json()["names"]
+assert names == {"ar": "ليلى حداد", "default": "Layla Haddad"}
+look = c.post("/api/admin/looks", json={"label": "Middle East", "gender": "female", "langs": ["ar", "ar-JO"], "names": names,
+                                        "photo": "data:image/png;base64," + b64.b64encode(png).decode()}).json()
+assert look["id"] == "middle_east_female" and look["photo"].startswith("https://blob.example/"), look
+looks = c.get("/api/admin/looks").json()["looks"]
+assert looks[0]["id"] == "middle_east_female" and any(l["id"] == "latin" and not l["custom"] for l in looks)
+# appears for learners in AI-built sims, is suggested for Arabic, and swaps in its name
+s3 = c.post("/api/admin/sims", json={"title": "Q", "context": "x", "decisions": 1, "options_per_decision": 2,
+                                     "total_tracks": 1, "slides_per_track": 1, "language": "ar"}).json()
+opts = c.get(f"/api/options?sim={s3['id']}&lang=ar").json()
+assert opts["suggested"]["ar"] == "middle_east_female", opts["suggested"]
+assert any(e["value"] == "middle_east_female" and e["label"] == "Middle East" for e in opts["ethnicities"])
+play = c.get(f"/api/simulation?sim={s3['id']}&lang=ar&ethnicity=middle_east_female").json()
+assert play["media"]["photo"].startswith("https://blob.example/") and "ليلى حداد" in json.dumps(play["nodes"], ensure_ascii=False)
+assert play["ui"]["ethnicity_labels"]["middle_east_female"] == "Middle East"
+# not offered in the built-in sim (it has no videos for this look)
+assert ["middle_east_female", "ar"] not in c.get("/api/options?lang=ar").json()["available_combos"]
+# video uses a female voice and the Blob photo
+calls["generate"].clear()
+r = c.post(f"/api/admin/sims/{s3['id']}/videos", json={"persona": "middle_east_female", "lang": "ar"}).json()
+assert r["errors"] == [] or all("Arabic" in e for e in r["errors"]), r["errors"]
+# edit + delete
+c.put("/api/admin/looks/middle_east_female", json={"label": "Middle East (Levant)", "gender": "female", "langs": ["ar-JO"], "names": names})
+assert c.get("/api/admin/looks").json()["looks"][0]["label"] == "Middle East (Levant)"
+assert c.delete("/api/admin/looks/latin").status_code == 404
+assert c.delete("/api/admin/looks/middle_east_female").json()["ok"]
 print("all media tests passed")

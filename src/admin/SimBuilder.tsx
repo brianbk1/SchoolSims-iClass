@@ -34,14 +34,14 @@ interface Media {
   suggested: Record<string, string>; images: { total: number; done: number; missing: string[] };
   heygen_ready: boolean; blob_ready: boolean; images_ready: boolean; looks: { id: string; label: string }[];
 }
-interface LangOpt { code: string; label: string; native: string; place: string }
+export interface LangOpt { code: string; label: string; native: string; place: string }
 interface ReportRow { id: string; title: string; context_summary: string; created_by: string; created_at: string; status: Status; languages: string[]; decisions: number; source: string }
 interface Note { to: string; subject: string; text: string; at: string; sent: boolean; error: string }
 
 // ---- helpers -----------------------------------------------------------------
 const TOKEN_KEY = 'iclass_admin_token';
 const token = () => { try { return localStorage.getItem(TOKEN_KEY) ?? ''; } catch { return ''; } };
-async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
+export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   const r = await fetch(path, { ...init, headers: { 'Content-Type': 'application/json', 'X-Admin-Token': token(), ...(init.headers ?? {}) } });
   const body = await r.json().catch(() => ({}));
   if (!r.ok) throw Object.assign(new Error(body.detail ?? `HTTP ${r.status}`), { status: r.status });
@@ -113,7 +113,7 @@ async function translateMany(id: string, codes: string[], onProgress: (done: num
   return { last, errors };
 }
 
-function LangPicker({ options, chosen, setChosen, exclude = [] }: { options: LangOpt[]; chosen: string[]; setChosen: (c: string[]) => void; exclude?: string[] }) {
+export function LangPicker({ options, chosen, setChosen, exclude = [] }: { options: LangOpt[]; chosen: string[]; setChosen: (c: string[]) => void; exclude?: string[] }) {
   const list = options.filter(o => o.code !== 'en' && !exclude.includes(o.code));
   const all = list.length > 0 && list.every(o => chosen.includes(o.code));
   return (

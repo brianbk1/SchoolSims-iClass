@@ -201,6 +201,8 @@ Open `/admin` → **Sim Builder** → **Create Sim from AI**.
 | `HEYGEN_API_KEY` | Character videos: the intro and every track get a clip of the character speaking, per language and look |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob (Storage → Create → Blob → connect). Keeps the videos, captions and images (HeyGen's links expire) |
 
+**Character looks** (admin → *Character looks*): add looks beyond the built-in five (a region, gender, the languages it suits, a name per language with *Suggest names*, and a portrait you upload or generate). Added looks are kept in the runtime store, suggested first for their languages, offered to learners in AI-built sims, and used for their videos (gender picks the voice).
+
 **Images and character videos** (sim preview → *Images and character videos*): create the missing scene images, then pick a character look per language and click *Make video clips*. Each clip is rendered by HeyGen (`backend/media_gen.py`): the look's portrait is framed on a 16:9 canvas in front of the region's background (`public/backgrounds/`), speaking the slide's script with a voice for that language and region. Renders take a few minutes; the page checks every 20 seconds and the daily cron finishes any left over. Finished clips and WebVTT captions are copied to Blob. Editing a script marks its clip out of date. A video slide without a clip for the learner's look shows the portrait with the script.
 
 Generation takes 1–3 minutes, so `vercel.json` gives the API function up to 300 s.
