@@ -1417,6 +1417,100 @@ def admin_delete_look(pid: str):
     return {"ok": True}
 
 
+
+# ---------------------------------------------------------------------------
+# Sign language: a signer video per video slide, shown picture-in-picture.
+# Stored in hash "sign_videos", field "<sim>|<node>|<sign lang>" -> URL.
+# ---------------------------------------------------------------------------
+
+SIGN_HASH = "sign_videos"
+SIGN_LANGS = {
+    "asl": "American Sign Language (ASL)", "bsl": "British Sign Language (BSL)",
+    "lsm": "Mexican Sign Language (LSM)", "lse": "Spanish Sign Language (LSE)",
+    "lsf": "French Sign Language (LSF)", "auslan": "Australian Sign Language (Auslan)",
+    "isl": "Israeli Sign Language (ISL)", "lsa": "Argentine Sign Language (LSA)",
+}
+SIGN_MAX_UPLOAD = 4_300_000  # Vercel caps a function request at ~4.5 MB
+
+
+def sign_videos_for(sim_id: str) -> dict[str, dict[str, str]]:
+    out: dict[str, dict[str, str]] = {}
+    prefix = f"{sim_id}|"
+    for k, v in store.hget_all(SIGN_HASH).items():
+        if k.startswith(prefix):
+            _, node, sl = k.split("|", 2)
+            out.setdefault(node, {})[sl] = v
+    return out
+
+
+def video_nodes(rec: dict) -> list[dict]:
+    nodes = rec["scenario"].get("en", {}).get("nodes", {})
+    return [{"id": k, "badge": n.get("step_badge", ""), "quote": n.get("quote", ""), "script": n.get("script", "")}
+            for k, n in nodes.items() if n.get("type") == "video"]
+
+
+@app.get("/api/sign-videos")
+def public_sign_videos(sim: str = Query(sims.BUILTIN_ID), x_admin_token: str | None = Header(default=None)):
+    load_sim(sim, x_admin_token)
+    return {"videos": sign_videos_for(sim), "languages": SIGN_LANGS}
+
+
+@app.get("/api/admin/sign-videos", dependencies=[Depends(require_admin)])
+def admin_sign_videos(sim: str = Query(sims.BUILTIN_ID), x_admin_token: str | None = Header(default=None)):
+    rec = load_sim(sim, x_admin_token)
+    return {"sim": sim, "title": rec.get("title", ""), "nodes": video_nodes(rec), "videos": sign_videos_for(sim),
+            "languages": SIGN_LANGS, "upload_ready": media_gen.blob_ready(), "max_upload": SIGN_MAX_UPLOAD}
+
+
+def _sign_target(sim: str, node: str, sign_lang: str, token: str | None) -> str:
+    rec = load_sim(sim, token)
+    if node not in {n["id"] for n in video_nodes(rec)}:
+        raise HTTPException(404, detail="That slide isn't a video slide.")
+    if sign_lang not in SIGN_LANGS:
+        raise HTTPException(400, detail="Unknown sign language.")
+    return f"{sim}|{node}|{sign_lang}"
+
+
+@app.put("/api/admin/sign-videos/{sim}/{node}/{sign_lang}", dependencies=[Depends(require_admin)])
+async def upload_sign_video(sim: str, node: str, sign_lang: str, request: Request,
+                            x_admin_token: str | None = Header(default=None)):
+    key = _sign_target(sim, node, sign_lang, x_admin_token)
+    if not media_gen.blob_ready():
+        raise HTTPException(503, detail="Connect Blob storage to upload videos, or paste a link instead.")
+    data = await request.body()
+    if not data:
+        raise HTTPException(400, detail="Empty file.")
+    if len(data) > SIGN_MAX_UPLOAD:
+        raise HTTPException(413, detail="File is over 4 MB. Export it smaller (480p is plenty for the corner window) or paste a link.")
+    ctype = request.headers.get("content-type", "video/mp4")
+    if not ctype.startswith("video/"):
+        raise HTTPException(400, detail="Upload a video file (MP4 or WebM).")
+    ext = "webm" if "webm" in ctype else "mp4"
+    url = media_gen.blob_put(f"sign/{sim}/{node}-{sign_lang}.{ext}", data, ctype)
+    store.hset(SIGN_HASH, key, url)
+    return {"videos": sign_videos_for(sim)}
+
+
+class SignLink(BaseModel):
+    url: str
+
+
+@app.post("/api/admin/sign-videos/{sim}/{node}/{sign_lang}", dependencies=[Depends(require_admin)])
+def link_sign_video(sim: str, node: str, sign_lang: str, body: SignLink, x_admin_token: str | None = Header(default=None)):
+    key = _sign_target(sim, node, sign_lang, x_admin_token)
+    url = body.url.strip()
+    if not re.match(r"^https://\S+$", url):
+        raise HTTPException(400, detail="Paste a direct https:// link to an MP4 or WebM file.")
+    store.hset(SIGN_HASH, key, url)
+    return {"videos": sign_videos_for(sim)}
+
+
+@app.delete("/api/admin/sign-videos/{sim}/{node}/{sign_lang}", dependencies=[Depends(require_admin)])
+def delete_sign_video(sim: str, node: str, sign_lang: str, x_admin_token: str | None = Header(default=None)):
+    store.hdel(SIGN_HASH, _sign_target(sim, node, sign_lang, x_admin_token))
+    return {"videos": sign_videos_for(sim)}
+
+
 if DIST_DIR.exists():
     app.mount("/assets", StaticFiles(directory=str(DIST_DIR / "assets")), name="assets")
 
@@ -1434,3 +1528,4 @@ if DIST_DIR.exists():
         if full_path and f.is_file() and DIST_DIR.resolve() in f.parents:
             return FileResponse(str(f))
         return FileResponse(str(DIST_DIR / "index.html"))
+

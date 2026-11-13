@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { VideoNode } from '../types';
 import { useSpeech } from '../hooks/useSpeech';
 
@@ -17,14 +17,36 @@ interface Props {
   retryLabel: string;
   photoUrl?: string;
   adminNote?: string;
+  sign?: { code: string; url: string };
+  signOn?: boolean;
+  onToggleSign?: () => void;
 }
 
-export default function VideoSlide({ node, videoUrl, captionsUrl, captionsOn, onToggleCaptions, audioUrl, speechEnabled, speakerName, captionsOnLabel, captionsOffLabel, videoErrorLabel, retryLabel, photoUrl, adminNote }: Props) {
+export default function VideoSlide({ node, videoUrl, captionsUrl, captionsOn, onToggleCaptions, audioUrl, speechEnabled, speakerName, captionsOnLabel, captionsOffLabel, videoErrorLabel, retryLabel, photoUrl, adminNote, sign, signOn, onToggleSign }: Props) {
   useSpeech(audioUrl, speechEnabled);
   const [vidErr, setVidErr] = useState(false);
   const [retryKey, setRetryKey] = useState(0);
 
   const retry = () => { setVidErr(false); setRetryKey(k => k + 1); };
+  const mainRef = useRef<HTMLVideoElement>(null);
+  const signRef = useRef<HTMLVideoElement>(null);
+  const showSign = !!(sign && signOn);
+  const synced = showSign && !!videoUrl && !vidErr;
+
+  // Keep the signer in step with the character's video: play, pause, seek and speed follow it.
+  useEffect(() => {
+    const m = mainRef.current, s = signRef.current;
+    if (!synced || !m || !s) return;
+    const follow = () => {
+      if (Math.abs(s.currentTime - m.currentTime) > 0.4) s.currentTime = m.currentTime;
+      s.playbackRate = m.playbackRate;
+      if (m.paused) s.pause(); else s.play().catch(() => {});
+    };
+    const evs = ['play', 'pause', 'seeked', 'ratechange', 'timeupdate'] as const;
+    evs.forEach(e => m.addEventListener(e, follow));
+    follow();
+    return () => evs.forEach(e => m.removeEventListener(e, follow));
+  }, [synced, retryKey, sign?.url]);
 
   return (
     <div className="main-card slide-enter" style={{ maxWidth: 1020, width: '100%', padding: 60 }}>
@@ -44,6 +66,7 @@ export default function VideoSlide({ node, videoUrl, captionsUrl, captionsOn, on
           ) : !vidErr ? (
             <video
               key={retryKey}
+              ref={mainRef}
               controls
               style={{ width: '100%', height: '100%' }}
               onError={() => setVidErr(true)}
@@ -57,6 +80,17 @@ export default function VideoSlide({ node, videoUrl, captionsUrl, captionsOn, on
               <span style={{ fontSize: 13, color: '#94a3b8' }}>{videoErrorLabel}</span>
               <button onClick={retry} style={{ fontSize: 12, color: '#C4B5FD', background: 'none', border: '1px solid #334155', borderRadius: 20, padding: '5px 14px', cursor: 'pointer' }}>↺ {retryLabel}</button>
             </div>
+          )}
+          {showSign && (
+            <video
+              ref={signRef}
+              className={`sign-pip${synced ? '' : ' sign-solo'}`}
+              src={sign!.url}
+              muted
+              playsInline
+              controls={!synced}
+              aria-label={`Sign language interpreter (${sign!.code.toUpperCase()})`}
+            />
           )}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -79,6 +113,16 @@ export default function VideoSlide({ node, videoUrl, captionsUrl, captionsOn, on
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M12 20v-4"/><path d="M6 6V4"/><path d="M18 6V4"/></svg>
             {captionsOn ? captionsOnLabel : captionsOffLabel}
           </button>
+          {sign && onToggleSign && (
+            <button
+              onClick={onToggleSign}
+              aria-pressed={!!signOn}
+              style={{ fontSize: 12, color: signOn ? 'var(--purple)' : 'var(--text-3)', background: signOn ? 'rgba(107,70,193,0.08)' : 'var(--surface2)', border: `1px solid ${signOn ? 'rgba(107,70,193,0.25)' : 'var(--border2)'}`, borderRadius: 8, padding: '6px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}
+            >
+              <span aria-hidden="true">🤟</span>
+              {sign.code.toUpperCase()} {signOn ? 'On' : 'Off'}
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -567,3 +567,10 @@ body.admin-page { height: auto; min-height: 100vh; overflow: auto; }
 .adm-badge { background: #fbbf24; color: #1e2a5a; border-radius: 999px; font-size: 11px; font-weight: 800; padding: 0 6px; line-height: 16px; }
 .hdr-admin { display: flex; align-items: center; gap: 5px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px; font-size: 12px; font-weight: 600; color: var(--text-2); text-decoration: none; }
 @media (max-width: 720px) { .hdr-admin span { display: none; } }
+
+/* Sign-language interpreter window over the character's video */
+.video-wrap { position: relative; }
+.video-wrap .sign-pip { height: auto; position: absolute; right: 10px; bottom: 54px; width: 32%; max-width: 260px; aspect-ratio: 4 / 3; object-fit: cover;
+  background: #0f172a; border: 2px solid rgba(255,255,255,0.85); border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.35); z-index: 2; }
+.video-wrap .sign-pip.sign-solo { bottom: 10px; }
+@media (max-width: 720px) { .video-wrap .sign-pip { width: 40%; bottom: 48px; } }

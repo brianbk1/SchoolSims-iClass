@@ -2,16 +2,17 @@ import { useEffect, useState } from 'react';
 import AdminApp from './AdminApp';
 import SimBuilder, { api, type LangOpt } from './SimBuilder';
 import LooksAdmin from './LooksAdmin';
+import SignLanguageAdmin from './SignLanguageAdmin';
 
 const TOKEN_KEY = 'iclass_admin_token';
 const readToken = () => { try { return localStorage.getItem(TOKEN_KEY) ?? ''; } catch { return ''; } };
 
-type Tab = 'new' | 'review' | 'report' | 'notifications' | 'looks' | 'languages' | 'sim';
+type Tab = 'new' | 'review' | 'report' | 'notifications' | 'looks' | 'languages' | 'sign' | 'sim';
 
 const tabFromHash = (): Tab => {
   const h = window.location.hash.replace('#', '');
   if (h.startsWith('sim=')) return 'sim';
-  return (['review', 'report', 'notifications', 'looks', 'languages'].includes(h) ? h : 'new') as Tab;
+  return (['review', 'report', 'notifications', 'looks', 'languages', 'sign'].includes(h) ? h : 'new') as Tab;
 };
 
 export default function AdminRoot() {
@@ -41,7 +42,7 @@ export default function AdminRoot() {
   const link = (t: Exclude<Tab, 'sim'>, text: React.ReactNode) => (
     <a href={`#${t}`} className={`adm-tab${tab === t ? ' on' : ''}`} aria-current={tab === t ? 'page' : undefined}>{text}</a>
   );
-  const builderTab = tab !== 'looks' && tab !== 'languages';
+  const builderTab = tab !== 'looks' && tab !== 'languages' && tab !== 'sign';
 
   return (
     <div style={{ minHeight: '100vh', background: '#f4f5f9' }}>
@@ -54,6 +55,7 @@ export default function AdminRoot() {
           {link('notifications', 'Notifications')}
           {link('looks', 'Character looks')}
           {link('languages', 'Languages (built-in sim)')}
+          {link('sign', 'Sign language')}
         </nav>
         <span className="adm-beta">Beta</span>
         <a href="/" target="_blank" rel="noreferrer" style={{ marginInlineStart: 'auto', fontSize: 13, color: '#c7d2fe', whiteSpace: 'nowrap' }}>Open the player ↗</a>
@@ -74,6 +76,8 @@ export default function AdminRoot() {
           <SimBuilder key={key} onNeedToken={m => setTokenMsg(m)} />
         ) : tab === 'looks' ? (
           <LooksAdmin key={key} languages={langs} />
+        ) : tab === 'sign' ? (
+          <SignLanguageAdmin key={key} />
         ) : (
           <>
             <p style={{ fontSize: 13, color: 'var(--text-3)', margin: '0 0 14px' }}>
