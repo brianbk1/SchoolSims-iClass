@@ -199,6 +199,7 @@ export default function App() {
         onToggleSpeech={() => { setSpeechEnabled(s => !s); window.speechSynthesis.cancel(); }}
         onRestart={isSetup ? undefined : restart}
         restartLabel={ui?.restart_btn ?? 'Restart Simulation'}
+        adminHref={isAdmin ? (simId !== 'default' ? `/admin#sim=${encodeURIComponent(simId)}` : '/admin#new') : undefined}
       />
 
       <div className="app-body" style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>

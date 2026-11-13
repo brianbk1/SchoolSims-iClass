@@ -11,6 +11,7 @@ interface HeaderProps {
   onToggleSpeech: () => void;
   onRestart?: () => void;
   restartLabel?: string;
+  adminHref?: string;
 }
 
 function fmt(s: number) {
@@ -19,7 +20,7 @@ function fmt(s: number) {
   return `${m}:${sec}`;
 }
 
-export default function Header({ simTitle, progress, slideLabel, timerSecs, lang, ethnicity, speechEnabled, onToggleSpeech, onRestart, restartLabel = 'Restart' }: HeaderProps) {
+export default function Header({ simTitle, progress, slideLabel, timerSecs, lang, ethnicity, speechEnabled, onToggleSpeech, onRestart, restartLabel = 'Restart', adminHref }: HeaderProps) {
   return (
     <header className="header-bar" style={{ height: 56, padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, zIndex: 20 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
@@ -49,6 +50,12 @@ export default function Header({ simTitle, progress, slideLabel, timerSecs, lang
         {lang && <span id="badge-lang" className="step-badge" style={{ color: 'var(--text-2)', background: 'var(--surface2)', borderColor: 'var(--border2)' }}>{lang}</span>}
         {ethnicity && <span id="badge-eth" className="step-badge">{ethnicity}</span>}
         <SpeechToggle enabled={speechEnabled} onToggle={onToggleSpeech} />
+        {adminHref && (
+          <a className="hdr-admin" href={adminHref} title="Admin: build, review and manage sims">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>Admin</span>
+          </a>
+        )}
         {onRestart && (
           <button id="hdr-restart" onClick={() => { if (confirm(`${restartLabel}?`)) onRestart(); }} title={restartLabel} aria-label={restartLabel}
             style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, padding: '5px 10px', fontSize: 12, fontWeight: 600, color: 'var(--text-2)', cursor: 'pointer' }}>

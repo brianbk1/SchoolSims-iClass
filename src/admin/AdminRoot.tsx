@@ -6,30 +6,57 @@ import LooksAdmin from './LooksAdmin';
 const TOKEN_KEY = 'iclass_admin_token';
 const readToken = () => { try { return localStorage.getItem(TOKEN_KEY) ?? ''; } catch { return ''; } };
 
-type Tab = 'builder' | 'looks' | 'languages';
+type Tab = 'new' | 'review' | 'report' | 'notifications' | 'looks' | 'languages' | 'sim';
+
+const tabFromHash = (): Tab => {
+  const h = window.location.hash.replace('#', '');
+  if (h.startsWith('sim=')) return 'sim';
+  return (['review', 'report', 'notifications', 'looks', 'languages'].includes(h) ? h : 'new') as Tab;
+};
 
 export default function AdminRoot() {
-  const [tab, setTab] = useState<Tab>(() => (window.location.hash.includes('languages') ? 'languages' : window.location.hash.includes('looks') ? 'looks' : 'builder'));
+  const [tab, setTab] = useState<Tab>(tabFromHash);
   const [langs, setLangs] = useState<LangOpt[]>([]);
-  useEffect(() => { api<{ language_options: LangOpt[] }>('/api/admin/whoami').then(w => setLangs(w.language_options ?? [])).catch(() => {}); }, []);
+  const [pending, setPending] = useState(0);
   const [tokenMsg, setTokenMsg] = useState<string | null>(null);
   const [tokenInput, setTokenInput] = useState(readToken());
   const [key, setKey] = useState(0);
 
-  const tabBtn = (t: Tab, text: string) => (
-    <button onClick={() => { setTab(t); window.location.hash = t === 'builder' ? '' : t; }}
-      className={`adm-tab${tab === t ? ' on' : ''}`}>{text}</button>
+  useEffect(() => { api<{ language_options: LangOpt[] }>('/api/admin/whoami').then(w => setLangs(w.language_options ?? [])).catch(() => {}); }, [key]);
+  // How many things wait for review (badge on the Review tab).
+  useEffect(() => {
+    const count = () => api<{ sims: { status: string; pending_langs?: string[] }[] }>('/api/admin/sims')
+      .then(r => setPending(r.sims.filter(s => s.status === 'pending_review' || (s.status === 'published' && (s.pending_langs ?? []).length)).length))
+      .catch(() => {});
+    count();
+    const t = setInterval(count, 60000);
+    return () => clearInterval(t);
+  }, [key, tab]);
+  useEffect(() => {
+    const onHash = () => setTab(tabFromHash());
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+
+  const link = (t: Exclude<Tab, 'sim'>, text: React.ReactNode) => (
+    <a href={`#${t}`} className={`adm-tab${tab === t ? ' on' : ''}`} aria-current={tab === t ? 'page' : undefined}>{text}</a>
   );
+  const builderTab = tab !== 'looks' && tab !== 'languages';
 
   return (
     <div style={{ minHeight: '100vh', background: '#f4f5f9' }}>
       <header className="adm-header">
         <span style={{ fontWeight: 800, fontSize: 17, color: '#fff' }}>SchoolSims</span>
-        {tabBtn('builder', 'Sim Builder')}
-        {tabBtn('looks', 'Character looks')}
-        {tabBtn('languages', 'Languages (built-in sim)')}
+        <nav className="adm-nav" aria-label="Admin">
+          {link('new', '✦ Create sim')}
+          {link('review', <>Review{pending > 0 && <span className="adm-badge">{pending}</span>}</>)}
+          {link('report', 'Report')}
+          {link('notifications', 'Notifications')}
+          {link('looks', 'Character looks')}
+          {link('languages', 'Languages (built-in sim)')}
+        </nav>
         <span className="adm-beta">Beta</span>
-        <a href="/" style={{ marginInlineStart: 'auto', fontSize: 13, color: '#c7d2fe' }}>Open the player ↗</a>
+        <a href="/" target="_blank" rel="noreferrer" style={{ marginInlineStart: 'auto', fontSize: 13, color: '#c7d2fe', whiteSpace: 'nowrap' }}>Open the player ↗</a>
       </header>
       <main style={{ padding: 24, maxWidth: 1500, margin: '0 auto' }}>
         {tokenMsg !== null ? (
@@ -43,7 +70,7 @@ export default function AdminRoot() {
               Continue
             </button>
           </div>
-        ) : tab === 'builder' ? (
+        ) : builderTab ? (
           <SimBuilder key={key} onNeedToken={m => setTokenMsg(m)} />
         ) : tab === 'looks' ? (
           <LooksAdmin key={key} languages={langs} />

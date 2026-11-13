@@ -155,15 +155,28 @@ function Chip({ status, extra }: { status: Status; extra?: string }) {
 }
 
 // ---- main ---------------------------------------------------------------------
-type View = { kind: 'new' } | { kind: 'sim'; id: string } | { kind: 'report' } | { kind: 'notifications' };
+type View = { kind: 'new' } | { kind: 'sim'; id: string } | { kind: 'report' } | { kind: 'notifications' } | { kind: 'review' };
+
+/** The admin's address bar is its menu: #new, #review, #report, #notifications, #sim=<id>. */
+export function viewFromHash(hash = window.location.hash): View {
+  const m = hash.match(/sim=([^&]+)/);
+  if (m) return { kind: 'sim', id: decodeURIComponent(m[1]) };
+  const h = hash.replace('#', '');
+  if (h === 'report' || h === 'notifications' || h === 'review') return { kind: h };
+  return { kind: 'new' };
+}
+const hashFor = (v: View) => (v.kind === 'sim' ? `sim=${encodeURIComponent(v.id)}` : v.kind === 'new' ? 'new' : v.kind);
 
 export default function SimBuilder({ onNeedToken }: { onNeedToken: (msg: string) => void }) {
   const [who, setWho] = useState<Who | null>(null);
   const [list, setList] = useState<SimRow[]>([]);
-  const [view, setView] = useState<View>(() => {
-    const m = window.location.hash.match(/sim=([^&]+)/);
-    return m ? { kind: 'sim', id: decodeURIComponent(m[1]) } : { kind: 'new' };
-  });
+  const [view, setView] = useState<View>(() => viewFromHash());
+  // Header links and the browser's back button change the address; follow them.
+  useEffect(() => {
+    const onHash = () => { setView(viewFromHash()); setError(null); setNotice(null); };
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -179,7 +192,7 @@ export default function SimBuilder({ onNeedToken }: { onNeedToken: (msg: string)
 
   const go = (v: View) => {
     setError(null); setNotice(null); setView(v);
-    window.location.hash = v.kind === 'sim' ? `sim=${encodeURIComponent(v.id)}` : '';
+    window.location.hash = hashFor(v);
   };
 
   const groups: [string, SimRow[]][] = [
@@ -193,10 +206,6 @@ export default function SimBuilder({ onNeedToken }: { onNeedToken: (msg: string)
     <div className="sb-layout">
       <aside style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <button style={{ ...primary, width: '100%' }} onClick={() => go({ kind: 'new' })}>✦ Create Sim from AI</button>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button style={{ ...ghost, flex: 1 }} onClick={() => go({ kind: 'report' })}>Report</button>
-          <button style={{ ...ghost, flex: 1 }} onClick={() => go({ kind: 'notifications' })}>Notifications</button>
-        </div>
         {who && (
           <p style={{ fontSize: 12, color: 'var(--text-3)', margin: 0 }}>
             Signed in as <b>{who.role === 'reviewer' ? 'SchoolSims reviewer' : 'sim builder'}</b>
@@ -239,6 +248,7 @@ export default function SimBuilder({ onNeedToken }: { onNeedToken: (msg: string)
             onDeleted={async () => { await load(); go({ kind: 'new' }); }} setError={setError} setNotice={setNotice} />
         )}
         {view.kind === 'report' && <Report onError={setError} />}
+        {view.kind === 'review' && <ReviewQueue rows={list} who={who} onOpen={id => go({ kind: 'sim', id })} />}
         {view.kind === 'notifications' && <Notifications who={who} onError={setError} />}
       </section>
     </div>
@@ -899,6 +909,41 @@ function MediaPanel({ sim, onUpdate, setError, setNotice }: {
   );
 }
 
+// ---- Review queue ---------------------------------------------------------------------
+function ReviewQueue({ rows, who, onOpen }: { rows: SimRow[]; who: Who | null; onOpen: (id: string) => void }) {
+  const pending = rows.filter(s => s.status === 'pending_review');
+  const langs = rows.filter(s => s.status === 'published' && (s as any).pending_langs?.length);
+  return (
+    <div style={card}>
+      <h2 style={h2}>Waiting for review</h2>
+      <p style={{ fontSize: 13, color: 'var(--text-3)', margin: '-8px 0 14px' }}>
+        {who?.role === 'reviewer' ? 'Open a sim to approve and publish it, or send it back with a note.' : `Reviewed by ${who?.reviewer_email ?? 'SchoolSims'}.`}
+      </p>
+      <table className="sb-table">
+        <thead><tr><th>Sim</th><th>Creator</th><th>Submitted</th><th>Expires</th><th>Languages</th><th></th></tr></thead>
+        <tbody>
+          {pending.map(s => (
+            <tr key={s.id}>
+              <td><b>{s.title}</b><div style={{ color: 'var(--text-3)' }}>{s.context_summary}</div></td>
+              <td>{s.created_by}</td><td>{day(s.submitted_at)}</td><td>{day(s.expires_at)}</td>
+              <td>{s.languages.join(', ')}</td>
+              <td><button style={ghost} onClick={() => onOpen(s.id)}>Open</button></td>
+            </tr>
+          ))}
+          {langs.map(s => (
+            <tr key={s.id + '-langs'}>
+              <td><b>{s.title}</b><div style={{ color: 'var(--text-3)' }}>New languages on a published sim</div></td>
+              <td>{s.created_by}</td><td>—</td><td>—</td><td>{(s as any).pending_langs.join(', ')}</td>
+              <td><button style={ghost} onClick={() => onOpen(s.id)}>Open</button></td>
+            </tr>
+          ))}
+          {pending.length + langs.length === 0 && <tr><td colSpan={6} style={{ color: 'var(--text-3)' }}>Nothing is waiting for review.</td></tr>}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 // ---- Report ---------------------------------------------------------------------
 function Report({ onError }: { onError: (m: string | null) => void }) {
   const iso = (d: Date) => d.toISOString().slice(0, 10);
@@ -932,7 +977,7 @@ function Report({ onError }: { onError: (m: string | null) => void }) {
           <tbody>
             {(rows ?? []).map(r => (
               <tr key={r.id}>
-                <td><a href={`#sim=${encodeURIComponent(r.id)}`} onClick={() => setTimeout(() => window.location.reload(), 0)}>{r.title}</a></td>
+                <td><a href={`#sim=${encodeURIComponent(r.id)}`}>{r.title}</a></td>
                 <td>{r.context_summary}</td><td>{r.created_by}</td><td>{day(r.created_at)}</td>
                 <td><Chip status={r.status} /></td><td>{r.languages.join(', ')}</td>
               </tr>
