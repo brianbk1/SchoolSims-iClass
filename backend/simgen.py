@@ -958,3 +958,54 @@ def suggest_names(region: str, gender: str, langs: list[str], call: Callable[...
         if isinstance(item, dict) and item.get("lang") and str(item.get("name", "")).strip():
             names[str(item["lang"])] = str(item["name"]).strip()
     return names
+
+
+LOOKS_TOOL = {
+    "name": "submit_looks",
+    "description": "Submit suggested character looks.",
+    "input_schema": {"type": "object", "required": ["looks"], "properties": {
+        "looks": {"type": "array", "items": {"type": "object",
+                  "required": ["label", "gender", "langs", "names", "portrait", "why"], "properties": {
+            "label": {"type": "string", "description": "Short region name, e.g. 'Middle East'"},
+            "gender": {"type": "string", "enum": ["female", "male"]},
+            "langs": {"type": "array", "items": {"type": "string"}, "description": "Language codes this look suits"},
+            "names": {"type": "array", "items": {"type": "object", "required": ["lang", "name"], "properties": {
+                "lang": {"type": "string"}, "name": {"type": "string"}}},
+                "description": "One name per language code plus 'default' (Latin script)"},
+            "portrait": {"type": "string", "description": "Neutral description of the person for a portrait "
+                         "generator: age range, appearance typical of the region, hair, clothing. Respectful, "
+                         "realistic, no stereotypes, no religious or national symbols unless typical work attire."},
+            "why": {"type": "string", "description": "One sentence: which gap this fills."}}}}}},
+}
+
+
+def suggest_looks(existing: list[dict], languages: list[dict], count: int = 6,
+                  call: Callable[..., dict] | None = None) -> list[dict]:
+    """Propose looks so every language has a fitting featured character, and both
+    genders are represented. `existing`: [{label, gender, langs}]; `languages`: [{code, label, place}]."""
+    prompt = "\n".join([
+        "We localize leadership simulations for schools. Each language should have a featured character whose "
+        "look and name feel natural to learners in that language's region, and we want both women and men.",
+        "Languages (code: name, region):",
+        *[f"  {l['code']}: {l.get('native') or l.get('label')}" + (f", {l['place']}" if l.get("place") else "") for l in languages],
+        "Looks we already have (label, gender: languages):",
+        *[f"  {e['label']}, {e['gender']}: {', '.join(e['langs']) or 'none'}" for e in existing],
+        f"Suggest up to {count} NEW looks that fill the biggest gaps: languages with no fitting look first, "
+        "then the missing gender for a region. Don't repeat an existing label+gender. Names: realistic and "
+        "common in the region, written in each language's script.",
+    ])
+    out = _unjson((call or call_claude)(prompt, LOOKS_TOOL))
+    looks = []
+    for item in _list(out.get("looks") if isinstance(out, dict) else out):
+        if not isinstance(item, dict) or not str(item.get("label", "")).strip():
+            continue
+        names = {}
+        for n in _list(item.get("names")):
+            if isinstance(n, dict) and n.get("lang") and str(n.get("name", "")).strip():
+                names[str(n["lang"])] = str(n["name"]).strip()
+        looks.append({"label": str(item["label"]).strip(),
+                      "gender": "male" if str(item.get("gender", "")).lower().startswith("m") else "female",
+                      "langs": [str(x) for x in _list(item.get("langs"))],
+                      "names": names, "portrait": str(item.get("portrait", "")).strip(),
+                      "why": str(item.get("why", "")).strip()})
+    return looks[:count]

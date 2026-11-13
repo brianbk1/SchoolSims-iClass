@@ -29,10 +29,12 @@ function shrink(file: File, maxH = 1400): Promise<string> {
   });
 }
 
-const chatgptPrompt = (region: string, gender: string) =>
-  `Photorealistic head-and-shoulders portrait of a ${gender || 'female'} school leader in their 40s from ${region || 'the region'}, ` +
+const chatgptPrompt = (region: string, gender: string, desc = '') =>
+  `Photorealistic head-and-shoulders portrait of a ${gender || 'female'} school leader from ${region || 'the region'}${desc ? ` (${desc})` : ' in their 40s'}, ` +
   'looking at the camera with a warm, professional expression, business-casual clothing, soft even light, ' +
   'plain light-grey studio background, centred, portrait orientation (2:3), no text, no logos. Not a real or famous person.';
+
+interface Suggestion { label: string; gender: string; langs: string[]; names: Record<string, string>; portrait: string; why: string; added?: boolean; error?: string }
 
 const EMPTY = { label: '', gender: 'female', langs: [] as string[], names: {} as Record<string, string>, photo: '', generate_prompt: '' };
 
@@ -43,6 +45,43 @@ export default function LooksAdmin({ languages }: { languages: LangOpt[] }) {
   const [editing, setEditing] = useState<string | null>(null);
   const [busy, setBusy] = useState('');
   const [msg, setMsg] = useState<{ tone: 'ok' | 'bad'; text: string } | null>(null);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+
+  const suggestLooks = async () => {
+    setBusy('suggest'); setMsg(null);
+    try { setSuggestions((await api<{ looks: Suggestion[] }>('/api/admin/looks/suggest', { method: 'POST' })).looks); }
+    catch (e: any) { setMsg({ tone: 'bad', text: e.message }); }
+    finally { setBusy(''); }
+  };
+
+  const addSuggestion = async (i: number) => {
+    const sg = suggestions[i];
+    setSuggestions(list => list.map((x, j) => j === i ? { ...x, error: '' } : x));
+    try {
+      await api('/api/admin/looks', { method: 'POST', body: JSON.stringify({
+        label: sg.label, gender: sg.gender, langs: sg.langs, names: sg.names, generate_prompt: sg.portrait }) });
+      setSuggestions(list => list.map((x, j) => j === i ? { ...x, added: true } : x));
+    } catch (e: any) {
+      setSuggestions(list => list.map((x, j) => j === i ? { ...x, error: e.message } : x));
+    }
+  };
+
+  const addAll = async () => {
+    const todo = suggestions.map((x, i) => (x.added ? -1 : i)).filter(i => i >= 0);
+    for (const [n, i] of todo.entries()) {
+      setBusy(`all ${n + 1}/${todo.length}`);
+      await addSuggestion(i);
+    }
+    setBusy(''); await load();
+  };
+
+  const useInForm = (sg: Suggestion) => {
+    setEditing(null);
+    setForm({ label: sg.label, gender: sg.gender, langs: sg.langs, names: sg.names, photo: '', generate_prompt: ready.images_ready ? sg.portrait : '' });
+    setMsg({ tone: 'ok', text: ready.images_ready ? 'Filled in below. Check it, then Add look.' : 'Filled in below. Make the portrait in ChatGPT with the prompt shown, upload it, then Add look.' });
+    setPortraitHint(sg.portrait);
+  };
+  const [portraitHint, setPortraitHint] = useState('');
 
   const load = useCallback(async () => {
     const r = await api<{ looks: Look[]; images_ready: boolean; blob_ready: boolean }>('/api/admin/looks');
@@ -88,6 +127,47 @@ export default function LooksAdmin({ languages }: { languages: LangOpt[] }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 1100 }}>
+      <div style={card}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1e2a5a', margin: 0, flex: 1 }}>Suggested looks</h2>
+          {suggestions.some(x => !x.added) && ready.images_ready && (
+            <button style={ghost} disabled={!!busy} onClick={addAll}>{busy.startsWith('all') ? `Adding ${busy.slice(4)}…` : 'Add all (generate portraits)'}</button>
+          )}
+          <button style={navy} disabled={!!busy} onClick={suggestLooks}>{busy === 'suggest' ? 'Thinking…' : '✦ Suggest looks'}</button>
+        </div>
+        <p style={{ fontSize: 13, color: 'var(--text-3)', margin: '6px 0 0' }}>
+          AI checks which languages have no fitting character (and which regions lack a woman or a man) and proposes looks to fill the gaps.
+          {ready.images_ready ? ' Adding one generates its portrait (about 30 seconds each).' : ' Add OPENAI_API_KEY to generate portraits here; otherwise use a suggestion in the form and upload a photo.'}
+        </p>
+        {suggestions.length > 0 && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12, marginTop: 14 }}>
+            {suggestions.map((sg, i) => (
+              <div key={i} style={{ border: `1px solid ${sg.added ? '#bbf7d0' : 'var(--border)'}`, background: sg.added ? '#f0fdf4' : 'var(--surface)', borderRadius: 12, padding: 14 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <b>{sg.label}</b><span style={{ fontSize: 12, color: 'var(--text-3)' }}>{sg.gender} · {sg.langs.join(', ')}</span>
+                </div>
+                <p style={{ fontSize: 12, color: '#8b1e3f', margin: '4px 0' }}>{sg.why}</p>
+                <p dir="auto" style={{ fontSize: 13, margin: '4px 0' }}>{Object.entries(sg.names).map(([l, n]) => `${n} (${l})`).join(' · ')}</p>
+                <textarea style={{ ...inp, fontSize: 12, minHeight: 54, padding: 6 }} value={sg.portrait} aria-label={`Portrait description for ${sg.label}`}
+                  onChange={e => setSuggestions(list => list.map((x, j) => j === i ? { ...x, portrait: e.target.value } : x))} />
+                {sg.error && <p style={{ fontSize: 12, color: '#b91c1c', margin: '4px 0' }}>{sg.error}</p>}
+                <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                  {sg.added ? <span style={{ fontSize: 13, color: '#166534', fontWeight: 600 }}>✓ Added</span> : (
+                    <>
+                      {ready.images_ready && <button style={{ ...navy, padding: '6px 12px', fontSize: 13 }} disabled={!!busy}
+                        onClick={async () => { setBusy(`one ${i}`); await addSuggestion(i); setBusy(''); await load(); }}>
+                        {busy === `one ${i}` ? 'Generating…' : 'Add'}</button>}
+                      <button style={{ ...ghost, padding: '6px 12px' }} onClick={() => useInForm(sg)}>Edit in form</button>
+                      <button style={{ ...ghost, padding: '6px 12px' }} onClick={() => setSuggestions(list => list.filter((_, j) => j !== i))}>Dismiss</button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       <div style={card}>
         <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1e2a5a', margin: '0 0 6px' }}>{editing ? 'Edit look' : 'Add a character look'}</h2>
         <p style={{ fontSize: 13, color: 'var(--text-3)', margin: '0 0 16px' }}>
@@ -143,8 +223,8 @@ export default function LooksAdmin({ languages }: { languages: LangOpt[] }) {
               To make one in ChatGPT, use this prompt:
             </p>
             <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-              <code style={{ fontSize: 12, background: '#f8fafc', border: '1px solid var(--border)', borderRadius: 8, padding: 8, flex: 1, whiteSpace: 'normal' }}>{chatgptPrompt(form.label, form.gender)}</code>
-              <button style={{ ...ghost, padding: '4px 10px', fontSize: 12 }} onClick={() => navigator.clipboard?.writeText(chatgptPrompt(form.label, form.gender))}>Copy</button>
+              <code style={{ fontSize: 12, background: '#f8fafc', border: '1px solid var(--border)', borderRadius: 8, padding: 8, flex: 1, whiteSpace: 'normal' }}>{chatgptPrompt(form.label, form.gender, portraitHint)}</code>
+              <button style={{ ...ghost, padding: '4px 10px', fontSize: 12 }} onClick={() => navigator.clipboard?.writeText(chatgptPrompt(form.label, form.gender, portraitHint))}>Copy</button>
             </div>
             {ready.images_ready && (
               <div style={{ marginTop: 10 }}>
